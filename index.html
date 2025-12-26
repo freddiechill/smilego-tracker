@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V49 - Logo Update</title>
+    <title>SmileGO V50 - Native Push Fix</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,12 +84,7 @@
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        .chat-body-scroll { 
-            flex: 1 1 auto; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 10px; 
-            background: #050505; min-height: 0; 
-            opacity: 0; transition: opacity 0.1s ease-out; 
-        }
+        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; min-height: 0; opacity: 0; transition: opacity 0.1s ease-out; }
         .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
 
         .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
@@ -195,8 +190,12 @@
                 <div class="p-3 border-bottom border-secondary"><div class="d-flex justify-content-between align-items-center"><span class="text-muted">Ad</span><div class="d-flex align-items-center"><span id="prof-name" class="fw-bold">...</span><i class="fas fa-pencil-alt edit-icon" onclick="toggleEdit('name')"></i></div></div><div id="edit-name-group" class="d-none mt-2 d-flex gap-2"><input id="inp-name" class="form-control form-control-sm"><button class="btn btn-success btn-sm" onclick="saveProf('name')"><i class="fas fa-check"></i></button></div></div>
                 <div class="p-3 border-bottom border-secondary"><div class="d-flex justify-content-between align-items-center"><span class="text-muted">Departman</span><div class="d-flex align-items-center"><span id="prof-dept" class="fw-bold">...</span><i class="fas fa-pencil-alt edit-icon" onclick="toggleEdit('dept')"></i></div></div><div id="edit-dept-group" class="d-none mt-2 d-flex gap-2"><select id="inp-dept" class="form-select form-select-sm"></select><button class="btn btn-success btn-sm" onclick="saveProf('dept')"><i class="fas fa-check"></i></button></div></div>
                 <div class="p-3 d-flex justify-content-between align-items-center"><span class="text-muted">Rol</span><span id="prof-role" class="badge bg-secondary">...</span></div>
+                
+                <button class="btn btn-warning w-100 mt-4 py-3 rounded-4 fw-bold" onclick="testNotification()">
+                    <i class="fas fa-bell"></i> Bana Test Bildirimi Gönder
+                </button>
             </div>
-            <button class="btn btn-outline-danger w-100 mt-4 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
+            <button class="btn btn-outline-danger w-100 mt-3 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
         </div>
 
         <nav class="bottom-nav">
@@ -274,7 +273,15 @@
                         if(uData.isBanned){ customAlert("Erişim engellendi."); signOut(auth); return; }
                         if(u.email === ADMIN) uData.role = 'Admin';
                         curUser = u;
-                        if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
+                        
+                        // --- NATIVE PUSH REGISTRATION (MEDIAN) ---
+                        if(window.median && window.median.onesignal) {
+                            median.onesignal.setExternalUserId(u.uid);
+                        }
+                        if(window.OneSignalDeferred) {
+                            OneSignalDeferred.push(()=>OneSignal.login(u.uid));
+                        }
+
                         document.getElementById('auth-screen').style.display='none'; 
                         document.getElementById('app-screen').style.display='block'; 
                         init();
@@ -310,6 +317,15 @@
             if (code === 'auth/wrong-password') return 'Şifre yanlış.';
             return "Hata: " + code;
         };
+
+        // TEST NOTIFICATION BUTTON
+        window.testNotification = async () => {
+            if(!curUser) return;
+            showLoading(true, "Test Bildirimi Gönderiliyor...");
+            await sendPushNotification(curUser.uid, "Test Bildirimi", "Bu bir test bildirimidir!");
+            showLoading(false);
+            customAlert("Bildirim gönderildi! Telefonunu kontrol et.");
+        }
 
         async function sendPushNotification(targetIds, title, message) {
             if(!targetIds) return;
@@ -351,11 +367,10 @@
                 
                 b.innerHTML = html;
                 
-                // IMAGE & SCROLL FIX (Wait for images to impact height)
+                // IMAGE & SCROLL FIX
                 const scrollDown = () => { b.scrollTop = b.scrollHeight; };
-                scrollDown(); // Immediate scroll
+                scrollDown(); 
                 
-                // Watch for image loads
                 const imgs = b.querySelectorAll('img');
                 if(imgs.length > 0) {
                     let loaded = 0;
@@ -365,7 +380,6 @@
                     });
                 }
 
-                // Reveal after a slight delay to allow layout to settle
                 setTimeout(() => {
                     scrollDown();
                     b.style.opacity = '1'; 
@@ -507,9 +521,13 @@
             openChat(c, u.name); 
         }
         
+        // --- SAFE & ROBUST DM LOADER ---
         async function loadRecentDMs() { 
             const dList = document.getElementById('dm-list');
+            // BLINK FIX: Don't clear list immediately
+            
             try {
+                // Get all messages (No orderBy to avoid index errors)
                 const s = await getDocs(collection(db, "messages")); 
                 if (s.empty) { 
                     dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>'; 
@@ -523,6 +541,7 @@
                     allMsgs.push({ ...data, _time: time });
                 });
                 
+                // Sort in memory
                 allMsgs.sort((a,b) => b._time - a._time);
 
                 const uniqueUsers = new Set(); 
@@ -538,6 +557,7 @@
                      return;
                 }
 
+                // Prepare new HTML string
                 let newHTML = "";
                 const promises = Array.from(uniqueUsers).map(uid => getDoc(doc(db, "users", uid)));
                 const userSnaps = await Promise.all(promises);
@@ -550,6 +570,7 @@
                     }
                 });
                 
+                // Swap content in one go
                 dList.innerHTML = newHTML;
 
             } catch (e) { 
