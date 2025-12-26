@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V30 - Production Ready</title>
+    <title>SmileGO V48 - Perfect Scroll</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,7 +14,7 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(function(OneSignal) {
         OneSignal.init({
-          appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d", // Senin App ID'n
+          appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
         });
       });
     </script>
@@ -23,45 +23,82 @@
         :root { --bg-dark: #09090b; --nav-dark: #101012; --primary: #818cf8; --sent-bg: #4f46e5; --recv-bg: #27272a; }
         body { background-color: var(--bg-dark); font-family: 'Satoshi', sans-serif; color: #fff; height: 100vh; overflow: hidden; margin: 0; user-select: none; }
 
-        /* SCROLLBAR GİZLEME */
         * { -ms-overflow-style: none; scrollbar-width: none; }
         *::-webkit-scrollbar { display: none; }
 
-        /* Z-INDEX AYARLARI */
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
         #context-menu { z-index: 1000006 !important; }
+        
+        .app-header { 
+            height: 70px; position: fixed; top: 0; left: 0; width: 100%; 
+            background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; 
+            z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
+        }
+        .bottom-nav { 
+            height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; 
+            z-index: 9999; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; 
+        }
 
-        /* AUTH */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, #312e81 0%, #09090b 60%); z-index: 200000; display: flex; align-items: center; justify-content: center; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-
-        /* APP LAYOUT */
-        .app-header { height: 70px; position: fixed; top: 0; left: 0; width: 100%; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-        .bottom-nav { height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; z-index: 50; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; }
-        .main-content { position: fixed; top: 70px; bottom: 85px; width: 100%; overflow-y: auto; padding: 20px; display: none; }
+        .main-content { 
+            position: fixed; top: 70px; bottom: 85px; width: 100%; 
+            overflow-y: auto; padding: 20px; display: none; z-index: 1; 
+        }
         .main-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CHAT OVERLAY */
-        #chat-overlay {
+        /* IMAGE VIEWER */
+        #img-viewer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 2000; 
-            display: none; flex-direction: column;
+            background: #000; z-index: 2000000;
+            display: none; align-items: center; justify-content: center;
+            overflow: hidden; touch-action: none;
         }
+        #img-viewer img {
+            max-width: 100%; max-height: 100%;
+            transform-origin: center center;
+            transition: transform 0.1s ease-out;
+        }
+        .img-viewer-close {
+            position: absolute; top: 40px; right: 20px;
+            background: rgba(255,255,255,0.2); color: white;
+            border: none; border-radius: 50%; width: 45px; height: 45px;
+            z-index: 2000001; font-size: 24px; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* SPINNER */
+        .upload-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* LOADING OVERLAY */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000007;
+            display: none; align-items: center; justify-content: center; flex-direction: column;
+        }
+
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, #312e81 0%, #09090b 60%); z-index: 200000; display: flex; align-items: center; justify-content: center; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+
+        #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; min-height: 0; }
+        
+        /* CHAT BODY - SMOOTH TRANSITION */
+        .chat-body-scroll { 
+            flex: 1 1 auto; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; gap: 10px; 
+            background: #050505; min-height: 0; 
+            opacity: 0; /* Başlangıçta gizli */
+            transition: opacity 0.1s ease-out; 
+        }
+        
         .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
 
         .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
-        .row-right { justify-content: flex-end; } 
-        .row-left { justify-content: flex-start; }
-
-        .msg-bubble {
-            max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; line-height: 1.4;
-            position: relative; word-wrap: break-word; min-width: 60px; cursor: pointer; transition: transform 0.1s;
-        }
+        .row-right { justify-content: flex-end; } .row-left { justify-content: flex-start; }
+        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; line-height: 1.4; position: relative; word-wrap: break-word; min-width: 60px; cursor: pointer; transition: transform 0.1s; }
         .msg-bubble:active { transform: scale(0.98); opacity: 0.8; }
         .bubble-sent { background: var(--sent-bg); color: #fff; border-bottom-right-radius: 4px; margin-left: 8px; }
         .bubble-received { background: var(--recv-bg); color: #fff; border-bottom-left-radius: 4px; margin-right: 8px; }
@@ -69,35 +106,26 @@
         .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
         .file-attachment { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
 
-        /* CONTEXT MENU */
-        #context-menu { 
-            position: fixed; background: #1c1c1e; border: 1px solid #333; 
-            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); 
-            display: none; flex-direction: column; min-width: 160px; overflow: hidden; 
-        }
+        #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 160px; overflow: hidden; }
         .ctx-item { padding: 12px 15px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; transition:0.2s; }
         .ctx-item:active { background: #333; }
         .ctx-item.delete { color: #ff6b6b; }
 
-        /* UI */
         .card-custom { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition:0.2s; }
         .card-custom:active { background: #202023; }
         .task-preview-text { font-size: 12px; color: #a1a1aa; margin-top: 5px; border-left: 2px solid #333; padding-left: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .detail-badge { display: inline-block; width: fit-content; font-size: 12px; padding: 6px 12px; border-radius: 20px; }
         .detail-desc { white-space: pre-wrap; word-break: break-word; color: #d4d4d8; font-size: 14px; line-height: 1.6; }
-        
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); display: flex; align-items: center; gap: 8px; }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 10px; border: 1px solid #27272a; margin-bottom: 10px; }
         .team-item:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
-
         .form-control, .form-select { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 14px; border-radius: 14px; }
         .form-control:focus { background: #27272a; color: white; border-color: var(--primary); box-shadow: none; }
         .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
-        .nav-btn { background: none; border: none; color: #52525b; display: flex; justify-content: center; align-items: center; flex: 1; height: 100%; }
+        .nav-btn { background: none; border: none; color: #52525b; display: flex; justify-content: center; align-items: center; flex: 1; height: 100%; z-index: 10000; }
         .nav-btn i { font-size: 24px; transition: 0.2s; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn.active i { transform: translateY(-3px); filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.5)); }
-        
         .notif-btn { position: relative; background: none; border: none; color: white; font-size: 24px; }
         .notif-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; display: none; border: 2px solid var(--bg-dark); }
         .notif-item { padding: 12px; border-bottom: 1px solid #333; font-size: 14px; transition: 0.3s; cursor: pointer; }
@@ -107,6 +135,16 @@
     </style>
 </head>
 <body>
+
+    <div id="loading-overlay">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+        <div class="text-white mt-3" id="loading-text">Yükleniyor...</div>
+    </div>
+
+    <div id="img-viewer">
+        <button class="img-viewer-close" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
+        <img id="img-viewer-src" src="">
+    </div>
 
     <div id="context-menu"></div>
 
@@ -136,12 +174,16 @@
             <h6 class="text-muted small fw-bold mb-3 ls-1">KANALLAR</h6>
             <div id="channel-list" class="d-flex flex-column gap-2 mb-4"></div>
             <h6 class="text-muted small fw-bold mb-3 ls-1">ÖZEL MESAJLAR</h6>
-            <div id="dm-list" class="d-flex flex-column gap-2"></div>
+            <div id="dm-list" class="d-flex flex-column gap-2">
+                <div class="text-center text-muted small mt-3">Mesajlar yükleniyor...</div>
+            </div>
         </div>
 
         <div id="view-team" class="main-content">
             <input type="text" class="form-control mb-4" placeholder="Ekipte ara..." onkeyup="renderTeam(this.value)">
-            <div id="team-list"></div>
+            <div id="team-list">
+                <div class="text-center text-muted small mt-3">Ekip yükleniyor...</div>
+            </div>
         </div>
 
         <div id="view-profile" class="main-content text-center">
@@ -176,7 +218,10 @@
         <div class="chat-body-scroll" id="chat-overlay-body"></div>
         <form id="chat-form" class="chat-footer-fixed d-flex align-items-center gap-2">
             <input type="file" id="chat-file-inp" hidden>
-            <button type="button" class="btn btn-dark text-muted me-2 rounded-circle" style="width:45px;height:45px" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
+            <button type="button" class="btn btn-dark text-muted me-2 rounded-circle d-flex align-items-center justify-content-center" style="width:45px;height:45px" onclick="document.getElementById('chat-file-inp').click()">
+                <i class="fas fa-paperclip" id="attach-icon"></i>
+                <div class="upload-spinner" id="upload-spinner"></div>
+            </button>
             <input id="chat-input" class="form-control me-2" placeholder="Mesaj yaz..." style="flex:1" autocomplete="off">
             <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px; display:flex; align-items:center; justify-content:center"><i class="fas fa-paper-plane"></i></button>
         </form>
@@ -191,14 +236,18 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, updateDoc, deleteDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, limit, updateDoc, deleteDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIGURATION
         const ONESIGNAL_APP_ID = "2657219b-d29e-46e1-ac6f-68d2cdb8014d";
         const ONESIGNAL_API_KEY = "os_v2_app_ezlsdg6stzdodldpndjm3oabjurhogbxdf3ehjmkc3kn3ltdl3yergesq5ssbqd2freyk75ysl7ltmzidm2amo7qfetxp4pwzzpgp5y";
 
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+
+        window.onerror = function(msg, url, line) {
+            customAlert("Hata Oluştu: " + msg + "\nSatır: " + line);
+            return false;
+        };
 
         let curUser=null, uData={}, activeChatId=null, chatUnsub=null, selMsg={};
         let notifUnsub=null, userUnsub=null, teamUnsub=null;
@@ -208,7 +257,15 @@
         const COLORS = ["#fca5a5", "#fdba74", "#fcd34d", "#86efac", "#67e8f9", "#93c5fd", "#c4b5fd", "#f9a8d4", "#e9d5ff"];
         function getCol(s){ let h=0; for(let i=0;i<s.length;i++)h=s.charCodeAt(i)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
 
-        // --- AUTH & CLEANUP ---
+        function toggleUploadSpinner(show) {
+            document.getElementById('attach-icon').style.display = show ? 'none' : 'block';
+            document.getElementById('upload-spinner').style.display = show ? 'block' : 'none';
+        }
+        function showLoading(show, text="Yükleniyor...") { 
+            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; 
+            document.getElementById('loading-text').innerText = text;
+        }
+
         onAuthStateChanged(auth, async u=>{
             if(u){
                 if(userUnsub) userUnsub();
@@ -235,31 +292,29 @@
         });
 
         async function init(){ 
-            loadProfile(); loadTasks(); loadChannels(); listenTeam(); listenNotifs(); popSelects(); loadRecentDMs(); 
+            try { 
+                loadProfile(); 
+                loadTasks(); 
+                loadChannels(); 
+                listenTeam(); 
+                listenNotifs(); 
+                popSelects(); 
+                loadRecentDMs(); 
+            } catch(e){ customAlert("Başlatma Hatası: " + e.message); } 
         }
 
         window.customAlert = (msg) => { document.getElementById('alert-msg').innerText = msg; new bootstrap.Modal(document.getElementById('modal-alert')).show(); };
         window.customConfirm = (msg, cb) => { document.getElementById('confirm-msg').innerText = msg; const m=new bootstrap.Modal(document.getElementById('modal-confirm')); m.show(); document.getElementById('confirm-btn-yes').onclick = () => { cb(); m.hide(); } };
-        
         const getErrorMsg = (code) => {
             if (code === 'auth/invalid-login-credentials' || code === 'auth/invalid-credential') return 'E-posta veya şifre hatalı.';
             if (code === 'auth/user-not-found') return 'Böyle bir kullanıcı bulunamadı.';
             if (code === 'auth/wrong-password') return 'Şifre yanlış.';
-            if (code === 'auth/email-already-in-use') return 'Bu e-posta adresi zaten kullanımda.';
-            if (code === 'auth/weak-password') return 'Şifre çok zayıf.';
-            if (code === 'auth/invalid-email') return 'Geçersiz e-posta formatı.';
-            return "Bir hata oluştu: " + code;
+            return "Hata: " + code;
         };
 
-        // --- PUSH HELPER ---
         async function sendPushNotification(targetIds, title, message) {
             if(!targetIds) return;
-            const data = {
-                app_id: ONESIGNAL_APP_ID,
-                include_external_user_ids: Array.isArray(targetIds) ? targetIds : [targetIds],
-                headings: { "en": title, "tr": title },
-                contents: { "en": message, "tr": message }
-            };
+            const data = { app_id: ONESIGNAL_APP_ID, include_external_user_ids: Array.isArray(targetIds) ? targetIds : [targetIds], headings: { "en": title, "tr": title }, contents: { "en": message, "tr": message } };
             try { await fetch("https://onesignal.com/api/v1/notifications", { method: "POST", headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + ONESIGNAL_API_KEY }, body: JSON.stringify(data) }); } catch(e) { console.error("Push Error", e); }
         }
 
@@ -267,150 +322,154 @@
         document.getElementById('form-register').addEventListener('submit',async e=>{e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value, dp=document.getElementById('r-dept').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{uid:c.user.uid,name:n,email:em,department:dp,role:'Üye',photoURL:p,createdAt:new Date(),isBanned:false}); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(e){customAlert(getErrorMsg(e.code))}});
         window.logout=()=>{ if(userUnsub) userUnsub(); if(notifUnsub) notifUnsub(); signOut(auth); };
 
-        // --- CHAT WITH FILES & CONTEXT MENU ---
         window.openChat=async(id,title)=>{
+            if(chatUnsub) chatUnsub(); 
+            const b = document.getElementById('chat-overlay-body');
+            b.innerHTML = ''; 
+            b.style.opacity = '0'; // Hide first to prevent jump
+            
             activeChatId=id; document.getElementById('chat-overlay-title').innerText=title;
             document.getElementById('chat-overlay').classList.add('open');
-            const b=document.getElementById('chat-overlay-body'); b.innerHTML='<div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>';
             
-            if(id.includes('_')) {
-               const otherId = id.split('_').find(x=>x!==curUser.uid);
-               if(otherId) {
-                   const qN = query(collection(db,"notifications"), where("to","==",curUser.uid), where("type","==","chat"), where("linkId","==",otherId), where("read","==",false));
-                   const snapN = await getDocs(qN); snapN.forEach(d => updateDoc(doc(db,"notifications",d.id), {read:true}));
-               }
-            }
-
-            if(chatUnsub) chatUnsub();
+            if(id.includes('_')) { const otherId = id.split('_').find(x=>x!==curUser.uid); if(otherId) { const qN = query(collection(db,"notifications"), where("to","==",curUser.uid), where("type","==","chat"), where("linkId","==",otherId), where("read","==",false)); const snapN = await getDocs(qN); snapN.forEach(d => updateDoc(doc(db,"notifications",d.id), {read:true})); } }
+            
             const q=query(collection(db,"messages"),where("channel","==",id));
             chatUnsub=onSnapshot(q, s=>{
-                let arr=[]; s.forEach(d=>arr.push({id:d.id,...d.data()})); arr.sort((x,y)=>x.createdAt-y.createdAt);
-                b.innerHTML=''; 
-                if(arr.length===0) b.innerHTML='<div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted"><i class="far fa-comments fa-3x mb-3 opacity-50"></i><p>Henüz mesaj yok.</p></div>';
+                let arr=[]; s.forEach(d=>arr.push({id:d.id,...d.data()})); 
+                arr.sort((x,y) => (x.createdAt?.seconds || 0) - (y.createdAt?.seconds || 0));
                 
-                arr.forEach(m=>{
-                    const me=m.senderId===curUser.uid; const isAdmin = uData.role === 'Admin'; const canEdit = me || isAdmin; const nmCol = getCol(m.senderName||"U");
-                    const div = document.createElement('div'); div.className = `chat-row ${me ? 'row-right' : 'row-left'}`;
-                    
-                    let content = m.text;
-                    if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="window.open('${m.url}')">`;
-                    if(m.type === 'file') content = `<div class="file-attachment"><i class="fas fa-file"></i> ${m.fileName}</div>`;
+                let html = '';
+                if(arr.length===0) html='<div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted"><i class="far fa-comments fa-3x mb-3 opacity-50"></i><p>Henüz mesaj yok.</p></div>';
+                else {
+                    arr.forEach(m=>{
+                        const me=m.senderId===curUser.uid; const nmCol = getCol(m.senderName||"U");
+                        let content = m.text;
+                        if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                        if(m.type === 'file' || m.type === 'chunked_file') content = `<div class="file-attachment"><i class="fas fa-file"></i> ${m.fileName} (${(m.size/1024/1024).toFixed(2)} MB)</div>`;
+                        html += `<div class="chat-row ${me ? 'row-right' : 'row-left'}"><div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}" oncontextmenu="showCtx(event.clientX, event.clientY, ${JSON.stringify(m).replace(/"/g, '&quot;')}); return false;" ontouchstart="handleTouch(event, ${JSON.stringify(m).replace(/"/g, '&quot;')})">${!me ? `<span class="sender-name" style="color:${nmCol}">${m.senderName}</span>` : ''}${content}</div></div>`;
+                    });
+                }
+                
+                b.innerHTML = html;
+                
+                // IMAGE & SCROLL FIX (Wait for images to impact height)
+                const scrollDown = () => { b.scrollTop = b.scrollHeight; };
+                scrollDown(); // Immediate scroll
+                
+                // Watch for image loads
+                const imgs = b.querySelectorAll('img');
+                if(imgs.length > 0) {
+                    let loaded = 0;
+                    imgs.forEach(img => {
+                        img.onload = () => { scrollDown(); };
+                        if(img.complete) scrollDown();
+                    });
+                }
 
-                    div.innerHTML = `<div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}">${!me ? `<span class="sender-name" style="color:${nmCol}">${m.senderName}</span>` : ''}${content}</div>`;
-                    
-                    if(canEdit || m.type==='image' || m.type==='file') {
-                        const bubble = div.querySelector('.msg-bubble');
-                        bubble.addEventListener('contextmenu', (e)=>{ e.preventDefault(); showCtx(e.clientX, e.clientY, m); });
-                        let t; bubble.addEventListener('touchstart', (e)=>{ t = setTimeout(()=>{ showCtx(e.touches[0].clientX, e.touches[0].clientY, m); }, 600); });
-                        bubble.addEventListener('touchend', ()=>{ clearTimeout(t); });
-                    }
-                    b.appendChild(div);
-                });
-                setTimeout(()=>b.scrollTop=b.scrollHeight,100);
+                // Reveal after a slight delay to allow layout to settle
+                setTimeout(() => {
+                    scrollDown();
+                    b.style.opacity = '1'; 
+                }, 100);
             });
         };
-        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); activeChatId=null; if(chatUnsub) chatUnsub(); };
+        
+        window.handleTouch = (e, m) => { setTimeout(() => showCtx(e.touches[0].clientX, e.touches[0].clientY, m), 600); };
+        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); activeChatId=null; if(chatUnsub) chatUnsub(); loadRecentDMs(); };
+        
+        let currentZoom = 1; let isDragging = false; let startX, startY, translateX = 0, translateY = 0;
+        const imgViewer = document.getElementById('img-viewer');
+        const zoomImg = document.getElementById('img-viewer-src');
+        window.openImgViewer = (url) => { zoomImg.src = url; imgViewer.style.display = 'flex'; currentZoom = 1; translateX = 0; translateY = 0; updateImageTransform(); };
+        window.closeImgViewer = () => { imgViewer.style.display = 'none'; };
+        let initialDist = 0;
+        imgViewer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) { initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); } else if (e.touches.length === 1 && currentZoom > 1) { isDragging = true; startX = e.touches[0].pageX - translateX; startY = e.touches[0].pageY - translateY; }
+        });
+        imgViewer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 2) { const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); if (initialDist > 0) { const delta = dist / initialDist; currentZoom = Math.min(Math.max(1, currentZoom * delta), 4); initialDist = dist; updateImageTransform(); } } else if (e.touches.length === 1 && isDragging && currentZoom > 1) { translateX = e.touches[0].pageX - startX; translateY = e.touches[0].pageY - startY; updateImageTransform(); }
+        });
+        imgViewer.addEventListener('touchend', () => { isDragging = false; initialDist = 0; });
+        function updateImageTransform() { zoomImg.style.transform = `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`; }
 
         const ctx = document.getElementById('context-menu');
-        function showCtx(x, y, msg) { 
-            selMsg = msg;
-            const w = 160; const h = 100; if(x + w > window.innerWidth) x = window.innerWidth - w - 20; if(y + h > window.innerHeight) y = window.innerHeight - h - 20;
-            
-            let html = '';
-            if(msg.type === 'image' || msg.type === 'file') html += `<div class="ctx-item" onclick="handleCtx('download')"><i class="fas fa-download"></i> İndir</div>`;
-            if(msg.type !== 'image' && msg.type !== 'file') html += `<div class="ctx-item" onclick="handleCtx('edit')"><i class="fas fa-pen"></i> Düzenle</div>`;
-            html += `<div class="ctx-item delete" onclick="handleCtx('delete')"><i class="fas fa-trash"></i> Sil</div>`;
-            
-            ctx.innerHTML = html; ctx.style.top = y + 'px'; ctx.style.left = x + 'px'; ctx.style.display = 'flex'; 
+        window.showCtx = (x, y, msg) => { 
+            selMsg = msg; const w = 160; const h = 100; if(x + w > window.innerWidth) x -= w; if(y + h > window.innerHeight) y -= h; 
+            const isMine = msg.senderId === curUser.uid; const isAdmin = uData.role === 'Admin';
+            let html = ''; 
+            if(msg.type === 'image' || msg.type === 'file' || msg.type === 'chunked_file') { html += `<div class="ctx-item" onclick="handleCtx('download')"><i class="fas fa-download"></i> İndir</div>`; }
+            if(isMine || isAdmin) { if(msg.type === 'text') html += `<div class="ctx-item" onclick="handleCtx('edit')"><i class="fas fa-pen"></i> Düzenle</div>`; html += `<div class="ctx-item delete" onclick="handleCtx('delete')"><i class="fas fa-trash"></i> Sil</div>`; }
+            if(html === '') return; ctx.innerHTML = html; ctx.style.top = y + 'px'; ctx.style.left = x + 'px'; ctx.style.display = 'flex'; 
         }
         document.addEventListener('click', (e)=>{ if(!ctx.contains(e.target)) ctx.style.display='none'; });
-        
         window.handleCtx = async (act) => { 
             ctx.style.display='none'; if(!selMsg.id) return; 
             if(act === 'delete') { customConfirm("Mesajı silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"messages",selMsg.id))); } 
             else if (act === 'edit') { document.getElementById('edit-msg-input').value = selMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); }
             else if (act === 'download') { 
-                fetch(selMsg.url).then(res => res.blob()).then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = selMsg.fileName || 'dosya';
-                    document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url);
-                }).catch(() => customAlert("İndirme hatası!"));
+                if(selMsg.type === 'chunked_file') {
+                    toggleUploadSpinner(true);
+                    try { const chunksSnap = await getDocs(query(collection(db, `messages/${selMsg.id}/chunks`), orderBy('index'))); let fullBase64 = ""; chunksSnap.forEach(doc => { fullBase64 += doc.data().data; }); const mime = fullBase64.match(/:(.*?);/)[1]; const b64Data = fullBase64.split(',')[1]; if (window.median && window.median.share) { median.share.shareFile({ base64: b64Data, filename: selMsg.fileName, mimetype: mime }); } else { const a = document.createElement('a'); a.style.display='none'; a.href=fullBase64; a.download=selMsg.fileName; document.body.appendChild(a); a.click(); } } catch(e) { customAlert("Hata: " + e.message); } finally { toggleUploadSpinner(false); }
+                } else if (selMsg.url) {
+                    if (window.median && window.median.share) { try { toggleUploadSpinner(true); const resp = await fetch(selMsg.url); const blob = await resp.blob(); const reader = new FileReader(); reader.readAsDataURL(blob); reader.onloadend = () => { const base64data = reader.result.split(',')[1]; median.share.shareFile({ base64: base64data, filename: selMsg.fileName || 'dosya', mimetype: blob.type }); toggleUploadSpinner(false); } } catch(e) { toggleUploadSpinner(false); customAlert("Paylaşım hatası: " + e); } } else { fetch(selMsg.url).then(res => res.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = selMsg.fileName || 'dosya'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }).catch(() => customAlert("İndirme hatası!")); }
+                }
             }
         }
         window.submitEditMsg = async () => { const nv = document.getElementById('edit-msg-input').value; await updateDoc(doc(db,"messages",selMsg.id), {text: nv}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); }
         
-        document.getElementById('chat-file-inp').addEventListener('change', e => {
+        document.getElementById('chat-file-inp').addEventListener('change', async e => {
             const f = e.target.files[0]; if(!f) return;
-            if(f.size > 500000) { customAlert("Dosya çok büyük! Max 500KB."); return; }
-            const r = new FileReader();
-            r.onload = async (ev) => {
-                const b64 = ev.target.result; const type = f.type.startsWith('image/') ? 'image' : 'file';
-                await addDoc(collection(db,"messages"),{ type: type, url: b64, fileName: f.name, text: '', channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date() });
-                notifyChat(activeChatId);
+            const CHUNK_SIZE = 900 * 1024; 
+            if(f.size <= CHUNK_SIZE && f.type.startsWith('image/')) {
+                const r = new FileReader(); r.readAsDataURL(f);
+                r.onload = async (ev) => { await addDoc(collection(db,"messages"),{ type: 'image', url: ev.target.result, fileName: f.name, text: '', channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date() }); notifyChat(activeChatId); };
+                return;
+            }
+            if(f.size > 16 * 1024 * 1024) { customAlert("Dosya 16MB'dan büyük olamaz!"); return; }
+            toggleUploadSpinner(true);
+            const reader = new FileReader(); reader.readAsDataURL(f);
+            reader.onload = async (ev) => {
+                const base64 = ev.target.result; const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
+                const msgRef = await addDoc(collection(db, "messages"), { type: 'chunked_file', fileName: f.name, size: f.size, channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date(), totalChunks: totalChunks });
+                for (let i = 0; i < totalChunks; i++) { const chunkData = base64.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE); await addDoc(collection(db, `messages/${msgRef.id}/chunks`), { index: i, data: chunkData }); }
+                toggleUploadSpinner(false); notifyChat(activeChatId);
             };
-            r.readAsDataURL(f);
         });
 
-        document.getElementById('chat-form').addEventListener('submit',async e=>{
-            e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t||!activeChatId)return; 
-            await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); 
-            document.getElementById('chat-input').value=''; notifyChat(activeChatId);
-        });
+        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t||!activeChatId)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; notifyChat(activeChatId);});
+        function notifyChat(cid) { if(cid.includes('_')){ const tg=cid.split('_').find(x=>x!==curUser.uid); if(tg) { addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date(), type: 'chat', linkId: curUser.uid, linkName: uData.name}); sendPushNotification(tg, "Yeni Mesaj", `${uData.name} sana bir mesaj gönderdi.`); } } }
 
-        function notifyChat(cid) {
-            if(cid.includes('_')){ 
-                const tg=cid.split('_').find(x=>x!==curUser.uid); 
-                if(tg) {
-                    addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date(), type: 'chat', linkId: curUser.uid, linkName: uData.name}); 
-                    sendPushNotification(tg, "Yeni Mesaj", `${uData.name} sana bir mesaj gönderdi.`);
-                }
-            }
-        }
-
-        // --- TASKS ---
         window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
-        document.getElementById('form-task').addEventListener('submit',async e=>{
-            e.preventDefault(); const t=document.getElementById('t-title').value, desc=document.getElementById('t-desc').value, typ=document.getElementById('t-type').value; let to="Herkes", uid=null; if(typ==='department')to=document.getElementById('t-dept').value; if(typ==='user'){const el=document.getElementById('t-user');to=el.options[el.selectedIndex].text;uid=el.value;} 
-            const tr = await addDoc(collection(db,"tasks"),{title:t, description:desc, assignedType:typ,assignedTo:to,assignedToUid:uid,status:'pending',createdByUid:curUser.uid,createdAt:new Date()}); 
-            if(uid&&uid!==curUser.uid) {
-                addDoc(collection(db,"notifications"),{to:uid,text:`Görev: ${t}`,read:false,createdAt:new Date(), type: 'task', linkId: tr.id, linkName: t, extraDesc: desc, extraAssign: to}); 
-                sendPushNotification(uid, "Yeni Görev", t);
-            }
-            bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset();
-        });
-        function loadTasks(){
-            onSnapshot(collection(db,"tasks"), s=>{
-                let tsk=[]; s.forEach(d=>{ const t={id:d.id,...d.data()}; allTasksCache[t.id]=t; tsk.push(t); }); tsk.sort((a,b)=>b.createdAt-a.createdAt);
-                const l=document.getElementById('task-list'); l.innerHTML='';
-                tsk.forEach(t=>{
-                    const isMine=t.assignedToUid===curUser.uid; const isMyDept=t.assignedType==='department'&&t.assignedTo===uData.department; const isAll=t.assignedType==='all'; const isCreator=t.createdByUid===curUser.uid; const isAdmin=uData.role==='Admin';
-                    if(isMine||isMyDept||isAll||isCreator||isAdmin) {
-                        const done=t.status==='completed'; const canDel=uData.role==='Admin'||isCreator;
-                        l.innerHTML+=`<div class="card-custom" onclick="openTaskDetail('${t.id}')"><div class="d-flex align-items-center mb-2"><i class="fas ${done?'fa-check-circle text-success':'fa-circle text-secondary'} me-3 fa-lg" style="cursor:pointer" onclick="event.stopPropagation();upt('${t.id}','${t.status}')"></i><div style="flex:1"><h6 class="m-0 ${done?'text-decoration-line-through text-muted':''}">${t.title}</h6><small class="text-muted">${t.assignedTo}</small></div>${canDel?`<i class="fas fa-trash text-danger ms-auto" style="cursor:pointer" onclick="event.stopPropagation();delTask('${t.id}')"></i>`:''}</div>${t.description ? `<div class="task-preview-text">${t.description}</div>` : ''}</div>`;
-                    }
-                });
-            });
-        }
+        document.getElementById('form-task').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('t-title').value, desc=document.getElementById('t-desc').value, typ=document.getElementById('t-type').value; let to="Herkes", uid=null; if(typ==='department')to=document.getElementById('t-dept').value; if(typ==='user'){const el=document.getElementById('t-user');to=el.options[el.selectedIndex].text;uid=el.value;} const tr = await addDoc(collection(db,"tasks"),{title:t, description:desc, assignedType:typ,assignedTo:to,assignedToUid:uid,status:'pending',createdByUid:curUser.uid,createdAt:new Date()}); if(uid&&uid!==curUser.uid) { addDoc(collection(db,"notifications"),{to:uid,text:`Görev: ${t}`,read:false,createdAt:new Date(), type: 'task', linkId: tr.id, linkName: t, extraDesc: desc, extraAssign: to}); sendPushNotification(uid, "Yeni Görev", t); } bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset();});
+        function loadTasks(){ onSnapshot(collection(db,"tasks"), s=>{ let tsk=[]; s.forEach(d=>{ const t={id:d.id,...d.data()}; allTasksCache[t.id]=t; tsk.push(t); }); tsk.sort((a,b)=>b.createdAt-a.createdAt); const l=document.getElementById('task-list'); l.innerHTML=''; tsk.forEach(t=>{ const isMine=t.assignedToUid===curUser.uid; const isMyDept=t.assignedType==='department'&&t.assignedTo===uData.department; const isAll=t.assignedType==='all'; const isCreator=t.createdByUid===curUser.uid; const isAdmin=uData.role==='Admin'; if(isMine||isMyDept||isAll||isCreator||isAdmin) { const done=t.status==='completed'; const canDel=uData.role==='Admin'||isCreator; l.innerHTML+=`<div class="card-custom" onclick="openTaskDetail('${t.id}')"><div class="d-flex align-items-center mb-2"><i class="fas ${done?'fa-check-circle text-success':'fa-circle text-secondary'} me-3 fa-lg" style="cursor:pointer" onclick="event.stopPropagation();upt('${t.id}','${t.status}')"></i><div style="flex:1"><h6 class="m-0 ${done?'text-decoration-line-through text-muted':''}">${t.title}</h6><small class="text-muted">${t.assignedTo || 'Belirsiz'}</small></div>${canDel?`<i class="fas fa-trash text-danger ms-auto" style="cursor:pointer" onclick="event.stopPropagation();delTask('${t.id}')"></i>`:''}</div>${t.description ? `<div class="task-preview-text">${t.description}</div>` : ''}</div>`; } }); }); }
         window.upt=(id,s)=>updateDoc(doc(db,"tasks",id),{status:s==='pending'?'completed':'pending'});
         window.delTask=(id)=>{customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id)));}
         window.openTaskDetail = async (tid) => { const t = allTasksCache[tid]; if(!t) return; const qN = query(collection(db,"notifications"), where("to","==",curUser.uid), where("type","==","task"), where("linkId","==",tid), where("read","==",false)); const snapN = await getDocs(qN); snapN.forEach(d => updateDoc(doc(db,"notifications",d.id), {read:true})); document.getElementById('td-title').innerText = t.title; document.getElementById('td-assign').innerText = t.assignedTo || "Belirsiz"; document.getElementById('td-desc').innerText = t.description || "Açıklama yok."; new bootstrap.Modal(document.getElementById('modal-task-detail')).show(); };
 
-        function listenTeam(){ if(teamUnsub) teamUnsub(); teamUnsub = onSnapshot(collection(db,"users"), s=>{ allTeamMembers = []; s.forEach(d => { const u = d.data(); if(!u.isBanned) allTeamMembers.push(u); }); renderTeam(); }); }
-        window.renderTeam = (filterText='') => {
-            const listEl = document.getElementById('team-list'); listEl.innerHTML = '';
-            const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
-            allTeamMembers.forEach(u => { if(filterText && !u.name.toLowerCase().includes(filterText.toLowerCase())) return; const dept = u.department && DEPTS.includes(u.department) ? u.department : "Diğer"; groups[dept].push(u); });
-            for (const [deptName, users] of Object.entries(groups)) {
-                if (users.length === 0) continue;
-                listEl.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`;
-                const groupContainer = document.createElement('div'); groupContainer.className = 'dept-group';
-                users.forEach(u => {
-                    const me=u.uid===curUser.uid; const admin=uData.role==='Admin';
-                    groupContainer.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 mb-1 team-item" style="border-bottom:1px solid rgba(255,255,255,0.05)"><div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><small class="text-muted" style="font-size:11px">${u.role}</small></div></div><div>${!me?`<button class="btn btn-dark border-secondary btn-sm" onclick="sdm('${u.uid}')"><i class="fas fa-paper-plane"></i></button>`:''}${admin&&!me?`<button class="btn btn-danger btn-sm ms-2" onclick="ban('${u.uid}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
-                });
-                listEl.appendChild(groupContainer);
-            }
+        function listenTeam(){ 
+            if(teamUnsub) teamUnsub(); 
+            teamUnsub = onSnapshot(collection(db,"users"), s=>{ 
+                allTeamMembers = []; 
+                s.forEach(d => { const u = d.data(); if(!u.isBanned) allTeamMembers.push(u); }); 
+                renderTeam(); 
+            }); 
         }
+        
+        window.renderTeam = (filterText='') => { 
+            const listEl = document.getElementById('team-list'); listEl.innerHTML = ''; 
+            if(allTeamMembers.length === 0) { listEl.innerHTML = '<div class="text-center text-muted mt-3">Kimse bulunamadı.</div>'; return; }
+            const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = []; 
+            allTeamMembers.forEach(u => { if(filterText && !u.name.toLowerCase().includes(filterText.toLowerCase())) return; const dept = u.department && DEPTS.includes(u.department) ? u.department : "Diğer"; groups[dept].push(u); }); 
+            for (const [deptName, users] of Object.entries(groups)) { 
+                if (users.length === 0) continue; 
+                listEl.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`; 
+                const groupContainer = document.createElement('div'); groupContainer.className = 'dept-group'; 
+                users.forEach(u => { const me=u.uid===curUser.uid; const admin=uData.role==='Admin'; groupContainer.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 mb-1 team-item" style="border-bottom:1px solid rgba(255,255,255,0.05)"><div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><small class="text-muted" style="font-size:11px">${u.role}</small></div></div><div>${!me?`<button class="btn btn-dark border-secondary btn-sm" onclick="sdm('${u.uid}')"><i class="fas fa-paper-plane"></i></button>`:''}${admin&&!me?`<button class="btn btn-danger btn-sm ms-2" onclick="ban('${u.uid}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`; }); 
+                listEl.appendChild(groupContainer); 
+            } 
+        }
+        
         window.ban=async(uid)=>{customConfirm("Kullanıcıyı engelle?", async () => await updateDoc(doc(db,"users",uid),{isBanned:true}));};
         
         window.toggleEdit=(f)=>{const g=document.getElementById(`edit-${f}-group`); g.classList.contains('d-none')?g.classList.remove('d-none'):g.classList.add('d-none'); document.getElementById(`inp-${f}`).value=uData[f==='name'?'name':'department'];}
@@ -418,14 +477,94 @@
         window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
         function loadProfile(){ document.getElementById('prof-img').src=uData.photoURL; document.getElementById('prof-name').innerText=uData.name; document.getElementById('prof-dept').innerText=uData.department; document.getElementById('prof-role').innerText=uData.role; }
         
-        function loadChannels(){ const l=document.getElementById('channel-list'); l.innerHTML=`<div class="card-custom p-3 d-flex align-items-center mb-0" onclick="openChat('general','Genel Sohbet')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Genel Sohbet</div></div>`; if(uData.role==='Admin'){ DEPTS.forEach(d=>{l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${d}','${d}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-danger"></i></div><div><div class="fw-bold">${d}</div><small class="text-muted">Admin</small></div></div>`;}); } else if(uData.department&&uData.department!=="..."){ l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${uData.department}','${uData.department}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-warning"></i></div><div><div class="fw-bold">${uData.department}</div></div></div>`; } }
-        window.sdm=async (uid)=>{ const uSnap = await getDoc(doc(db, "users", uid)); if(!uSnap.exists()) return; const u = uSnap.data(); const c=[curUser.uid,uid].sort().join('_'); openChat(c, u.name); const d=document.getElementById('dm-list'); if(!d.innerHTML.includes(c)) d.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${c}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold">${u.name}</div><small class="text-muted">Özel Mesaj</small></div></div>`; }
-        async function loadRecentDMs() { const s = await getDocs(query(collection(db, "messages"), orderBy("createdAt", "desc"))); const uniqueUsers = new Set(); let count = 0; s.forEach(doc => { if(count > 300) return; const d = doc.data(); if(d.channel.includes('_') && d.channel.includes(curUser.uid)) { const otherId = d.channel.split('_').find(id => id !== curUser.uid); if(otherId) uniqueUsers.add(otherId); } count++; }); const dList = document.getElementById('dm-list'); dList.innerHTML = ''; uniqueUsers.forEach(async uid => { const uSnap = await getDoc(doc(db, "users", uid)); if(uSnap.exists()) { const u = uSnap.data(); const c = [curUser.uid, uid].sort().join('_'); dList.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${c}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold">${u.name}</div><small class="text-muted">Özel Mesaj</small></div></div>`; } }); }
+        function loadChannels(){ 
+            const l=document.getElementById('channel-list'); 
+            l.innerHTML=`<div class="card-custom p-3 d-flex align-items-center mb-0" onclick="openChat('general','Genel Sohbet')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Genel Sohbet</div></div>`; 
+            if(uData.role==='Admin'){ 
+                DEPTS.forEach(d=>{l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${d}','${d}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-danger"></i></div><div><div class="fw-bold">${d}</div><small class="text-muted">Admin</small></div></div>`;}); 
+            } else if(uData.department&&uData.department!=="..."){ 
+                l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${uData.department}','${uData.department}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-warning"></i></div><div><div class="fw-bold">${uData.department}</div></div></div>`; 
+            } 
+        }
 
-        window.goTab=(t,b)=>{document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); if(b)b.classList.add('active'); const ts={'tasks':'Görev Panosu','messages':'Mesajlar','team':'Ekip Listesi','profile':'Profilim'}; document.getElementById('page-title').innerText=ts[t];}
+        window.goTab = (t,b) => {
+            document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); 
+            document.getElementById(`view-${t}`).classList.add('active'); 
+            
+            document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); 
+            if(b) b.classList.add('active'); 
+            
+            const ts={'tasks':'Görev Panosu','messages':'Mesajlar','team':'Ekip Listesi','profile':'Profilim'}; 
+            document.getElementById('page-title').innerText=ts[t];
+        }
+
         function popSelects(){let o=''; DEPTS.forEach(d=>o+=`<option>${d}</option>`); document.getElementById('t-dept').innerHTML=o; document.getElementById('inp-dept').innerHTML=o; getDocs(collection(db,"users")).then(s=>{let u='';s.forEach(d=>{if(!d.data().isBanned&&d.id!==curUser.uid)u+=`<option value="${d.id}">${d.data().name}</option>`});document.getElementById('t-user').innerHTML=u;});}
         function listenNotifs(){ if(notifUnsub) notifUnsub(); notifUnsub = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
         window.openNotifs=async()=>{const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); const l=document.getElementById('notif-list'); l.innerHTML='...'; const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid))); let nArr=[]; s.forEach(d=>nArr.push({id:d.id, ...d.data()})); nArr.sort((a,b)=>b.createdAt-a.createdAt); l.innerHTML=''; if(nArr.length===0) l.innerHTML='<div class="text-center p-3 text-muted">Bildirim yok.</div>'; else { nArr.forEach(n=>{ let clickAction = ''; if(n.type === 'chat' && n.linkId) clickAction = `sdm('${n.linkId}')`; if(n.type === 'task') clickAction = `openTaskDetail('${n.linkId}')`; l.innerHTML+=`<div class="notif-item ${n.read?'read':'unread'}" onclick="${clickAction}; bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"><small>${n.text}</small></div>`; updateDoc(doc(db,"notifications",n.id),{read:true}); }); document.getElementById('notif-dot').style.display='none'; } }
+        
+        window.sdm=async (uid)=>{ 
+            const uSnap = await getDoc(doc(db, "users", uid)); if(!uSnap.exists()) return; 
+            const u = uSnap.data(); const c=[curUser.uid,uid].sort().join('_'); 
+            openChat(c, u.name); 
+        }
+        
+        // --- SAFE & ROBUST DM LOADER ---
+        async function loadRecentDMs() { 
+            const dList = document.getElementById('dm-list');
+            // BLINK FIX: Don't clear list immediately
+            
+            try {
+                // Get all messages (No orderBy to avoid index errors)
+                const s = await getDocs(collection(db, "messages")); 
+                if (s.empty) { 
+                    dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>'; 
+                    return; 
+                }
+
+                let allMsgs = [];
+                s.forEach(d => {
+                    const data = d.data();
+                    const time = data.createdAt ? (data.createdAt.seconds ? data.createdAt.seconds * 1000 : new Date(data.createdAt).getTime()) : 0;
+                    allMsgs.push({ ...data, _time: time });
+                });
+                
+                // Sort in memory
+                allMsgs.sort((a,b) => b._time - a._time);
+
+                const uniqueUsers = new Set(); 
+                allMsgs.forEach(d => { 
+                    if(d.channel && d.channel.includes('_') && d.channel.includes(curUser.uid)) { 
+                        const otherId = d.channel.split('_').find(id => id !== curUser.uid); 
+                        if(otherId) uniqueUsers.add(otherId); 
+                    } 
+                }); 
+                
+                if(uniqueUsers.size === 0) {
+                     dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>';
+                     return;
+                }
+
+                // Prepare new HTML string
+                let newHTML = "";
+                const promises = Array.from(uniqueUsers).map(uid => getDoc(doc(db, "users", uid)));
+                const userSnaps = await Promise.all(promises);
+
+                userSnaps.forEach(snap => {
+                    if (snap.exists()) { 
+                        const u = snap.data(); 
+                        const c = [curUser.uid, snap.id].sort().join('_'); 
+                        newHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${c}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold">${u.name}</div><small class="text-muted">Özel Mesaj</small></div></div>`; 
+                    }
+                });
+                
+                // Swap content in one go
+                dList.innerHTML = newHTML;
+
+            } catch (e) { 
+                dList.innerHTML = `<div class="text-danger small p-2 text-center">Hata: ${e.message}</div>`;
+                console.error("DM Load Error", e); 
+            }
+        }
     </script>
 </body>
 </html>
