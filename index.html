@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V52 - Crash Proof</title>
+    <title>SmileGO V53 - Force Push</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,12 +84,7 @@
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        .chat-body-scroll { 
-            flex: 1 1 auto; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 10px; 
-            background: #050505; min-height: 0; 
-            opacity: 0; transition: opacity 0.1s ease-out; 
-        }
+        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; min-height: 0; opacity: 0; transition: opacity 0.1s ease-out; }
         .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
 
         .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
@@ -196,9 +191,14 @@
                 <div class="p-3 border-bottom border-secondary"><div class="d-flex justify-content-between align-items-center"><span class="text-muted">Departman</span><div class="d-flex align-items-center"><span id="prof-dept" class="fw-bold">...</span><i class="fas fa-pencil-alt edit-icon" onclick="toggleEdit('dept')"></i></div></div><div id="edit-dept-group" class="d-none mt-2 d-flex gap-2"><select id="inp-dept" class="form-select form-select-sm"></select><button class="btn btn-success btn-sm" onclick="saveProf('dept')"><i class="fas fa-check"></i></button></div></div>
                 <div class="p-3 d-flex justify-content-between align-items-center"><span class="text-muted">Rol</span><span id="prof-role" class="badge bg-secondary">...</span></div>
                 
-                <button class="btn btn-warning w-100 mt-4 py-3 rounded-4 fw-bold" onclick="testNotification()">
-                    <i class="fas fa-bell"></i> Bana Test Bildirimi Gönder
-                </button>
+                <div class="d-flex gap-2 mt-4 px-2">
+                    <button class="btn btn-dark w-50 py-3 rounded-4 fw-bold small" onclick="forceRegisterPush()">
+                        <i class="fas fa-user-plus mb-1 d-block"></i> Kaydol
+                    </button>
+                    <button class="btn btn-warning w-50 py-3 rounded-4 fw-bold small" onclick="testNotification()">
+                        <i class="fas fa-bell mb-1 d-block"></i> Test Et
+                    </button>
+                </div>
             </div>
             <button class="btn btn-outline-danger w-100 mt-3 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
         </div>
@@ -247,9 +247,9 @@
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-        // GLOBAL ERROR HANDLER
+        // GLOBAL ERROR HANDLER (CRITICAL)
         window.onerror = function(msg, url, line) {
-            // Sadece kritik hataları göster, gereksiz uyarıları yut
+            // Sadece kritik hataları göster
             console.error("Error: " + msg);
             return false;
         };
@@ -281,13 +281,15 @@
                         if(u.email === ADMIN) uData.role = 'Admin';
                         curUser = u;
                         
-                        // --- SAFE NATIVE REGISTRATION ---
+                        // --- AGGRESSIVE NATIVE REGISTRATION (TRY-CATCH SAFE) ---
                         try {
                             if(window.median && window.median.onesignal) {
+                                median.onesignal.register();
                                 median.onesignal.setExternalUserId(u.uid);
                             }
-                        } catch(e) { console.log("Push reg skipped"); }
+                        } catch(e) { console.log("Push init error:", e); }
 
+                        // WEB FALLBACK
                         if(window.OneSignalDeferred) {
                             OneSignalDeferred.push(()=>OneSignal.login(u.uid));
                         }
@@ -316,7 +318,7 @@
                 listenNotifs(); 
                 popSelects(); 
                 loadRecentDMs(); 
-            } catch(e){ console.log("Init partial error", e); } 
+            } catch(e){ console.log("Init error", e); } 
         }
 
         window.customAlert = (msg) => { document.getElementById('alert-msg').innerText = msg; new bootstrap.Modal(document.getElementById('modal-alert')).show(); };
@@ -327,20 +329,44 @@
             if (code === 'auth/wrong-password') return 'Şifre yanlış.';
             return "Hata: " + code;
         };
+        
+        // --- MANUAL FORCE REGISTER BUTTON ---
+        window.forceRegisterPush = () => {
+            if(!curUser) return;
+            try {
+                if(window.median && window.median.onesignal) {
+                    median.onesignal.register(); // Zorla izin iste
+                    median.onesignal.setExternalUserId(curUser.uid); // Zorla ID ata
+                    customAlert("Kayıt komutu gönderildi.");
+                } else {
+                    customAlert("Bu özellik sadece mobil uygulamada çalışır.");
+                }
+            } catch(e) { customAlert("Hata: " + e.message); }
+        }
 
-        // TEST NOTIFICATION BUTTON
+        // --- TEST NOTIFICATION ---
         window.testNotification = async () => {
             if(!curUser) return;
-            showLoading(true, "Test Bildirimi Gönderiliyor...");
-            await sendPushNotification(curUser.uid, "Test Bildirimi", "Bu bir test bildirimidir!");
+            showLoading(true, "Test Bildirimi...");
+            // Kendine gönder
+            await sendPushNotification(curUser.uid, "Test Başarılı!", "Bildirim sisteminiz çalışıyor.");
             showLoading(false);
-            customAlert("Bildirim gönderildi! Telefonunu kontrol et.");
+            customAlert("Bildirim gönderildi. Birazdan gelmesi gerek.");
         }
 
         async function sendPushNotification(targetIds, title, message) {
             if(!targetIds) return;
             const data = { app_id: ONESIGNAL_APP_ID, include_external_user_ids: Array.isArray(targetIds) ? targetIds : [targetIds], headings: { "en": title, "tr": title }, contents: { "en": message, "tr": message } };
-            try { await fetch("https://onesignal.com/api/v1/notifications", { method: "POST", headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + ONESIGNAL_API_KEY }, body: JSON.stringify(data) }); } catch(e) { console.error("Push Error", e); }
+            // SAFE REST API CALL
+            try { 
+                const res = await fetch("https://onesignal.com/api/v1/notifications", { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
+                    body: JSON.stringify(data) 
+                });
+                const json = await res.json();
+                if(json.errors) { customAlert("Push API Hatası: " + JSON.stringify(json.errors)); }
+            } catch(e) { console.error("Push Error", e); }
         }
 
         document.getElementById('form-login').addEventListener('submit',async e=>{e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ customAlert(getErrorMsg(err.code)); }});
@@ -371,7 +397,6 @@
                         let content = m.text;
                         if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                         if(m.type === 'file' || m.type === 'chunked_file') content = `<div class="file-attachment"><i class="fas fa-file"></i> ${m.fileName} (${(m.size/1024/1024).toFixed(2)} MB)</div>`;
-                        // SAFE JSON STRINGIFY
                         const safeM = JSON.stringify(m).replace(/"/g, '&quot;');
                         html += `<div class="chat-row ${me ? 'row-right' : 'row-left'}">
                                     <div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}" 
