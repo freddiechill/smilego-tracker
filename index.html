@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V50 - Native Push Fix</title>
+    <title>SmileGO V52 - Crash Proof</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,7 +84,12 @@
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; min-height: 0; opacity: 0; transition: opacity 0.1s ease-out; }
+        .chat-body-scroll { 
+            flex: 1 1 auto; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; gap: 10px; 
+            background: #050505; min-height: 0; 
+            opacity: 0; transition: opacity 0.1s ease-out; 
+        }
         .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
 
         .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
@@ -242,8 +247,10 @@
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
+        // GLOBAL ERROR HANDLER
         window.onerror = function(msg, url, line) {
-            customAlert("Hata Oluştu: " + msg + "\nSatır: " + line);
+            // Sadece kritik hataları göster, gereksiz uyarıları yut
+            console.error("Error: " + msg);
             return false;
         };
 
@@ -274,10 +281,13 @@
                         if(u.email === ADMIN) uData.role = 'Admin';
                         curUser = u;
                         
-                        // --- NATIVE PUSH REGISTRATION (MEDIAN) ---
-                        if(window.median && window.median.onesignal) {
-                            median.onesignal.setExternalUserId(u.uid);
-                        }
+                        // --- SAFE NATIVE REGISTRATION ---
+                        try {
+                            if(window.median && window.median.onesignal) {
+                                median.onesignal.setExternalUserId(u.uid);
+                            }
+                        } catch(e) { console.log("Push reg skipped"); }
+
                         if(window.OneSignalDeferred) {
                             OneSignalDeferred.push(()=>OneSignal.login(u.uid));
                         }
@@ -306,7 +316,7 @@
                 listenNotifs(); 
                 popSelects(); 
                 loadRecentDMs(); 
-            } catch(e){ customAlert("Başlatma Hatası: " + e.message); } 
+            } catch(e){ console.log("Init partial error", e); } 
         }
 
         window.customAlert = (msg) => { document.getElementById('alert-msg').innerText = msg; new bootstrap.Modal(document.getElementById('modal-alert')).show(); };
@@ -361,7 +371,18 @@
                         let content = m.text;
                         if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                         if(m.type === 'file' || m.type === 'chunked_file') content = `<div class="file-attachment"><i class="fas fa-file"></i> ${m.fileName} (${(m.size/1024/1024).toFixed(2)} MB)</div>`;
-                        html += `<div class="chat-row ${me ? 'row-right' : 'row-left'}"><div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}" oncontextmenu="showCtx(event.clientX, event.clientY, ${JSON.stringify(m).replace(/"/g, '&quot;')}); return false;" ontouchstart="handleTouch(event, ${JSON.stringify(m).replace(/"/g, '&quot;')})">${!me ? `<span class="sender-name" style="color:${nmCol}">${m.senderName}</span>` : ''}${content}</div></div>`;
+                        // SAFE JSON STRINGIFY
+                        const safeM = JSON.stringify(m).replace(/"/g, '&quot;');
+                        html += `<div class="chat-row ${me ? 'row-right' : 'row-left'}">
+                                    <div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}" 
+                                         ontouchstart="startLongPress(event, ${safeM})" 
+                                         ontouchend="cancelLongPress()" 
+                                         ontouchmove="cancelLongPress()" 
+                                         oncontextmenu="return false;">
+                                        ${!me ? `<span class="sender-name" style="color:${nmCol}">${m.senderName}</span>` : ''}
+                                        ${content}
+                                    </div>
+                                 </div>`;
                     });
                 }
                 
@@ -373,7 +394,6 @@
                 
                 const imgs = b.querySelectorAll('img');
                 if(imgs.length > 0) {
-                    let loaded = 0;
                     imgs.forEach(img => {
                         img.onload = () => { scrollDown(); };
                         if(img.complete) scrollDown();
@@ -387,7 +407,22 @@
             });
         };
         
-        window.handleTouch = (e, m) => { setTimeout(() => showCtx(e.touches[0].clientX, e.touches[0].clientY, m), 600); };
+        // --- SMART LONG PRESS LOGIC ---
+        let longPressTimer;
+        const LONG_PRESS_DURATION = 800; // 0.8 Saniye
+
+        window.startLongPress = (e, msg) => {
+            if(longPressTimer) clearTimeout(longPressTimer);
+            longPressTimer = setTimeout(() => {
+                const touch = e.touches[0];
+                showCtx(touch.clientX, touch.clientY, msg);
+            }, LONG_PRESS_DURATION);
+        };
+
+        window.cancelLongPress = () => {
+            if(longPressTimer) clearTimeout(longPressTimer);
+        };
+
         window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); activeChatId=null; if(chatUnsub) chatUnsub(); loadRecentDMs(); };
         
         let currentZoom = 1; let isDragging = false; let startX, startY, translateX = 0, translateY = 0;
@@ -408,6 +443,7 @@
 
         const ctx = document.getElementById('context-menu');
         window.showCtx = (x, y, msg) => { 
+            if (window.navigator && window.navigator.vibrate) { window.navigator.vibrate(50); }
             selMsg = msg; const w = 160; const h = 100; if(x + w > window.innerWidth) x -= w; if(y + h > window.innerHeight) y -= h; 
             const isMine = msg.senderId === curUser.uid; const isAdmin = uData.role === 'Admin';
             let html = ''; 
