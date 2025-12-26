@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V48 - Perfect Scroll</title>
+    <title>SmileGO V49 - Logo Update</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,16 +84,12 @@
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        
-        /* CHAT BODY - SMOOTH TRANSITION */
         .chat-body-scroll { 
             flex: 1 1 auto; overflow-y: auto; padding: 20px; 
             display: flex; flex-direction: column; gap: 10px; 
             background: #050505; min-height: 0; 
-            opacity: 0; /* Başlangıçta gizli */
-            transition: opacity 0.1s ease-out; 
+            opacity: 0; transition: opacity 0.1s ease-out; 
         }
-        
         .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
 
         .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
@@ -153,7 +149,10 @@
 
     <div id="auth-screen">
         <div class="glass-card">
-            <h3 class="text-center fw-bold mb-4 text-white">SmileGO</h3>
+            <div class="text-center mb-4">
+                <img src="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/smilegologotracker.png" alt="SmileGO" style="width: 170px; height: auto;">
+            </div>
+            
             <ul class="nav nav-pills nav-fill mb-4 bg-dark rounded p-1" style="border: 1px solid #333"><li class="nav-item"><a class="nav-link active rounded" data-bs-toggle="pill" href="#tab-login">Giriş</a></li><li class="nav-item"><a class="nav-link rounded" data-bs-toggle="pill" href="#tab-register">Kayıt</a></li></ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-login"><form id="form-login"><input type="email" id="l-email" class="form-control mb-3" placeholder="Email" required><input type="password" id="l-pass" class="form-control mb-4" placeholder="Şifre" required><button class="btn-primary-soft">Giriş Yap</button></form></div>
@@ -508,13 +507,9 @@
             openChat(c, u.name); 
         }
         
-        // --- SAFE & ROBUST DM LOADER ---
         async function loadRecentDMs() { 
             const dList = document.getElementById('dm-list');
-            // BLINK FIX: Don't clear list immediately
-            
             try {
-                // Get all messages (No orderBy to avoid index errors)
                 const s = await getDocs(collection(db, "messages")); 
                 if (s.empty) { 
                     dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>'; 
@@ -528,7 +523,6 @@
                     allMsgs.push({ ...data, _time: time });
                 });
                 
-                // Sort in memory
                 allMsgs.sort((a,b) => b._time - a._time);
 
                 const uniqueUsers = new Set(); 
@@ -544,7 +538,6 @@
                      return;
                 }
 
-                // Prepare new HTML string
                 let newHTML = "";
                 const promises = Array.from(uniqueUsers).map(uid => getDoc(doc(db, "users", uid)));
                 const userSnaps = await Promise.all(promises);
@@ -557,7 +550,6 @@
                     }
                 });
                 
-                // Swap content in one go
                 dList.innerHTML = newHTML;
 
             } catch (e) { 
