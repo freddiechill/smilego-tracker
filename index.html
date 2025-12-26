@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V56 - CORS Bypass</title>
+    <title>SmileGO V58 - Touch Fix</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -23,10 +23,16 @@
 
     <style>
         :root { --bg-dark: #09090b; --nav-dark: #101012; --primary: #818cf8; --sent-bg: #4f46e5; --recv-bg: #27272a; }
-        body { background-color: var(--bg-dark); font-family: 'Satoshi', sans-serif; color: #fff; height: 100vh; overflow: hidden; margin: 0; user-select: none; }
+        body { background-color: var(--bg-dark); font-family: 'Satoshi', sans-serif; color: #fff; height: 100vh; overflow: hidden; margin: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         * { -ms-overflow-style: none; scrollbar-width: none; }
         *::-webkit-scrollbar { display: none; }
+
+        /* TIKLAMA GARANTİSİ */
+        button, a, input, select, .card-custom, .nav-btn, .notif-btn, .msg-bubble {
+            cursor: pointer;
+            pointer-events: auto !important; /* Kritik Onarım */
+        }
 
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
@@ -73,11 +79,12 @@
         .upload-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* LOADING OVERLAY */
+        /* LOADING OVERLAY (Safe Mode) */
         #loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 2000007;
             display: none; align-items: center; justify-content: center; flex-direction: column;
+            pointer-events: auto; /* Sadece bu açıkken tıklamayı engelle */
         }
 
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, #312e81 0%, #09090b 60%); z-index: 200000; display: flex; align-items: center; justify-content: center; }
@@ -254,7 +261,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-        // GLOBAL ERROR HANDLER
+        // SAFE ERROR LOGGING
         window.onerror = function(msg, url, line) {
             console.error("Error: " + msg);
             return false;
@@ -272,9 +279,20 @@
             document.getElementById('attach-icon').style.display = show ? 'none' : 'block';
             document.getElementById('upload-spinner').style.display = show ? 'block' : 'none';
         }
+        
+        let loadingTimeout;
         function showLoading(show, text="Yükleniyor...") { 
-            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; 
-            document.getElementById('loading-text').innerText = text;
+            const overlay = document.getElementById('loading-overlay');
+            if(show) {
+                overlay.style.display = 'flex';
+                document.getElementById('loading-text').innerText = text;
+                // TIMEOUT SAFETY (7 Saniye sonra zorla kapat)
+                if(loadingTimeout) clearTimeout(loadingTimeout);
+                loadingTimeout = setTimeout(() => { overlay.style.display = 'none'; }, 7000);
+            } else {
+                overlay.style.display = 'none';
+                if(loadingTimeout) clearTimeout(loadingTimeout);
+            }
         }
 
         onAuthStateChanged(auth, async u=>{
@@ -287,16 +305,20 @@
                         if(u.email === ADMIN) uData.role = 'Admin';
                         curUser = u;
                         
-                        try {
-                            if(window.median && window.median.onesignal) {
-                                median.onesignal.register();
-                                median.onesignal.setExternalUserId(u.uid);
+                        // NON-BLOCKING NATIVE REGISTRATION
+                        // Bunu setTimeout içine alarak ana iş parçacığını serbest bırakıyoruz
+                        setTimeout(() => {
+                            try {
+                                if(window.median && window.median.onesignal) {
+                                    median.onesignal.register();
+                                    median.onesignal.setExternalUserId(u.uid);
+                                }
+                            } catch(e) { console.log("Native push skip"); }
+                            
+                            if(window.OneSignalDeferred) {
+                                OneSignalDeferred.push(()=>OneSignal.login(u.uid));
                             }
-                        } catch(e) { console.log("Push init error:", e); }
-
-                        if(window.OneSignalDeferred) {
-                            OneSignalDeferred.push(()=>OneSignal.login(u.uid));
-                        }
+                        }, 2000);
 
                         document.getElementById('auth-screen').style.display='none'; 
                         document.getElementById('app-screen').style.display='block'; 
@@ -338,6 +360,7 @@
             if(!curUser) return;
             let success = false;
             
+            // WEB SDK
             if(window.OneSignalDeferred){
                 OneSignalDeferred.push(function(OneSignal){
                     OneSignal.login(curUser.uid);
@@ -345,21 +368,19 @@
                 });
             }
 
-            if(navigator.userAgent.indexOf('median') > -1 || window.median) {
-                try {
-                    if(window.median && median.onesignal && median.onesignal.login) {
-                        median.onesignal.login({'externalId': curUser.uid});
-                        success = true;
-                    }
-                    else if(window.gonative && gonative.onesignal && gonative.onesignal.login) {
-                        gonative.onesignal.login({'externalId': curUser.uid});
-                        success = true;
-                    }
-                } catch(e) { console.error(e); }
-            }
+            // NATIVE SDK (SAFE)
+            try {
+                if(window.median && window.median.onesignal && median.onesignal.login) {
+                    median.onesignal.login({'externalId': curUser.uid});
+                    success = true;
+                } else if(window.gonative && gonative.onesignal && gonative.onesignal.login) {
+                    gonative.onesignal.login({'externalId': curUser.uid});
+                    success = true;
+                }
+            } catch(e) { console.error(e); }
 
             if(success) customAlert("Cihaz başarıyla kaydedildi!");
-            else customAlert("Web kaydı yapıldı. (Mobil uygulama dışındaysanız normaldir).");
+            else customAlert("Web kaydı tetiklendi.");
         }
 
         window.testNotification = async () => {
@@ -373,26 +394,36 @@
             if(!targetIds) return;
             const data = { app_id: ONESIGNAL_APP_ID, include_external_user_ids: Array.isArray(targetIds) ? targetIds : [targetIds], headings: { "en": title, "tr": title }, contents: { "en": message, "tr": message } };
             
-            // --- CORS BYPASS PROXY ---
-            try { 
+            // WATERFALL (Direct -> Proxy A -> Proxy B)
+            try {
+                const res = await fetch("https://onesignal.com/api/v1/notifications", { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
+                    body: JSON.stringify(data) 
+                });
+                if(res.ok) { customAlert("Başarılı (Direkt)!"); return; }
+            } catch(e) { console.log("Direct fail", e); }
+
+            try {
                 const res = await fetch("https://corsproxy.io/?https://onesignal.com/api/v1/notifications", { 
                     method: "POST", 
                     headers: { "Content-Type": "application/json", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
                     body: JSON.stringify(data) 
                 });
                 const json = await res.json();
-                
-                if(json.errors) { 
-                    customAlert("API Hatası: " + JSON.stringify(json.errors)); 
-                } else if(json.recipients === 0) {
-                    customAlert("Uyarı: Kullanıcı OneSignal'de kayıtlı değil (Recipients: 0). Lütfen 'Kaydol' butonuna tekrar basın.");
-                } else {
-                    customAlert("Başarılı! Bildirim gitti.");
-                }
+                if(!json.errors) { customAlert("Başarılı (Vekil A)!"); return; }
+            } catch(e) { console.log("Proxy A fail", e); }
 
+            try {
+                const res = await fetch("https://thingproxy.freeboard.io/fetch/https://onesignal.com/api/v1/notifications", { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
+                    body: JSON.stringify(data) 
+                });
+                const json = await res.json();
+                if(!json.errors) { customAlert("Başarılı (Vekil B)!"); return; }
             } catch(e) { 
-                customAlert("Bağlantı Hatası: " + e.message); 
-                console.error("Push Error", e); 
+                customAlert("Tüm denemeler başarısız."); 
             }
         }
 
@@ -404,7 +435,7 @@
             if(chatUnsub) chatUnsub(); 
             const b = document.getElementById('chat-overlay-body');
             b.innerHTML = ''; 
-            b.style.opacity = '0'; // Hide first to prevent jump
+            b.style.opacity = '0'; 
             
             activeChatId=id; document.getElementById('chat-overlay-title').innerText=title;
             document.getElementById('chat-overlay').classList.add('open');
@@ -440,13 +471,11 @@
                 
                 b.innerHTML = html;
                 
-                // IMAGE & SCROLL FIX
                 const scrollDown = () => { b.scrollTop = b.scrollHeight; };
                 scrollDown(); 
                 
                 const imgs = b.querySelectorAll('img');
                 if(imgs.length > 0) {
-                    let loaded = 0;
                     imgs.forEach(img => {
                         img.onload = () => { scrollDown(); };
                         if(img.complete) scrollDown();
