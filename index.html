@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V58 - Touch Fix</title>
+    <title>SmileGO V6.0 - Ultimate Management</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -15,9 +15,7 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(function(OneSignal) {
-        OneSignal.init({
-          appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
-        });
+        OneSignal.init({ appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d" });
       });
     </script>
 
@@ -29,10 +27,7 @@
         *::-webkit-scrollbar { display: none; }
 
         /* TIKLAMA GARANTİSİ */
-        button, a, input, select, .card-custom, .nav-btn, .notif-btn, .msg-bubble {
-            cursor: pointer;
-            pointer-events: auto !important; /* Kritik Onarım */
-        }
+        button, a, input, select, textarea, .card-custom, .nav-btn, .notif-btn, .msg-bubble, .clickable { cursor: pointer; pointer-events: auto !important; }
 
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
@@ -56,165 +51,172 @@
         .main-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* IMAGE VIEWER */
-        #img-viewer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000000;
-            display: none; align-items: center; justify-content: center;
-            overflow: hidden; touch-action: none;
-        }
-        #img-viewer img {
-            max-width: 100%; max-height: 100%;
-            transform-origin: center center;
-            transition: transform 0.1s ease-out;
-        }
-        .img-viewer-close {
-            position: absolute; top: 40px; right: 20px;
-            background: rgba(255,255,255,0.2); color: white;
-            border: none; border-radius: 50%; width: 45px; height: 45px;
-            z-index: 2000001; font-size: 24px; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* SPINNER */
-        .upload-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* LOADING OVERLAY (Safe Mode) */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 2000007;
-            display: none; align-items: center; justify-content: center; flex-direction: column;
-            pointer-events: auto; /* Sadece bu açıkken tıklamayı engelle */
-        }
-
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, #312e81 0%, #09090b 60%); z-index: 200000; display: flex; align-items: center; justify-content: center; }
+        /* Helpers */
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-
+        .card-custom { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition:0.2s; position: relative; }
+        .card-custom:active { background: #202023; }
+        .form-control, .form-select { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 12px; border-radius: 12px; font-size: 14px; }
+        .form-control:focus, .form-select:focus { background: #27272a; color: white; border-color: var(--primary); box-shadow: none; }
+        .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
+        
+        /* CHAT */
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
-        .chat-header-fixed { flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px; }
-        .chat-body-scroll { 
-            flex: 1 1 auto; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 10px; 
-            background: #050505; min-height: 0; 
-            opacity: 0; transition: opacity 0.1s ease-out; 
-        }
-        .chat-footer-fixed { flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; }
-
-        .chat-row { display: flex; width: 100%; align-items: flex-end; margin-bottom: 5px; }
-        .row-right { justify-content: flex-end; } .row-left { justify-content: flex-start; }
-        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; line-height: 1.4; position: relative; word-wrap: break-word; min-width: 60px; cursor: pointer; transition: transform 0.1s; }
-        .msg-bubble:active { transform: scale(0.98); opacity: 0.8; }
-        .bubble-sent { background: var(--sent-bg); color: #fff; border-bottom-right-radius: 4px; margin-left: 8px; }
-        .bubble-received { background: var(--recv-bg); color: #fff; border-bottom-left-radius: 4px; margin-right: 8px; }
-        .sender-name { font-size: 11px; font-weight: 800; margin-bottom: 3px; display: block; filter: brightness(1.3); }
+        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; }
+        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; position: relative; word-wrap: break-word; }
+        .bubble-sent { background: var(--sent-bg); color: #fff; border-bottom-right-radius: 4px; margin-left: auto; }
+        .bubble-received { background: var(--recv-bg); color: #fff; border-bottom-left-radius: 4px; margin-right: auto; }
         .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
-        .file-attachment { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
 
-        #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 160px; overflow: hidden; }
-        .ctx-item { padding: 12px 15px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; transition:0.2s; }
-        .ctx-item:active { background: #333; }
-        .ctx-item.delete { color: #ff6b6b; }
+        /* TASKS */
+        .star-rating i { color: #fbbf24; font-size: 12px; margin-right: 1px; }
+        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .st-pending { background: rgba(255,255,255,0.1); color: #aaa; }
+        .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .st-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        
+        /* PROFILE SOCIALS */
+        .social-icon { font-size: 20px; width: 30px; text-align: center; }
+        .si-linkedin { color: #0077b5; } .si-instagram { color: #e1306c; } .si-x { color: #fff; }
+        .si-tiktok { color: #ff0050; } .si-youtube { color: #ff0000; } .si-kick { color: #53fc18; }
 
-        .card-custom { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition:0.2s; }
-        .card-custom:active { background: #202023; }
-        .task-preview-text { font-size: 12px; color: #a1a1aa; margin-top: 5px; border-left: 2px solid #333; padding-left: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .detail-badge { display: inline-block; width: fit-content; font-size: 12px; padding: 6px 12px; border-radius: 20px; }
-        .detail-desc { white-space: pre-wrap; word-break: break-word; color: #d4d4d8; font-size: 14px; line-height: 1.6; }
-        .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); display: flex; align-items: center; gap: 8px; }
-        .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 10px; border: 1px solid #27272a; margin-bottom: 10px; }
-        .team-item:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
-        .form-control, .form-select { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 14px; border-radius: 14px; }
-        .form-control:focus { background: #27272a; color: white; border-color: var(--primary); box-shadow: none; }
-        .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
-        .nav-btn { background: none; border: none; color: #52525b; display: flex; justify-content: center; align-items: center; flex: 1; height: 100%; z-index: 10000; }
-        .nav-btn i { font-size: 24px; transition: 0.2s; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn.active i { transform: translateY(-3px); filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.5)); }
-        .notif-btn { position: relative; background: none; border: none; color: white; font-size: 24px; }
-        .notif-dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; display: none; border: 2px solid var(--bg-dark); }
-        .notif-item { padding: 12px; border-bottom: 1px solid #333; font-size: 14px; transition: 0.3s; cursor: pointer; }
-        .notif-item.unread { background: rgba(129, 140, 248, 0.1); border-left: 3px solid var(--primary); font-weight: 500; }
-        .notif-item.read { opacity: 0.6; }
-        .edit-icon { color: var(--primary); cursor: pointer; margin-left: 8px; font-size: 12px; }
+        /* LOADING & UTILS */
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000007; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; }
+        #img-viewer img { max-width: 100%; max-height: 100%; }
+        .nav-btn { background: none; border: none; color: #52525b; flex: 1; height: 100%; font-size: 24px; transition: 0.2s; }
+        .nav-btn.active { color: var(--primary); transform: translateY(-3px); }
+        .role-badge { font-size: 10px; padding: 3px 6px; border-radius: 4px; background: #333; color: #ccc; margin-left: 4px; }
+        
+        /* SEARCHABLE DROPDOWN SIMULATION */
+        .search-list { max-height: 200px; overflow-y: auto; background: #202023; border: 1px solid #333; border-radius: 0 0 12px 12px; display: none; position: absolute; width: 100%; z-index: 1000; }
+        .search-list div { padding: 10px; cursor: pointer; border-bottom: 1px solid #2a2a2d; font-size: 13px; }
+        .search-list div:hover { background: var(--primary); color: black; }
+
+        .progress-ring { width: 60px; height: 60px; }
+        .progress-ring__circle { transition: 0.35s stroke-dashoffset; transform: rotate(-90deg); transform-origin: 50% 50%; }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-        <div class="text-white mt-3" id="loading-text">Yükleniyor...</div>
+        <div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div>
     </div>
 
     <div id="img-viewer">
-        <button class="img-viewer-close" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
+        <button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="document.getElementById('img-viewer').style.display='none'"><i class="fas fa-times"></i></button>
         <img id="img-viewer-src" src="">
     </div>
 
-    <div id="context-menu"></div>
-
-    <div class="modal fade" id="modal-alert" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-info-circle text-info fa-3x mb-3"></i><h5 class="fw-bold mb-2">Bilgi</h5><p class="text-muted small mb-4" id="alert-msg">...</p><button class="btn btn-primary-soft" data-bs-dismiss="modal">Tamam</button></div></div></div>
-    <div class="modal fade" id="modal-confirm" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-exclamation-circle text-warning fa-3x mb-3"></i><h5 class="fw-bold mb-2">Emin misiniz?</h5><p class="text-muted small mb-4" id="confirm-msg">...</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-dark border-secondary w-50" data-bs-dismiss="modal">İptal</button><button class="btn btn-danger w-50" id="confirm-btn-yes">Evet</button></div></div></div></div>
+    <div id="context-menu" style="position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; display: none; flex-direction: column; min-width: 160px; box-shadow: 0 4px 20px rgba(0,0,0,0.9);"></div>
 
     <div id="auth-screen">
-        <div class="glass-card">
-            <div class="text-center mb-4">
-                <img src="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/smilegologotracker.png" alt="SmileGO" style="width: 170px; height: auto;">
-            </div>
-            
-            <ul class="nav nav-pills nav-fill mb-4 bg-dark rounded p-1" style="border: 1px solid #333"><li class="nav-item"><a class="nav-link active rounded" data-bs-toggle="pill" href="#tab-login">Giriş</a></li><li class="nav-item"><a class="nav-link rounded" data-bs-toggle="pill" href="#tab-register">Kayıt</a></li></ul>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="tab-login"><form id="form-login"><input type="email" id="l-email" class="form-control mb-3" placeholder="Email" required><input type="password" id="l-pass" class="form-control mb-4" placeholder="Şifre" required><button class="btn-primary-soft">Giriş Yap</button></form></div>
-                <div class="tab-pane fade" id="tab-register"><form id="form-register"><input id="r-name" class="form-control mb-3" placeholder="Ad Soyad" required><input id="r-email" class="form-control mb-3" placeholder="Email" required><input type="password" id="r-pass" class="form-control mb-3" placeholder="Şifre (min 6)" required><select id="r-dept" class="form-select mb-4" required><option value="" disabled selected>Departman Seç</option><option>Organizasyonel Gelişim</option><option>Sosyal Medya</option><option>Bölge Koordinatörlüğü</option><option>Psikolog İlişkileri</option><option>Data & Planlama</option><option>Kurumsal İletişim</option></select><button class="btn-primary-soft">Kayıt Ol</button></form></div>
+        <div id="auth-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, #312e81 0%, #09090b 60%);z-index:-1"></div>
+        <div class="d-flex align-items-center justify-content-center h-100 w-100">
+            <div class="glass-card">
+                <div class="text-center mb-4"><img src="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/smilegologotracker.png" alt="SmileGO" style="width: 170px;"></div>
+                <ul class="nav nav-pills nav-fill mb-4 bg-dark rounded p-1" style="border: 1px solid #333"><li class="nav-item"><a class="nav-link active rounded" data-bs-toggle="pill" href="#tab-login">Giriş</a></li><li class="nav-item"><a class="nav-link rounded" data-bs-toggle="pill" href="#tab-register">Kayıt</a></li></ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab-login"><form id="form-login"><input type="email" id="l-email" class="form-control mb-3" placeholder="Email" required><input type="password" id="l-pass" class="form-control mb-4" placeholder="Şifre" required><button class="btn-primary-soft">Giriş Yap</button></form></div>
+                    <div class="tab-pane fade" id="tab-register"><form id="form-register"><input id="r-name" class="form-control mb-3" placeholder="Ad Soyad" required><input id="r-email" class="form-control mb-3" placeholder="Email" required><input type="password" id="r-pass" class="form-control mb-3" placeholder="Şifre (min 6)" required><div class="text-muted small mb-2">Departman ve Rol Admin tarafından atanacaktır.</div><button class="btn-primary-soft">Kayıt Ol</button></form></div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="app-screen" style="display: none;">
-        <header class="app-header"><h5 class="m-0 fw-bold" id="page-title">Görev Panosu</h5><button class="notif-btn" onclick="openNotifs()"><i class="fas fa-bell"></i><div id="notif-dot" class="notif-dot"></div></button></header>
+        <header class="app-header">
+            <h5 class="m-0 fw-bold" id="page-title">Görev Panosu</h5>
+            <div class="d-flex gap-3 align-items-center">
+                <button class="notif-btn" onclick="openLeaderboard()"><i class="fas fa-trophy text-warning"></i></button>
+                <button class="notif-btn" onclick="openNotifs()"><i class="fas fa-bell"></i><div id="notif-dot" class="notif-dot" style="position:absolute;top:0;right:0;width:8px;height:8px;background:red;border-radius:50%;display:none;"></div></button>
+            </div>
+        </header>
 
         <div id="view-tasks" class="main-content active">
-            <button class="btn-primary-soft mb-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-task"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
+            <button class="btn-primary-soft mb-4 shadow-sm" onclick="openTaskModal()"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
+            
+            <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill active" onclick="filterTasks('all', this)">Tümü</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('pending', this)">Başlamadı</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('progress', this)">Yapılıyor</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('done', this)">Bitti</button>
+            </div>
+
             <div id="task-list" class="d-flex flex-column gap-2"></div>
         </div>
 
         <div id="view-messages" class="main-content">
-            <h6 class="text-muted small fw-bold mb-3 ls-1">KANALLAR</h6>
+            <h6 class="text-muted small fw-bold mb-3 ls-1">GRUPLAR</h6>
             <div id="channel-list" class="d-flex flex-column gap-2 mb-4"></div>
             <h6 class="text-muted small fw-bold mb-3 ls-1">ÖZEL MESAJLAR</h6>
-            <div id="dm-list" class="d-flex flex-column gap-2">
-                <div class="text-center text-muted small mt-3">Mesajlar yükleniyor...</div>
-            </div>
+            <div id="dm-list" class="d-flex flex-column gap-2"></div>
         </div>
 
         <div id="view-team" class="main-content">
             <input type="text" class="form-control mb-4" placeholder="Ekipte ara..." onkeyup="renderTeam(this.value)">
-            <div id="team-list">
-                <div class="text-center text-muted small mt-3">Ekip yükleniyor...</div>
-            </div>
+            <div id="team-list"></div>
         </div>
 
-        <div id="view-profile" class="main-content text-center">
-            <div class="mb-4 mt-4 position-relative d-inline-block">
-                <img id="prof-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110" style="object-fit: cover;">
-                <label for="file-inp" class="position-absolute bottom-0 end-0 bg-white text-dark rounded-circle d-flex align-items-center justify-content-center shadow" style="width:35px;height:35px;cursor:pointer"><i class="fas fa-camera small"></i></label>
-                <input type="file" id="file-inp" class="d-none" accept="image/*" onchange="uploadPhoto(this)">
-            </div>
-            <div class="card-custom text-start p-0 overflow-hidden">
-                <div class="p-3 border-bottom border-secondary"><div class="d-flex justify-content-between align-items-center"><span class="text-muted">Ad</span><div class="d-flex align-items-center"><span id="prof-name" class="fw-bold">...</span><i class="fas fa-pencil-alt edit-icon" onclick="toggleEdit('name')"></i></div></div><div id="edit-name-group" class="d-none mt-2 d-flex gap-2"><input id="inp-name" class="form-control form-control-sm"><button class="btn btn-success btn-sm" onclick="saveProf('name')"><i class="fas fa-check"></i></button></div></div>
-                <div class="p-3 border-bottom border-secondary"><div class="d-flex justify-content-between align-items-center"><span class="text-muted">Departman</span><div class="d-flex align-items-center"><span id="prof-dept" class="fw-bold">...</span><i class="fas fa-pencil-alt edit-icon" onclick="toggleEdit('dept')"></i></div></div><div id="edit-dept-group" class="d-none mt-2 d-flex gap-2"><select id="inp-dept" class="form-select form-select-sm"></select><button class="btn btn-success btn-sm" onclick="saveProf('dept')"><i class="fas fa-check"></i></button></div></div>
-                <div class="p-3 d-flex justify-content-between align-items-center"><span class="text-muted">Rol</span><span id="prof-role" class="badge bg-secondary">...</span></div>
+        <div id="view-profile" class="main-content">
+            <div class="text-center">
+                <div class="mb-3 position-relative d-inline-block">
+                    <img id="prof-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110" style="object-fit: cover;">
+                    <label for="file-inp" class="position-absolute bottom-0 end-0 bg-white text-dark rounded-circle d-flex align-items-center justify-content-center shadow" style="width:35px;height:35px;cursor:pointer"><i class="fas fa-camera small"></i></label>
+                    <input type="file" id="file-inp" class="d-none" accept="image/*" onchange="uploadPhoto(this)">
+                </div>
+                <h4 id="prof-name" class="fw-bold mb-1">...</h4>
+                <div id="prof-roles" class="d-flex justify-content-center gap-1 mb-2"></div>
                 
-                <div class="d-flex gap-2 mt-4 px-2">
-                    <button class="btn btn-dark w-50 py-3 rounded-4 fw-bold small" onclick="forceRegisterPush()">
-                        <i class="fas fa-user-plus mb-1 d-block"></i> Kaydol
-                    </button>
-                    <button class="btn btn-warning w-50 py-3 rounded-4 fw-bold small" onclick="testNotification()">
-                        <i class="fas fa-bell mb-1 d-block"></i> Test Et
-                    </button>
+                <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
+                    <div class="text-start">
+                        <div class="text-muted small">Görev Başarımı</div>
+                        <h4 class="fw-bold m-0" id="prof-rate">0%</h4>
+                    </div>
+                    <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/>
+                    </svg>
                 </div>
             </div>
-            <button class="btn btn-outline-danger w-100 mt-3 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
+
+            <div class="card-custom mt-3">
+                <h6 class="fw-bold text-muted mb-3">KİŞİSEL BİLGİLER</h6>
+                
+                <div class="mb-3 position-relative">
+                    <label class="small text-muted">Üniversite</label>
+                    <input type="text" class="form-control" id="inp-uni" placeholder="Üniversite Ara..." onkeyup="filterSearch('uni')">
+                    <div class="search-list" id="list-uni"></div>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label class="small text-muted">Bölüm</label>
+                    <input type="text" class="form-control" id="inp-sec" placeholder="Bölüm Ara..." onkeyup="filterSearch('sec')">
+                    <div class="search-list" id="list-sec"></div>
+                </div>
+
+                <button class="btn btn-sm btn-success w-100" onclick="saveEduInfo()">Bilgileri Kaydet</button>
+             </div>
+
+             <div class="card-custom mt-2">
+                <h6 class="fw-bold text-muted mb-3">SOSYAL MEDYA (Kullanıcı Adları)</h6>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-linkedin"></i></span><input id="sm-linkedin" class="form-control" placeholder="LinkedIn"></div>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-instagram"></i></span><input id="sm-instagram" class="form-control" placeholder="Instagram"></div>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-twitter"></i></span><input id="sm-x" class="form-control" placeholder="X (Twitter)"></div>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-tiktok"></i></span><input id="sm-tiktok" class="form-control" placeholder="TikTok"></div>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-youtube"></i></span><input id="sm-youtube" class="form-control" placeholder="YouTube"></div>
+                <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-kickstarter"></i></span><input id="sm-kick" class="form-control" placeholder="Kick"></div>
+                <button class="btn btn-sm btn-success w-100 mt-2" onclick="saveSocials()">Sosyal Medyayı Kaydet</button>
+             </div>
+
+             <div id="admin-zone" class="d-none mt-3">
+                 <div class="card-custom border-danger">
+                     <h6 class="text-danger fw-bold">YÖNETİCİ PANELİ</h6>
+                     <p class="small text-muted">Kullanıcı düzenlemek için Ekip sayfasından kişiye tıklayın.</p>
+                 </div>
+             </div>
+
+             <button class="btn btn-outline-danger w-100 mt-4 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
         </div>
 
         <nav class="bottom-nav">
@@ -226,476 +228,698 @@
     </div>
 
     <div id="chat-overlay">
-        <div class="chat-header-fixed">
-            <div class="d-flex align-items-center">
-                <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
-                <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
-            </div>
+        <div style="flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px;">
+            <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
+            <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
         </div>
         <div class="chat-body-scroll" id="chat-overlay-body"></div>
-        <form id="chat-form" class="chat-footer-fixed d-flex align-items-center gap-2">
+        <form id="chat-form" style="flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; display: flex; gap: 10px;">
             <input type="file" id="chat-file-inp" hidden>
-            <button type="button" class="btn btn-dark text-muted me-2 rounded-circle d-flex align-items-center justify-content-center" style="width:45px;height:45px" onclick="document.getElementById('chat-file-inp').click()">
-                <i class="fas fa-paperclip" id="attach-icon"></i>
-                <div class="upload-spinner" id="upload-spinner"></div>
-            </button>
-            <input id="chat-input" class="form-control me-2" placeholder="Mesaj yaz..." style="flex:1" autocomplete="off">
-            <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px; display:flex; align-items:center; justify-content:center"><i class="fas fa-paper-plane"></i></button>
+            <button type="button" class="btn btn-dark text-muted rounded-circle" style="width:45px;height:45px" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
+            <input id="chat-input" class="form-control" placeholder="Mesaj yaz..." style="border-radius:20px" autocomplete="off">
+            <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px"><i class="fas fa-paper-plane"></i></button>
         </form>
     </div>
 
-    <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
-    <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Yeni Görev</h5><form id="form-task"><input id="t-title" class="form-control mb-3" placeholder="Başlık" required><textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama (İsteğe bağlı)" rows="3"></textarea><select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select><select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select><button class="btn-primary-soft">Oluştur</button></form></div></div></div>
-    <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-2" id="td-title">...</h5><span class="badge bg-secondary mb-3 detail-badge" id="td-assign">...</span><p class="detail-desc" id="td-desc">...</p><div class="d-flex justify-content-end"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
-    <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:60vh;overflow-y:auto"></div></div></div></div>
+    <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Yeni Görev</h5><form id="form-task">
+        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required>
+        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
+        
+        <label class="small text-muted mb-1">Önem Derecesi</label>
+        <div class="mb-3 fs-4 text-warning" id="star-select">
+            <i class="far fa-star clickable" onclick="setStars(1)"></i>
+            <i class="far fa-star clickable" onclick="setStars(2)"></i>
+            <i class="far fa-star clickable" onclick="setStars(3)"></i>
+            <i class="far fa-star clickable" onclick="setStars(4)"></i>
+            <i class="far fa-star clickable" onclick="setStars(5)"></i>
+        </div>
+        <input type="hidden" id="t-stars" value="0">
+
+        <select id="t-type" class="form-select mb-3" onchange="togT(this.value)">
+            <option value="department">Departman</option>
+            <option value="user">Kişi</option>
+            <option value="all">Herkes</option>
+        </select>
+        <select id="t-dept" class="form-select mb-3"></select>
+        <select id="t-user" class="form-select mb-4 d-none"></select>
+        <button class="btn-primary-soft">Oluştur</button>
+    </form></div></div></div>
+
+    <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
+        <h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5>
+        <h6 id="ue-name" class="text-primary mb-3"></h6>
+        <div class="mb-2 small">Roller (Birden fazla seçilebilir)</div>
+        <div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div>
+        <div class="mb-2 small">Departmanlar (Birden fazla seçilebilir)</div>
+        <div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div>
+        <button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button>
+    </div></div></div>
+
+    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden">
+        <div class="bg-primary p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5><small class="text-black opacity-75">Departman İçi Başarı</small></div>
+        <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div>
+    </div></div></div>
+
+    <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
+
+    <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center">
+        <h6 class="mb-3">Durum Güncelle</h6>
+        <div class="d-grid gap-2">
+            <button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button>
+            <button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button>
+            <button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button>
+        </div>
+    </div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, limit, updateDoc, deleteDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        const ONESIGNAL_APP_ID = "2657219b-d29e-46e1-ac6f-68d2cdb8014d";
-        const ONESIGNAL_API_KEY = "os_v2_app_ezlsdg6stzdodldpndjm3oabjurhogbxdf3ehjmkc3kn3ltdl3yergesq5ssbqd2freyk75ysl7ltmzidm2amo7qfetxp4pwzzpgp5y";
+        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-        // SAFE ERROR LOGGING
-        window.onerror = function(msg, url, line) {
-            console.error("Error: " + msg);
-            return false;
-        };
+        // --- CONSTANTS & DATA ---
+        const ADMIN_EMAIL = "yenerarda7@gmail.com";
+        const DEPTS = ["Organizasyonel Gelişim","Sosyal Medya","Bölge Koordinatörlüğü","Psikolog İlişkileri","Data & Planlama","Kurumsal İletişim", "Yazılım"];
+        const ROLES = ["Başkan", "YK", "YKY", "Üye", "Admin"];
+        const UNIVERSITIES = ["Sakarya Üniversitesi", "Sakarya Uygulamalı Bilimler Üniversitesi", "İstanbul Üniversitesi", "ODTÜ", "İTÜ", "Boğaziçi Üniversitesi", "Marmara Üniversitesi", "Yıldız Teknik Üniversitesi", "Hacettepe Üniversitesi", "Ankara Üniversitesi", "Ege Üniversitesi", "Dokuz Eylül Üniversitesi", "Gazi Üniversitesi", "Anadolu Üniversitesi", "Akdeniz Üniversitesi", "Çukurova Üniversitesi", "Bilkent Üniversitesi", "Koç Üniversitesi", "Sabancı Üniversitesi", "Yeditepe Üniversitesi", "Bahçeşehir Üniversitesi"]; // Demo listesi, gerçekte çok daha uzun
+        const DEPARTMENTS_UNI = ["İşletme", "Bilgisayar Mühendisliği", "Hukuk", "Tıp", "Psikoloji", "Mimarlık", "Endüstri Mühendisliği", "Makine Mühendisliği", "Elektrik-Elektronik Müh.", "İnşaat Mühendisliği", "Siyaset Bilimi", "Uluslararası İlişkiler", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Öğretmenlik", "Grafik Tasarım", "İletişim Tasarımı", "Sosyoloji", "Felsefe"]; // Demo
 
-        let curUser=null, uData={}, activeChatId=null, chatUnsub=null, selMsg={};
-        let notifUnsub=null, userUnsub=null, teamUnsub=null;
-        let allTeamMembers = []; let allTasksCache = {};
-        const ADMIN="yenerarda7@gmail.com";
-        const DEPTS=["Organizasyonel Gelişim","Sosyal Medya","Bölge Koordinatörlüğü","Psikolog İlişkileri","Data & Planlama","Kurumsal İletişim"];
-        const COLORS = ["#fca5a5", "#fdba74", "#fcd34d", "#86efac", "#67e8f9", "#93c5fd", "#c4b5fd", "#f9a8d4", "#e9d5ff"];
-        function getCol(s){ let h=0; for(let i=0;i<s.length;i++)h=s.charCodeAt(i)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
+        let curUser=null, uData={}, activeChatId=null;
+        let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null;
+        let allUsersCache=[], allTasksCache={};
+        let selectedTaskForStatus = null; // ID of task being updated
+        let selectedUserForEdit = null; // UID for Admin edit
 
-        function toggleUploadSpinner(show) {
-            document.getElementById('attach-icon').style.display = show ? 'none' : 'block';
-            document.getElementById('upload-spinner').style.display = show ? 'block' : 'none';
-        }
-        
-        let loadingTimeout;
-        function showLoading(show, text="Yükleniyor...") { 
-            const overlay = document.getElementById('loading-overlay');
-            if(show) {
-                overlay.style.display = 'flex';
-                document.getElementById('loading-text').innerText = text;
-                // TIMEOUT SAFETY (7 Saniye sonra zorla kapat)
-                if(loadingTimeout) clearTimeout(loadingTimeout);
-                loadingTimeout = setTimeout(() => { overlay.style.display = 'none'; }, 7000);
-            } else {
-                overlay.style.display = 'none';
-                if(loadingTimeout) clearTimeout(loadingTimeout);
-            }
-        }
-
-        onAuthStateChanged(auth, async u=>{
+        // --- AUTH & INIT ---
+        onAuthStateChanged(auth, async u => {
             if(u){
-                if(userUnsub) userUnsub();
-                userUnsub = onSnapshot(doc(db, "users", u.uid), (docSnap) => {
-                    if (docSnap.exists()) {
-                        uData = docSnap.data();
-                        if(uData.isBanned){ customAlert("Erişim engellendi."); signOut(auth); return; }
-                        if(u.email === ADMIN) uData.role = 'Admin';
-                        curUser = u;
+                curUser = u;
+                unsubUser = onSnapshot(doc(db,"users",u.uid), s => {
+                    if(s.exists()){
+                        uData = s.data();
+                        if(uData.isBanned) { signOut(auth); alert("Hesap erişimi engellendi."); return; }
+                        // Geriye dönük uyumluluk (Array yapısı yoksa çevir)
+                        if(!Array.isArray(uData.roles)) uData.roles = [uData.role || 'Üye'];
+                        if(!Array.isArray(uData.departments)) uData.departments = [uData.department || '...'];
+                        if(u.email === ADMIN_EMAIL && !uData.roles.includes('Admin')) uData.roles.push('Admin');
                         
-                        // NON-BLOCKING NATIVE REGISTRATION
-                        // Bunu setTimeout içine alarak ana iş parçacığını serbest bırakıyoruz
-                        setTimeout(() => {
-                            try {
-                                if(window.median && window.median.onesignal) {
-                                    median.onesignal.register();
-                                    median.onesignal.setExternalUserId(u.uid);
-                                }
-                            } catch(e) { console.log("Native push skip"); }
-                            
-                            if(window.OneSignalDeferred) {
-                                OneSignalDeferred.push(()=>OneSignal.login(u.uid));
-                            }
-                        }, 2000);
-
-                        document.getElementById('auth-screen').style.display='none'; 
-                        document.getElementById('app-screen').style.display='block'; 
-                        init();
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('app-screen').style.display = 'block';
+                        initApp();
                     }
                 });
+                // OneSignal Login
+                if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
             } else {
-                if(userUnsub) userUnsub(); if(notifUnsub) notifUnsub(); if(teamUnsub) teamUnsub(); if(chatUnsub) chatUnsub();
-                curUser=null; uData={}; allTeamMembers=[]; allTasksCache={};
-                ['task-list','dm-list','channel-list','team-list','notif-list'].forEach(id=>document.getElementById(id).innerHTML='');
-                if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.logout());
-                document.getElementById('auth-screen').style.display='flex'; 
-                document.getElementById('app-screen').style.display='none'; 
+                cleanup();
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-screen').style.display = 'none';
             }
         });
 
-        async function init(){ 
-            try { 
-                loadProfile(); 
-                loadTasks(); 
-                loadChannels(); 
-                listenTeam(); 
-                listenNotifs(); 
-                popSelects(); 
-                loadRecentDMs(); 
-            } catch(e){ console.log("Init error", e); } 
+        async function initApp() {
+            loadProfile();
+            listenTasks();
+            listenTeam();
+            loadChannels();
+            listenNotifs();
+            loadRecentDMs();
+            
+            // Populate Selects
+            const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
+            DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
+            
+            // Check Admin Zone
+            if(isAdminOrPres()) document.getElementById('admin-zone').classList.remove('d-none');
         }
 
-        window.customAlert = (msg) => { document.getElementById('alert-msg').innerText = msg; new bootstrap.Modal(document.getElementById('modal-alert')).show(); };
-        window.customConfirm = (msg, cb) => { document.getElementById('confirm-msg').innerText = msg; const m=new bootstrap.Modal(document.getElementById('modal-confirm')); m.show(); document.getElementById('confirm-btn-yes').onclick = () => { cb(); m.hide(); } };
-        const getErrorMsg = (code) => {
-            if (code === 'auth/invalid-login-credentials' || code === 'auth/invalid-credential') return 'E-posta veya şifre hatalı.';
-            if (code === 'auth/user-not-found') return 'Böyle bir kullanıcı bulunamadı.';
-            if (code === 'auth/wrong-password') return 'Şifre yanlış.';
-            return "Hata: " + code;
+        function cleanup() {
+            if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); 
+            if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif();
+            curUser=null; uData={};
+        }
+
+        const isAdmin = () => uData.roles?.includes('Admin');
+        const isPres = () => uData.roles?.includes('Başkan');
+        const isAdminOrPres = () => isAdmin() || isPres();
+        const isBoard = () => uData.roles?.some(r => ['YK','YKY','Başkan','Admin'].includes(r));
+
+        // --- PROFILE LOGIC ---
+        window.loadProfile = () => {
+            document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
+            document.getElementById('prof-name').innerText = uData.name;
+            
+            const rDiv = document.getElementById('prof-roles'); rDiv.innerHTML='';
+            uData.roles.forEach(r => rDiv.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
+            
+            // Fill Inputs
+            document.getElementById('inp-uni').value = uData.university || '';
+            document.getElementById('inp-sec').value = uData.uni_dept || '';
+            
+            if(uData.socials) {
+                ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => {
+                    document.getElementById(`sm-${k}`).value = uData.socials[k] || '';
+                });
+            }
+
+            calcSuccessRate();
         };
-        
-        window.forceRegisterPush = () => {
-            if(!curUser) return;
-            let success = false;
+
+        window.calcSuccessRate = () => {
+            let total = 0, done = 0;
+            Object.values(allTasksCache).forEach(t => {
+                if(t.statusMap && t.statusMap[curUser.uid]) {
+                    total++;
+                    if(t.statusMap[curUser.uid] === 'done') done++;
+                }
+            });
+            const rate = total === 0 ? 0 : Math.round((done/total)*100);
+            document.getElementById('prof-rate').innerText = `%${rate}`;
+            const circle = document.getElementById('prof-circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (rate / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        };
+
+        window.saveEduInfo = async () => {
+            const uni = document.getElementById('inp-uni').value;
+            const sec = document.getElementById('inp-sec').value;
+            await updateDoc(doc(db,"users",curUser.uid), { university: uni, uni_dept: sec });
+            alert("Eğitim bilgileri güncellendi!");
+        };
+
+        window.saveSocials = async () => {
+            const soc = {};
+            ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => {
+                const v = document.getElementById(`sm-${k}`).value.trim();
+                if(v) soc[k] = v;
+            });
+            await updateDoc(doc(db,"users",curUser.uid), { socials: soc });
+            alert("Sosyal medya güncellendi!");
+        };
+
+        // --- SEARCHABLE SELECT LOGIC ---
+        window.filterSearch = (type) => {
+            const inp = document.getElementById(`inp-${type}`);
+            const list = document.getElementById(`list-${type}`);
+            const val = inp.value.toLowerCase();
+            const source = type === 'uni' ? UNIVERSITIES : DEPARTMENTS_UNI;
             
-            // WEB SDK
-            if(window.OneSignalDeferred){
-                OneSignalDeferred.push(function(OneSignal){
-                    OneSignal.login(curUser.uid);
-                    OneSignal.User.PushSubscription.optIn();
+            list.innerHTML = '';
+            if(val.length < 1) { list.style.display='none'; return; }
+            
+            const matches = source.filter(s => s.toLowerCase().includes(val));
+            matches.forEach(m => {
+                const d = document.createElement('div');
+                d.innerText = m;
+                d.onclick = () => { inp.value = m; list.style.display='none'; };
+                list.appendChild(d);
+            });
+            list.style.display = matches.length ? 'block' : 'none';
+        };
+
+        // --- TASKS LOGIC ---
+        function listenTasks() {
+            if(unsubTasks) unsubTasks();
+            unsubTasks = onSnapshot(collection(db,"tasks"), s => {
+                const list = document.getElementById('task-list');
+                list.innerHTML = '';
+                allTasksCache = {};
+                
+                let tempArr = [];
+                s.forEach(d => {
+                    const t = { id: d.id, ...d.data() };
+                    allTasksCache[t.id] = t;
+                    
+                    // Filter: Can I see this task?
+                    // 1. I created it
+                    // 2. Assigned to Me directly
+                    // 3. Assigned to 'Herkes'
+                    // 4. Assigned to one of my Departments
+                    // 5. I am Admin/Pres
+                    const isCreator = t.createdByUid === curUser.uid;
+                    const isMine = t.assignedType === 'user' && t.assignedToUid === curUser.uid;
+                    const isAll = t.assignedType === 'all';
+                    const isMyDept = t.assignedType === 'department' && uData.departments?.includes(t.assignedTo);
+                    
+                    if(isCreator || isMine || isAll || isMyDept || isAdminOrPres()) {
+                        tempArr.push(t);
+                    }
                 });
+
+                tempArr.sort((a,b) => b.createdAt - a.createdAt);
+                
+                // RENDER
+                const filter = document.querySelector('.btn-outline-secondary.active').innerText; // Tümü, Başlamadı vs.
+                
+                tempArr.forEach(t => {
+                    // My Status
+                    let myStatus = 'pending';
+                    if(t.statusMap && t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
+                    else if(t.statusMap && t.assignedType === 'user' && t.assignedToUid !== curUser.uid) {
+                         // Viewing someone else's task
+                         myStatus = Object.values(t.statusMap)[0];
+                    }
+
+                    // Filter UI
+                    if(filter === 'Başlamadı' && myStatus !== 'pending') return;
+                    if(filter === 'Yapılıyor' && myStatus !== 'progress') return;
+                    if(filter === 'Bitti' && myStatus !== 'done') return;
+
+                    // Star Rendering
+                    let starsHtml = '';
+                    for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
+
+                    // Status Badge Class
+                    const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
+                    const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
+                    
+                    // Button Logic
+                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+
+                    list.innerHTML += `
+                    <div class="card-custom">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span>
+                            <div>${starsHtml}</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">${t.title}</h6>
+                        <p class="text-muted small mb-2 text-truncate">${t.description || ''}</p>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20">
+                                <small class="text-muted" style="font-size:11px">${t.creatorName}</small>
+                            </div>
+                            ${isAssignedToMe ? 
+                                `<button class="btn btn-sm status-badge ${stClass}" onclick="openStatusModal('${t.id}')">${stText}</button>` : 
+                                `<span class="status-badge ${stClass}">${stText}</span>`
+                            }
+                        </div>
+                        ${(t.createdByUid === curUser.uid || isAdminOrPres()) ? `<i class="fas fa-trash text-danger position-absolute top-0 end-0 m-3" onclick="delTask('${t.id}')"></i>` : ''}
+                    </div>`;
+                });
+                
+                calcSuccessRate(); // Recalc profile stats
+            });
+        }
+
+        window.openTaskModal = async () => {
+            const userSelect = document.getElementById('t-user');
+            userSelect.innerHTML = '';
+            // Only Members logic not strictly enforced here but handled in submit
+            const snap = await getDocs(collection(db,"users"));
+            snap.forEach(d => {
+                if(d.id !== curUser.uid) userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`;
+            });
+            new bootstrap.Modal(document.getElementById('modal-task')).show();
+        };
+
+        window.setStars = (n) => {
+            document.getElementById('t-stars').value = n;
+            const container = document.getElementById('star-select');
+            const stars = container.getElementsByTagName('i');
+            for(let i=0; i<5; i++) {
+                stars[i].className = i < n ? 'fas fa-star clickable' : 'far fa-star clickable';
+            }
+        };
+
+        document.getElementById('form-task').addEventListener('submit', async e => {
+            e.preventDefault();
+            const title = document.getElementById('t-title').value;
+            const desc = document.getElementById('t-desc').value;
+            const type = document.getElementById('t-type').value;
+            const imp = parseInt(document.getElementById('t-stars').value);
+            let to = "Herkes", uid = null;
+            
+            // Restriction Logic: Members cannot assign to YK/Pres
+            const myRoles = uData.roles;
+            const isJustMember = myRoles.length === 1 && myRoles[0] === 'Üye';
+            
+            if(type === 'department') to = document.getElementById('t-dept').value;
+            if(type === 'user') {
+                const el = document.getElementById('t-user');
+                to = el.options[el.selectedIndex].text;
+                uid = el.value;
+                const targetRoles = el.options[el.selectedIndex].getAttribute('data-role');
+                
+                if(isJustMember && (targetRoles.includes('YK') || targetRoles.includes('Başkan') || targetRoles.includes('YKY'))) {
+                    alert("Üyeler YK veya Başkana görev atayamaz!");
+                    return;
+                }
             }
 
-            // NATIVE SDK (SAFE)
-            try {
-                if(window.median && window.median.onesignal && median.onesignal.login) {
-                    median.onesignal.login({'externalId': curUser.uid});
-                    success = true;
-                } else if(window.gonative && gonative.onesignal && gonative.onesignal.login) {
-                    gonative.onesignal.login({'externalId': curUser.uid});
-                    success = true;
-                }
-            } catch(e) { console.error(e); }
+            // Init status for assigned user immediately if single user
+            let initialStatusMap = {};
+            if(type === 'user' && uid) initialStatusMap[uid] = 'pending';
+            
+            await addDoc(collection(db,"tasks"), {
+                title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid,
+                importance: imp, createdByUid: curUser.uid, creatorName: uData.name, creatorPhoto: uData.photoURL,
+                createdAt: new Date(), statusMap: initialStatusMap
+            });
 
-            if(success) customAlert("Cihaz başarıyla kaydedildi!");
-            else customAlert("Web kaydı tetiklendi.");
+            // Notification logic
+            if(uid) sendNotif(uid, 'Yeni Görev', title, 'task', uid); // Simplification
+            
+            bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide();
+            e.target.reset(); setStars(0);
+        });
+
+        window.openStatusModal = (tid) => {
+            selectedTaskForStatus = tid;
+            new bootstrap.Modal(document.getElementById('modal-status')).show();
+        };
+
+        window.updateTaskStatus = async (status) => {
+            if(!selectedTaskForStatus) return;
+            // Update specific key in map: "statusMap.USER_ID"
+            const updateKey = `statusMap.${curUser.uid}`;
+            await updateDoc(doc(db,"tasks",selectedTaskForStatus), {
+                [updateKey]: status
+            });
+            bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide();
+        };
+
+        window.filterTasks = (filter, btn) => {
+            document.querySelectorAll('#view-tasks .btn-outline-secondary').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Re-trigger render by essentially reloading (or just logic inside onSnapshot handles it if we store filter state)
+            // For simplicity, just update UI text and let onSnapshot re-render next time or trigger reload
+            // In this architecture, best to just store filter in a var and call render function.
+            // But since onSnapshot is active, we can just hack it:
+            if(unsubTasks) { unsubTasks(); listenTasks(); } // Poor man's re-render
+        };
+
+        // --- TEAM & ADMIN LOGIC ---
+        function listenTeam() {
+            unsubTeam = onSnapshot(collection(db,"users"), s => {
+                allUsersCache = [];
+                s.forEach(d => allUsersCache.push(d.data()));
+                renderTeam();
+            });
         }
 
-        window.testNotification = async () => {
-            if(!curUser) return;
-            showLoading(true, "Test Bildirimi...");
-            await sendPushNotification(curUser.uid, "Test Başarılı!", "Bu bir test bildirimidir.");
-            showLoading(false);
-        }
-
-        async function sendPushNotification(targetIds, title, message) {
-            if(!targetIds) return;
-            const data = { app_id: ONESIGNAL_APP_ID, include_external_user_ids: Array.isArray(targetIds) ? targetIds : [targetIds], headings: { "en": title, "tr": title }, contents: { "en": message, "tr": message } };
+        window.renderTeam = (filter='') => {
+            const list = document.getElementById('team-list'); list.innerHTML = '';
+            const f = filter.toLowerCase();
             
-            // WATERFALL (Direct -> Proxy A -> Proxy B)
-            try {
-                const res = await fetch("https://onesignal.com/api/v1/notifications", { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
-                    body: JSON.stringify(data) 
-                });
-                if(res.ok) { customAlert("Başarılı (Direkt)!"); return; }
-            } catch(e) { console.log("Direct fail", e); }
-
-            try {
-                const res = await fetch("https://corsproxy.io/?https://onesignal.com/api/v1/notifications", { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
-                    body: JSON.stringify(data) 
-                });
-                const json = await res.json();
-                if(!json.errors) { customAlert("Başarılı (Vekil A)!"); return; }
-            } catch(e) { console.log("Proxy A fail", e); }
-
-            try {
-                const res = await fetch("https://thingproxy.freeboard.io/fetch/https://onesignal.com/api/v1/notifications", { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json", "Authorization": "Basic " + ONESIGNAL_API_KEY }, 
-                    body: JSON.stringify(data) 
-                });
-                const json = await res.json();
-                if(!json.errors) { customAlert("Başarılı (Vekil B)!"); return; }
-            } catch(e) { 
-                customAlert("Tüm denemeler başarısız."); 
-            }
-        }
-
-        document.getElementById('form-login').addEventListener('submit',async e=>{e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ customAlert(getErrorMsg(err.code)); }});
-        document.getElementById('form-register').addEventListener('submit',async e=>{e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value, dp=document.getElementById('r-dept').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{uid:c.user.uid,name:n,email:em,department:dp,role:'Üye',photoURL:p,createdAt:new Date(),isBanned:false}); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(e){customAlert(getErrorMsg(e.code))}});
-        window.logout=()=>{ if(userUnsub) userUnsub(); if(notifUnsub) notifUnsub(); signOut(auth); };
-
-        window.openChat=async(id,title)=>{
-            if(chatUnsub) chatUnsub(); 
-            const b = document.getElementById('chat-overlay-body');
-            b.innerHTML = ''; 
-            b.style.opacity = '0'; 
-            
-            activeChatId=id; document.getElementById('chat-overlay-title').innerText=title;
-            document.getElementById('chat-overlay').classList.add('open');
-            
-            if(id.includes('_')) { const otherId = id.split('_').find(x=>x!==curUser.uid); if(otherId) { const qN = query(collection(db,"notifications"), where("to","==",curUser.uid), where("type","==","chat"), where("linkId","==",otherId), where("read","==",false)); const snapN = await getDocs(qN); snapN.forEach(d => updateDoc(doc(db,"notifications",d.id), {read:true})); } }
-            
-            const q=query(collection(db,"messages"),where("channel","==",id));
-            chatUnsub=onSnapshot(q, s=>{
-                let arr=[]; s.forEach(d=>arr.push({id:d.id,...d.data()})); 
-                arr.sort((x,y) => (x.createdAt?.seconds || 0) - (y.createdAt?.seconds || 0));
+            allUsersCache.forEach(u => {
+                if(!u.name.toLowerCase().includes(f)) return;
                 
-                let html = '';
-                if(arr.length===0) html='<div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted"><i class="far fa-comments fa-3x mb-3 opacity-50"></i><p>Henüz mesaj yok.</p></div>';
-                else {
-                    arr.forEach(m=>{
-                        const me=m.senderId===curUser.uid; const nmCol = getCol(m.senderName||"U");
-                        let content = m.text;
-                        if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
-                        if(m.type === 'file' || m.type === 'chunked_file') content = `<div class="file-attachment"><i class="fas fa-file"></i> ${m.fileName} (${(m.size/1024/1024).toFixed(2)} MB)</div>`;
-                        const safeM = JSON.stringify(m).replace(/"/g, '&quot;');
-                        html += `<div class="chat-row ${me ? 'row-right' : 'row-left'}">
-                                    <div class="msg-bubble ${me ? 'bubble-sent' : 'bubble-received'}" id="msg-${m.id}" 
-                                         ontouchstart="startLongPress(event, ${safeM})" 
-                                         ontouchend="cancelLongPress()" 
-                                         ontouchmove="cancelLongPress()" 
-                                         oncontextmenu="return false;">
-                                        ${!me ? `<span class="sender-name" style="color:${nmCol}">${m.senderName}</span>` : ''}
-                                        ${content}
-                                    </div>
-                                 </div>`;
-                    });
-                }
-                
-                b.innerHTML = html;
-                
-                const scrollDown = () => { b.scrollTop = b.scrollHeight; };
-                scrollDown(); 
-                
-                const imgs = b.querySelectorAll('img');
-                if(imgs.length > 0) {
-                    imgs.forEach(img => {
-                        img.onload = () => { scrollDown(); };
-                        if(img.complete) scrollDown();
-                    });
-                }
+                // Badges
+                let badges = '';
+                u.roles?.forEach(r => badges += `<span class="role-badge border">${r}</span>`);
+                u.departments?.forEach(d => badges += `<span class="role-badge bg-dark border border-secondary text-muted">${d.substring(0,3)}</span>`);
 
-                setTimeout(() => {
-                    scrollDown();
-                    b.style.opacity = '1'; 
-                }, 100);
+                const isAdminView = isAdminOrPres();
+                
+                list.innerHTML += `
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom border-dark clickable" onclick="${isAdminView ? `openUserEdit('${u.uid}')` : `openChat('${[curUser.uid,u.uid].sort().join('_')}','${u.name}')`}">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="${u.photoURL}" class="rounded-circle" width="45" height="45" style="object-fit:cover">
+                        <div>
+                            <div class="fw-bold">${u.name}</div>
+                            <div class="d-flex mt-1">${badges}</div>
+                        </div>
+                    </div>
+                    ${u.socials?.linkedin ? `<i class="fab fa-linkedin text-primary"></i>` : ''}
+                </div>`;
             });
         };
-        
-        // --- SMART LONG PRESS LOGIC ---
-        let longPressTimer;
-        const LONG_PRESS_DURATION = 800; // 0.8 Saniye
 
-        window.startLongPress = (e, msg) => {
-            if(longPressTimer) clearTimeout(longPressTimer);
-            longPressTimer = setTimeout(() => {
-                const touch = e.touches[0];
-                showCtx(touch.clientX, touch.clientY, msg);
-            }, LONG_PRESS_DURATION);
+        // ADMIN EDIT USER
+        window.openUserEdit = (uid) => {
+            if(!isAdminOrPres()) return;
+            selectedUserForEdit = uid;
+            const u = allUsersCache.find(x => x.uid === uid);
+            document.getElementById('ue-name').innerText = u.name;
+            
+            // Roles Checkboxes
+            const rd = document.getElementById('ue-roles'); rd.innerHTML = '';
+            ROLES.forEach(r => {
+                const checked = u.roles?.includes(r) ? 'checked' : '';
+                rd.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="${r}" ${checked}><label class="form-check-label">${r}</label></div>`;
+            });
+
+            // Depts Checkboxes
+            const dd = document.getElementById('ue-depts'); dd.innerHTML = '';
+            DEPTS.forEach(d => {
+                const checked = u.departments?.includes(d) ? 'checked' : '';
+                dd.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="${d}" ${checked}><label class="form-check-label">${d}</label></div>`;
+            });
+
+            new bootstrap.Modal(document.getElementById('modal-user-edit')).show();
         };
 
-        window.cancelLongPress = () => {
-            if(longPressTimer) clearTimeout(longPressTimer);
+        window.saveUserEdit = async () => {
+            const roles = Array.from(document.querySelectorAll('#ue-roles input:checked')).map(cb => cb.value);
+            const depts = Array.from(document.querySelectorAll('#ue-depts input:checked')).map(cb => cb.value);
+            
+            await updateDoc(doc(db,"users",selectedUserForEdit), { roles, departments: depts });
+            bootstrap.Modal.getInstance(document.getElementById('modal-user-edit')).hide();
         };
 
-        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); activeChatId=null; if(chatUnsub) chatUnsub(); loadRecentDMs(); };
-        
-        let currentZoom = 1; let isDragging = false; let startX, startY, translateX = 0, translateY = 0;
-        const imgViewer = document.getElementById('img-viewer');
-        const zoomImg = document.getElementById('img-viewer-src');
-        window.openImgViewer = (url) => { zoomImg.src = url; imgViewer.style.display = 'flex'; currentZoom = 1; translateX = 0; translateY = 0; updateImageTransform(); };
-        window.closeImgViewer = () => { imgViewer.style.display = 'none'; };
-        let initialDist = 0;
-        imgViewer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) { initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); } else if (e.touches.length === 1 && currentZoom > 1) { isDragging = true; startX = e.touches[0].pageX - translateX; startY = e.touches[0].pageY - translateY; }
-        });
-        imgViewer.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (e.touches.length === 2) { const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); if (initialDist > 0) { const delta = dist / initialDist; currentZoom = Math.min(Math.max(1, currentZoom * delta), 4); initialDist = dist; updateImageTransform(); } } else if (e.touches.length === 1 && isDragging && currentZoom > 1) { translateX = e.touches[0].pageX - startX; translateY = e.touches[0].pageY - startY; updateImageTransform(); }
-        });
-        imgViewer.addEventListener('touchend', () => { isDragging = false; initialDist = 0; });
-        function updateImageTransform() { zoomImg.style.transform = `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`; }
+        // --- CHAT LOGIC ---
+        function loadChannels() {
+            const list = document.getElementById('channel-list');
+            list.innerHTML = `
+            <div class="card-custom p-3 d-flex align-items-center mb-0" onclick="openChat('Sohbet','Genel Sohbet')">
+                <div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div>
+                <div class="fw-bold">Sohbet</div>
+            </div>
+            <div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('Business','Business')">
+                <div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div>
+                <div class="fw-bold">Business</div>
+            </div>`;
 
-        const ctx = document.getElementById('context-menu');
-        window.showCtx = (x, y, msg) => { 
-            if (window.navigator && window.navigator.vibrate) { window.navigator.vibrate(50); }
-            selMsg = msg; const w = 160; const h = 100; if(x + w > window.innerWidth) x -= w; if(y + h > window.innerHeight) y -= h; 
-            const isMine = msg.senderId === curUser.uid; const isAdmin = uData.role === 'Admin';
-            let html = ''; 
-            if(msg.type === 'image' || msg.type === 'file' || msg.type === 'chunked_file') { html += `<div class="ctx-item" onclick="handleCtx('download')"><i class="fas fa-download"></i> İndir</div>`; }
-            if(isMine || isAdmin) { if(msg.type === 'text') html += `<div class="ctx-item" onclick="handleCtx('edit')"><i class="fas fa-pen"></i> Düzenle</div>`; html += `<div class="ctx-item delete" onclick="handleCtx('delete')"><i class="fas fa-trash"></i> Sil</div>`; }
-            if(html === '') return; ctx.innerHTML = html; ctx.style.top = y + 'px'; ctx.style.left = x + 'px'; ctx.style.display = 'flex'; 
-        }
-        document.addEventListener('click', (e)=>{ if(!ctx.contains(e.target)) ctx.style.display='none'; });
-        window.handleCtx = async (act) => { 
-            ctx.style.display='none'; if(!selMsg.id) return; 
-            if(act === 'delete') { customConfirm("Mesajı silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"messages",selMsg.id))); } 
-            else if (act === 'edit') { document.getElementById('edit-msg-input').value = selMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); }
-            else if (act === 'download') { 
-                if(selMsg.type === 'chunked_file') {
-                    toggleUploadSpinner(true);
-                    try { const chunksSnap = await getDocs(query(collection(db, `messages/${selMsg.id}/chunks`), orderBy('index'))); let fullBase64 = ""; chunksSnap.forEach(doc => { fullBase64 += doc.data().data; }); const mime = fullBase64.match(/:(.*?);/)[1]; const b64Data = fullBase64.split(',')[1]; if (window.median && window.median.share) { median.share.shareFile({ base64: b64Data, filename: selMsg.fileName, mimetype: mime }); } else { const a = document.createElement('a'); a.style.display='none'; a.href=fullBase64; a.download=selMsg.fileName; document.body.appendChild(a); a.click(); } } catch(e) { customAlert("Hata: " + e.message); } finally { toggleUploadSpinner(false); }
-                } else if (selMsg.url) {
-                    if (window.median && window.median.share) { try { toggleUploadSpinner(true); const resp = await fetch(selMsg.url); const blob = await resp.blob(); const reader = new FileReader(); reader.readAsDataURL(blob); reader.onloadend = () => { const base64data = reader.result.split(',')[1]; median.share.shareFile({ base64: base64data, filename: selMsg.fileName || 'dosya', mimetype: blob.type }); toggleUploadSpinner(false); } } catch(e) { toggleUploadSpinner(false); customAlert("Paylaşım hatası: " + e); } } else { fetch(selMsg.url).then(res => res.blob()).then(blob => { const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url; a.download = selMsg.fileName || 'dosya'; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); }).catch(() => customAlert("İndirme hatası!")); }
-                }
+            if(isBoard()) {
+                list.innerHTML += `
+                <div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yonetim','Yönetim Kurulu')">
+                    <div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div>
+                    <div class="fw-bold text-warning">Yönetim Kurulu</div>
+                </div>`;
             }
+            
+            // Dept Channels
+            uData.departments?.forEach(d => {
+                list.innerHTML += `
+                <div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${d}','${d}')">
+                    <div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div>
+                    <div class="fw-bold">${d}</div>
+                </div>`;
+            });
         }
-        window.submitEditMsg = async () => { const nv = document.getElementById('edit-msg-input').value; await updateDoc(doc(db,"messages",selMsg.id), {text: nv}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); }
-        
+
+        window.openChat = (cid, title) => {
+            activeChatId = cid;
+            document.getElementById('chat-overlay-title').innerText = title;
+            const body = document.getElementById('chat-overlay-body');
+            body.innerHTML = '';
+            document.getElementById('chat-overlay').classList.add('open');
+            
+            if(unsubChat) unsubChat();
+            const q = query(collection(db,"messages"), where("channel","==",cid), orderBy("createdAt","asc"));
+            
+            unsubChat = onSnapshot(q, s => {
+                let html = '';
+                s.forEach(d => {
+                    const m = d.data();
+                    const me = m.senderId === curUser.uid;
+                    let content = m.text;
+                    if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                    
+                    html += `<div class="d-flex w-100 mb-1 ${me?'justify-content-end':'justify-content-start'}">
+                        <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}">
+                            ${!me ? `<small class="d-block fw-bold mb-1 text-warning" style="font-size:10px">${m.senderName}</small>` : ''}
+                            ${content}
+                            <div style="font-size:9px; opacity:0.6; text-align:right; margin-top:2px">${m.createdAt?.seconds ? new Date(m.createdAt.seconds*1000).getHours() + ':' + String(new Date(m.createdAt.seconds*1000).getMinutes()).padStart(2,'0') : ''}</div>
+                        </div>
+                    </div>`;
+                });
+                body.innerHTML = html;
+                body.scrollTop = body.scrollHeight;
+            });
+        };
+
+        window.closeChat = () => {
+             document.getElementById('chat-overlay').classList.remove('open'); 
+             if(unsubChat) unsubChat(); 
+             activeChatId = null;
+        };
+
+        // --- IMAGE UPLOAD FIX (COMPRESSION + CHUNKING if needed, simpler Base64 Resize here) ---
+        // Firestore 1MB limit workaround: Resize image to max 800px and 0.6 quality jpg
         document.getElementById('chat-file-inp').addEventListener('change', async e => {
-            const f = e.target.files[0]; if(!f) return;
-            const CHUNK_SIZE = 900 * 1024; 
-            if(f.size <= CHUNK_SIZE && f.type.startsWith('image/')) {
-                const r = new FileReader(); r.readAsDataURL(f);
-                r.onload = async (ev) => { await addDoc(collection(db,"messages"),{ type: 'image', url: ev.target.result, fileName: f.name, text: '', channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date() }); notifyChat(activeChatId); };
-                return;
-            }
-            if(f.size > 16 * 1024 * 1024) { customAlert("Dosya 16MB'dan büyük olamaz!"); return; }
-            toggleUploadSpinner(true);
-            const reader = new FileReader(); reader.readAsDataURL(f);
-            reader.onload = async (ev) => {
-                const base64 = ev.target.result; const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
-                const msgRef = await addDoc(collection(db, "messages"), { type: 'chunked_file', fileName: f.name, size: f.size, channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date(), totalChunks: totalChunks });
-                for (let i = 0; i < totalChunks; i++) { const chunkData = base64.substring(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE); await addDoc(collection(db, `messages/${msgRef.id}/chunks`), { index: i, data: chunkData }); }
-                toggleUploadSpinner(false); notifyChat(activeChatId);
+            const f = e.target.files[0];
+            if(!f || !activeChatId) return;
+            
+            // Show Spinner
+            const btn = document.querySelector('#chat-form button[type=button]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            const reader = new FileReader();
+            reader.readAsDataURL(f);
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.src = ev.target.result;
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Resize logic
+                    const MAX_W = 800;
+                    const MAX_H = 800;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX_W) { h *= MAX_W / w; w = MAX_W; } } 
+                    else { if (h > MAX_H) { w *= MAX_H / h; h = MAX_H; } }
+                    
+                    canvas.width = w; canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    // Compress to JPEG 0.6
+                    const base64 = canvas.toDataURL('image/jpeg', 0.6); 
+                    
+                    // Upload
+                    await addDoc(collection(db,"messages"), {
+                        type: 'image', url: base64, channel: activeChatId, 
+                        senderId: curUser.uid, senderName: uData.name, createdAt: new Date()
+                    });
+                    
+                    btn.innerHTML = '<i class="fas fa-paperclip"></i>';
+                    notifyChat(activeChatId);
+                };
             };
         });
 
-        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t||!activeChatId)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; notifyChat(activeChatId);});
-        function notifyChat(cid) { if(cid.includes('_')){ const tg=cid.split('_').find(x=>x!==curUser.uid); if(tg) { addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date(), type: 'chat', linkId: curUser.uid, linkName: uData.name}); sendPushNotification(tg, "Yeni Mesaj", `${uData.name} sana bir mesaj gönderdi.`); } } }
-
-        window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
-        document.getElementById('form-task').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('t-title').value, desc=document.getElementById('t-desc').value, typ=document.getElementById('t-type').value; let to="Herkes", uid=null; if(typ==='department')to=document.getElementById('t-dept').value; if(typ==='user'){const el=document.getElementById('t-user');to=el.options[el.selectedIndex].text;uid=el.value;} const tr = await addDoc(collection(db,"tasks"),{title:t, description:desc, assignedType:typ,assignedTo:to,assignedToUid:uid,status:'pending',createdByUid:curUser.uid,createdAt:new Date()}); if(uid&&uid!==curUser.uid) { addDoc(collection(db,"notifications"),{to:uid,text:`Görev: ${t}`,read:false,createdAt:new Date(), type: 'task', linkId: tr.id, linkName: t, extraDesc: desc, extraAssign: to}); sendPushNotification(uid, "Yeni Görev", t); } bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset();});
-        function loadTasks(){ onSnapshot(collection(db,"tasks"), s=>{ let tsk=[]; s.forEach(d=>{ const t={id:d.id,...d.data()}; allTasksCache[t.id]=t; tsk.push(t); }); tsk.sort((a,b)=>b.createdAt-a.createdAt); const l=document.getElementById('task-list'); l.innerHTML=''; tsk.forEach(t=>{ const isMine=t.assignedToUid===curUser.uid; const isMyDept=t.assignedType==='department'&&t.assignedTo===uData.department; const isAll=t.assignedType==='all'; const isCreator=t.createdByUid===curUser.uid; const isAdmin=uData.role==='Admin'; if(isMine||isMyDept||isAll||isCreator||isAdmin) { const done=t.status==='completed'; const canDel=uData.role==='Admin'||isCreator; l.innerHTML+=`<div class="card-custom" onclick="openTaskDetail('${t.id}')"><div class="d-flex align-items-center mb-2"><i class="fas ${done?'fa-check-circle text-success':'fa-circle text-secondary'} me-3 fa-lg" style="cursor:pointer" onclick="event.stopPropagation();upt('${t.id}','${t.status}')"></i><div style="flex:1"><h6 class="m-0 ${done?'text-decoration-line-through text-muted':''}">${t.title}</h6><small class="text-muted">${t.assignedTo || 'Belirsiz'}</small></div>${canDel?`<i class="fas fa-trash text-danger ms-auto" style="cursor:pointer" onclick="event.stopPropagation();delTask('${t.id}')"></i>`:''}</div>${t.description ? `<div class="task-preview-text">${t.description}</div>` : ''}</div>`; } }); }); }
-        window.upt=(id,s)=>updateDoc(doc(db,"tasks",id),{status:s==='pending'?'completed':'pending'});
-        window.delTask=(id)=>{customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id)));}
-        window.openTaskDetail = async (tid) => { const t = allTasksCache[tid]; if(!t) return; const qN = query(collection(db,"notifications"), where("to","==",curUser.uid), where("type","==","task"), where("linkId","==",tid), where("read","==",false)); const snapN = await getDocs(qN); snapN.forEach(d => updateDoc(doc(db,"notifications",d.id), {read:true})); document.getElementById('td-title').innerText = t.title; document.getElementById('td-assign').innerText = t.assignedTo || "Belirsiz"; document.getElementById('td-desc').innerText = t.description || "Açıklama yok."; new bootstrap.Modal(document.getElementById('modal-task-detail')).show(); };
-
-        function listenTeam(){ 
-            if(teamUnsub) teamUnsub(); 
-            teamUnsub = onSnapshot(collection(db,"users"), s=>{ 
-                allTeamMembers = []; 
-                s.forEach(d => { const u = d.data(); if(!u.isBanned) allTeamMembers.push(u); }); 
-                renderTeam(); 
-            }); 
-        }
-        
-        window.renderTeam = (filterText='') => { 
-            const listEl = document.getElementById('team-list'); listEl.innerHTML = ''; 
-            if(allTeamMembers.length === 0) { listEl.innerHTML = '<div class="text-center text-muted mt-3">Kimse bulunamadı.</div>'; return; }
-            const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = []; 
-            allTeamMembers.forEach(u => { if(filterText && !u.name.toLowerCase().includes(filterText.toLowerCase())) return; const dept = u.department && DEPTS.includes(u.department) ? u.department : "Diğer"; groups[dept].push(u); }); 
-            for (const [deptName, users] of Object.entries(groups)) { 
-                if (users.length === 0) continue; 
-                listEl.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`; 
-                const groupContainer = document.createElement('div'); groupContainer.className = 'dept-group'; 
-                users.forEach(u => { const me=u.uid===curUser.uid; const admin=uData.role==='Admin'; groupContainer.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 mb-1 team-item" style="border-bottom:1px solid rgba(255,255,255,0.05)"><div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><small class="text-muted" style="font-size:11px">${u.role}</small></div></div><div>${!me?`<button class="btn btn-dark border-secondary btn-sm" onclick="sdm('${u.uid}')"><i class="fas fa-paper-plane"></i></button>`:''}${admin&&!me?`<button class="btn btn-danger btn-sm ms-2" onclick="ban('${u.uid}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`; }); 
-                listEl.appendChild(groupContainer); 
-            } 
-        }
-        
-        window.ban=async(uid)=>{customConfirm("Kullanıcıyı engelle?", async () => await updateDoc(doc(db,"users",uid),{isBanned:true}));};
-        
-        window.toggleEdit=(f)=>{const g=document.getElementById(`edit-${f}-group`); g.classList.contains('d-none')?g.classList.remove('d-none'):g.classList.add('d-none'); document.getElementById(`inp-${f}`).value=uData[f==='name'?'name':'department'];}
-        window.saveProf=async(f)=>{const v=document.getElementById(`inp-${f}`).value; await updateDoc(doc(db,"users",curUser.uid),{[f==='name'?'name':'department']:v}); uData[f==='name'?'name':'department']=v; loadProfile(); toggleEdit(f);}
-        window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
-        function loadProfile(){ document.getElementById('prof-img').src=uData.photoURL; document.getElementById('prof-name').innerText=uData.name; document.getElementById('prof-dept').innerText=uData.department; document.getElementById('prof-role').innerText=uData.role; }
-        
-        function loadChannels(){ 
-            const l=document.getElementById('channel-list'); 
-            l.innerHTML=`<div class="card-custom p-3 d-flex align-items-center mb-0" onclick="openChat('general','Genel Sohbet')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Genel Sohbet</div></div>`; 
-            if(uData.role==='Admin'){ 
-                DEPTS.forEach(d=>{l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${d}','${d}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-danger"></i></div><div><div class="fw-bold">${d}</div><small class="text-muted">Admin</small></div></div>`;}); 
-            } else if(uData.department&&uData.department!=="..."){ 
-                l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" onclick="openChat('${uData.department}','${uData.department}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase text-warning"></i></div><div><div class="fw-bold">${uData.department}</div></div></div>`; 
-            } 
-        }
-
-        window.goTab = (t,b) => {
-            document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); 
-            document.getElementById(`view-${t}`).classList.add('active'); 
+        // --- LEADERBOARD ---
+        window.openLeaderboard = () => {
+            const list = document.getElementById('lb-list');
+            list.innerHTML = '';
             
-            document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); 
-            if(b) b.classList.add('active'); 
-            
-            const ts={'tasks':'Görev Panosu','messages':'Mesajlar','team':'Ekip Listesi','profile':'Profilim'}; 
-            document.getElementById('page-title').innerText=ts[t];
-        }
-
-        function popSelects(){let o=''; DEPTS.forEach(d=>o+=`<option>${d}</option>`); document.getElementById('t-dept').innerHTML=o; document.getElementById('inp-dept').innerHTML=o; getDocs(collection(db,"users")).then(s=>{let u='';s.forEach(d=>{if(!d.data().isBanned&&d.id!==curUser.uid)u+=`<option value="${d.id}">${d.data().name}</option>`});document.getElementById('t-user').innerHTML=u;});}
-        function listenNotifs(){ if(notifUnsub) notifUnsub(); notifUnsub = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
-        window.openNotifs=async()=>{const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); const l=document.getElementById('notif-list'); l.innerHTML='...'; const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid))); let nArr=[]; s.forEach(d=>nArr.push({id:d.id, ...d.data()})); nArr.sort((a,b)=>b.createdAt-a.createdAt); l.innerHTML=''; if(nArr.length===0) l.innerHTML='<div class="text-center p-3 text-muted">Bildirim yok.</div>'; else { nArr.forEach(n=>{ let clickAction = ''; if(n.type === 'chat' && n.linkId) clickAction = `sdm('${n.linkId}')`; if(n.type === 'task') clickAction = `openTaskDetail('${n.linkId}')`; l.innerHTML+=`<div class="notif-item ${n.read?'read':'unread'}" onclick="${clickAction}; bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"><small>${n.text}</small></div>`; updateDoc(doc(db,"notifications",n.id),{read:true}); }); document.getElementById('notif-dot').style.display='none'; } }
-        
-        window.sdm=async (uid)=>{ 
-            const uSnap = await getDoc(doc(db, "users", uid)); if(!uSnap.exists()) return; 
-            const u = uSnap.data(); const c=[curUser.uid,uid].sort().join('_'); 
-            openChat(c, u.name); 
-        }
-        
-        // --- SAFE & ROBUST DM LOADER ---
-        async function loadRecentDMs() { 
-            const dList = document.getElementById('dm-list');
-            // BLINK FIX: Don't clear list immediately
-            
-            try {
-                // Get all messages (No orderBy to avoid index errors)
-                const s = await getDocs(collection(db, "messages")); 
-                if (s.empty) { 
-                    dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>'; 
-                    return; 
-                }
-
-                let allMsgs = [];
-                s.forEach(d => {
-                    const data = d.data();
-                    const time = data.createdAt ? (data.createdAt.seconds ? data.createdAt.seconds * 1000 : new Date(data.createdAt).getTime()) : 0;
-                    allMsgs.push({ ...data, _time: time });
-                });
-                
-                // Sort in memory
-                allMsgs.sort((a,b) => b._time - a._time);
-
-                const uniqueUsers = new Set(); 
-                allMsgs.forEach(d => { 
-                    if(d.channel && d.channel.includes('_') && d.channel.includes(curUser.uid)) { 
-                        const otherId = d.channel.split('_').find(id => id !== curUser.uid); 
-                        if(otherId) uniqueUsers.add(otherId); 
-                    } 
-                }); 
-                
-                if(uniqueUsers.size === 0) {
-                     dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>';
-                     return;
-                }
-
-                // Prepare new HTML string
-                let newHTML = "";
-                const promises = Array.from(uniqueUsers).map(uid => getDoc(doc(db, "users", uid)));
-                const userSnaps = await Promise.all(promises);
-
-                userSnaps.forEach(snap => {
-                    if (snap.exists()) { 
-                        const u = snap.data(); 
-                        const c = [curUser.uid, snap.id].sort().join('_'); 
-                        newHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${c}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40" height="40" style="object-fit:cover"><div><div class="fw-bold">${u.name}</div><small class="text-muted">Özel Mesaj</small></div></div>`; 
+            // Calculate scores for everyone
+            const scores = [];
+            allUsersCache.forEach(u => {
+                let total = 0, done = 0;
+                Object.values(allTasksCache).forEach(t => {
+                    if(t.statusMap && t.statusMap[u.uid]) {
+                        total++;
+                        if(t.statusMap[u.uid] === 'done') done++;
                     }
                 });
-                
-                // Swap content in one go
-                dList.innerHTML = newHTML;
+                const rate = total === 0 ? 0 : (done/total)*100;
+                scores.push({ ...u, rate, done, total });
+            });
+            
+            scores.sort((a,b) => b.rate - a.rate);
+            
+            scores.forEach((s, idx) => {
+                // Only show my departments
+                const sameDept = s.departments.some(d => uData.departments.includes(d));
+                if(!sameDept && !isAdmin()) return;
 
-            } catch (e) { 
-                dList.innerHTML = `<div class="text-danger small p-2 text-center">Hata: ${e.message}</div>`;
-                console.error("DM Load Error", e); 
-            }
+                let color = idx === 0 ? 'gold' : (idx === 1 ? 'silver' : (idx===2 ? '#cd7f32' : 'white'));
+                list.innerHTML += `
+                <div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary" style="background:${idx<3?'rgba(255,255,255,0.05)':''}">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="fw-bold" style="width:20px; color:${color}">${idx+1}</div>
+                        <img src="${s.photoURL}" class="rounded-circle" width="35">
+                        <div>
+                            <div class="fw-bold small">${s.name}</div>
+                            <div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div>
+                        </div>
+                    </div>
+                    <div class="fw-bold text-success">%${Math.round(s.rate)}</div>
+                </div>`;
+            });
+            new bootstrap.Modal(document.getElementById('modal-leaderboard')).show();
+        };
+
+        // --- UTILS ---
+        window.goTab = (t,b) => {
+            document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active'));
+            document.getElementById(`view-${t}`).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));
+            b.classList.add('active');
+        };
+        
+        window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
+        
+        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; notifyChat(activeChatId);});
+
+        function notifyChat(cid) { 
+            if(cid.includes('_')){ 
+                const tg=cid.split('_').find(x=>x!==curUser.uid); 
+                addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date()});
+            } 
         }
+
+        function listenNotifs(){ 
+            unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); 
+        }
+        
+        window.openNotifs=async()=>{
+            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); 
+            const l=document.getElementById('notif-list'); l.innerHTML='...'; 
+            const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid))); 
+            l.innerHTML='';
+            s.forEach(d=>{
+                const n = d.data();
+                l.innerHTML+=`<div class="p-2 border-bottom border-secondary ${n.read?'opacity-50':''}"><small>${n.text}</small></div>`;
+                updateDoc(doc(db,"notifications",d.id),{read:true});
+            });
+            document.getElementById('notif-dot').style.display='none';
+        }
+        
+        async function loadRecentDMs() {
+             const dList = document.getElementById('dm-list');
+             const s = await getDocs(collection(db, "messages")); // In production, optimize this query!
+             let pairs = new Set();
+             s.forEach(d => {
+                 const c = d.data().channel;
+                 if(c && c.includes('_') && c.includes(curUser.uid)) {
+                     const other = c.split('_').find(x => x!==curUser.uid);
+                     pairs.add(other);
+                 }
+             });
+             dList.innerHTML = '';
+             pairs.forEach(async uid => {
+                 const u = allUsersCache.find(x=>x.uid===uid); // Likely loaded from team listener
+                 if(u) dList.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,uid].sort().join('_')}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`;
+             });
+        }
+        
+        window.logout = () => signOut(auth);
+        
+        // Register Logic
+        document.getElementById('form-register').addEventListener('submit',async e=>{
+            e.preventDefault(); 
+            const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; 
+            try{ 
+                const c=await createUserWithEmailAndPassword(auth,em,ps); 
+                const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; 
+                await setDoc(doc(db,"users",c.user.uid),{
+                    uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false,
+                    roles: ['Üye'], departments: ['...'] // Default
+                }); 
+                await updateProfile(c.user,{displayName:n,photoURL:p}); 
+            } catch(err){ alert(err.message) }
+        });
+        
+        document.getElementById('form-login').addEventListener('submit',async e=>{
+            e.preventDefault(); 
+            try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } 
+            catch(err){ alert("Hata: " + err.message); }
+        });
+        
+        // Photo Update (Profile)
+        window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
+        
+        window.openImgViewer = (src) => { document.getElementById('img-viewer-src').src = src; document.getElementById('img-viewer').style.display='flex'; }
+
     </script>
 </body>
 </html>
