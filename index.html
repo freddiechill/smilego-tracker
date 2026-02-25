@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO Tracker</title>
+    <title>SmileGO V25.0 - Final Stable</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -70,16 +70,25 @@
         .cb-dept { border: 1px solid #52525b; color: #a1a1aa; background: transparent; }
 
         /* Star & Status & UX */
-        #star-select { display: flex; gap: 15px; align-items: center; }
+        #star-select { display: flex; gap: 2px; align-items: center; }
         #star-select i { font-size: 24px; cursor: pointer; width: 24px; text-align: center; }
+        
         #td-status-list > div:last-child { border-bottom: none !important; }
         .dept-group > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
         #notif-list > div:last-child { border-bottom: none !important; }
+        #lb-list > div:last-child { border-bottom: none !important; }
 
-        /* Leaderboard Tabs */
         .lb-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.1); }
         .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
         .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
+
+        /* HORIZONTAL SCROLLABLE FILTERS */
+        .filter-scroll-container {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-scroll-container::-webkit-scrollbar { display: none; }
+        .filter-btn { flex: 0 0 auto; width: auto; padding-left: 16px; padding-right: 16px; border-radius: 50px; font-size: 13px; }
 
         #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; overflow: hidden; }
         #img-viewer img { max-width: 100%; max-height: 100%; transition: transform 0.1s ease-out; }
@@ -170,12 +179,12 @@
 
         <div id="view-tasks" class="main-content active">
             <button id="btn-add-task" class="btn-primary-soft mb-4 shadow-sm" onclick="openTaskModal()"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
-            <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
-                <button class="btn btn-sm btn-outline-secondary rounded-pill active" onclick="filterTasks('all', this)">Tümü</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('week', this)">Bu Hafta</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('pending', this)">Başlamadı</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('progress', this)">Yapılıyor</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('done', this)">Bitti</button>
+            <div class="filter-scroll-container mb-3">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('pending', this)">Başlamadı</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('progress', this)">Yapılıyor</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('done', this)">Bitti</button>
             </div>
             <div id="task-list" class="d-flex flex-column gap-2"></div>
         </div>
@@ -199,7 +208,10 @@
                     <label for="file-inp" class="position-absolute bottom-0 end-0 bg-white text-dark rounded-circle d-flex align-items-center justify-content-center shadow" style="width:35px;height:35px;cursor:pointer"><i class="fas fa-camera small"></i></label>
                     <input type="file" id="file-inp" class="d-none" accept="image/*" onchange="uploadPhoto(this)">
                 </div>
-                <h4 id="prof-name" class="fw-bold mb-1">...</h4>
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+                    <h4 id="prof-name" class="fw-bold m-0">...</h4>
+                    <i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i>
+                </div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
                 
                 <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
@@ -259,6 +271,7 @@
     </div>
 
     <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
+    
     <div class="modal fade" id="modal-reactions" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Tepkiler</h5><div id="reaction-list" style="max-height:300px;overflow-y:auto"></div><div class="d-flex justify-content-end mt-2"><button class="btn btn-dark btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Görevi Yönet</h5><form id="form-task">
@@ -280,10 +293,10 @@
             <div style="flex:1; margin-right:10px;">
                 <h5 class="fw-bold mb-1" id="td-title">...</h5>
                 <div id="td-assignees" class="d-flex align-items-center mb-1"></div>
-                <div id="td-stars" class="text-warning small"></div>
             </div>
             <div class="text-end" id="td-meta"></div>
         </div>
+        <div class="d-flex flex-wrap gap-2 mb-2 align-items-center" id="td-stars-wrapper"></div>
         <div class="bg-dark p-2 rounded mb-3 small text-muted" id="td-desc" style="max-height:100px;overflow-y:auto"></div>
         <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
@@ -312,6 +325,8 @@
 
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
+    
+    <div class="modal fade" id="modal-name-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3"><h6 class="mb-3">İsim Değiştir</h6><input id="inp-new-name" class="form-control mb-3"><button class="btn btn-success w-100" onclick="saveMyName()">Kaydet</button></div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
@@ -342,6 +357,7 @@
         window.alert = window.showToast;
         window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = new bootstrap.Modal(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
+        // Helper for Calendar Week (Mon-Sun)
         function getWeekRange() {
             const now = new Date();
             const day = now.getDay(); 
@@ -438,6 +454,16 @@
             showToast("Kaydedildi!"); 
         };
         window.saveSocials = async () => { const soc = {}; ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { const v = document.getElementById(`sm-${k}`).value.trim(); if(v) soc[k] = v; }); await updateDoc(doc(db,"users",curUser.uid), { socials: soc }); showToast("Kaydedildi!"); };
+        
+        window.editMyName = () => { document.getElementById('inp-new-name').value = uData.name; new bootstrap.Modal(document.getElementById('modal-name-edit')).show(); }
+        window.saveMyName = async () => {
+             const newName = document.getElementById('inp-new-name').value;
+             if(newName) {
+                 await updateDoc(doc(db,"users",curUser.uid), { name: newName });
+                 showToast("İsim güncellendi.");
+                 bootstrap.Modal.getInstance(document.getElementById('modal-name-edit')).hide();
+             }
+        }
 
         window.filterSearch = (type) => {
             const inp = document.getElementById(`inp-${type}`); const list = document.getElementById(`list-${type}`);
@@ -449,14 +475,16 @@
 
         window.togT=(v)=>{
             document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
-            // Hide normal Select, Show Multi-Select
-            document.getElementById('t-user').classList.add('d-none'); // Always hide the old select
+            document.getElementById('t-user').classList.add('d-none');
             const ms = document.getElementById('user-multiselect');
             if(v === 'user') {
                 ms.classList.remove('d-none');
                 ms.innerHTML = '';
                 allUsersCache.forEach(u => {
-                    ms.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}"><label class="form-check-label" for="u_${u.uid}">${u.name}</label></div>`;
+                    ms.innerHTML += `<div class="form-check p-2 border-bottom border-dark" style="cursor:pointer" onclick="this.querySelector('input').click()">
+                        <input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}" onclick="event.stopPropagation()">
+                        <label class="form-check-label ms-2" for="u_${u.uid}" style="pointer-events:none">${u.name}</label>
+                    </div>`;
                 });
             } else {
                 ms.classList.add('d-none');
@@ -493,9 +521,7 @@
                 let tempArr = [];
                 s.forEach(d => {
                     const t = { id: d.id, ...d.data() }; allTasksCache[t.id] = t;
-                    const isAssignedToMe = (t.assignedType==='all') || 
-                                           (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || 
-                                           (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
+                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
                     if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { tempArr.push(t); }
                 });
                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
@@ -526,7 +552,6 @@
                     const dlBadge = formatDeadline(t.deadline);
                     const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
-                    // Avatars for Assignees
                     let assigneesHtml = '';
                     if(t.assignedType === 'user' && t.assignedToUids) {
                         assigneesHtml = '<div class="avatar-stack">';
@@ -540,17 +565,22 @@
                     }
 
                     list.innerHTML += `
-                    <div class="card-custom" onclick="openTaskDetail('${t.id}'); pushState()">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <div class="d-flex align-items-center gap-2">${assigneesHtml} ${starsHtml} ${dlBadge}</div>
-                            ${canEdit ? `<div class="d-flex gap-2">
-                                <i class="fas fa-edit text-warning" style="font-size:14px" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
-                                <i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>
-                            </div>` : ''}
+                    <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
+                        ${canEdit ? `<div style="position:absolute; top:12px; right:12px;" class="d-flex gap-2">
+                            <i class="fas fa-edit text-warning" style="font-size:14px" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
+                            <i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>
+                        </div>` : ''}
+                        
+                        <div style="margin-right: 50px;">
+                            <h6 class="fw-bold mb-1">${t.title}</h6>
+                            <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
                         </div>
-                        <h6 class="fw-bold mb-1">${t.title}</h6>
-                        <p class="text-muted small mb-2 text-truncate">${t.description || ''}</p>
-                        <div class="d-flex align-items-center justify-content-between">
+
+                        ${dlBadge ? `<div class="position-absolute" style="top:40px; right:12px; text-align:right">${dlBadge}</div>` : ''}
+
+                        <p class="text-muted small mb-2 text-truncate" style="margin-right:80px">${t.description || ''}</p>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-3">
                             <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
                             ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
                         </div>
@@ -564,8 +594,14 @@
             document.getElementById('form-task').reset(); 
             document.getElementById('t-id').value = '';
             setStars(0);
-            document.getElementById('user-multiselect').classList.add('d-none');
             
+            const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
+            const snap = await getDocs(collection(db,"users"));
+            snap.forEach(d => { 
+                if(d.id !== curUser.uid && !d.data().isBanned)
+                    userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; 
+            });
+
             if(editId) {
                 const t = allTasksCache[editId];
                 if(t) {
@@ -576,8 +612,19 @@
                     setStars(t.importance || 0);
                     document.getElementById('t-type').value = t.assignedType;
                     togT(t.assignedType);
-                    // Pre-select logic would go here for edits
+                    setTimeout(() => {
+                        if(t.assignedType === 'department') document.getElementById('t-dept').value = t.assignedTo;
+                        if(t.assignedType === 'user' && t.assignedToUids) {
+                            t.assignedToUids.forEach(uid => {
+                                const cb = document.getElementById(`u_${uid}`);
+                                if(cb) cb.checked = true;
+                            });
+                        }
+                    }, 100);
                 }
+            } else {
+                 document.getElementById('t-type').value = 'department';
+                 togT('department');
             }
 
             new bootstrap.Modal(document.getElementById('modal-task')).show(); pushState();
@@ -595,14 +642,16 @@
             if(t.assignedType === 'user' && t.assignedToUids) {
                 t.assignedToUids.forEach(uid => {
                     const u = allUsersCache.find(x => x.uid === uid);
-                    if(u) assigneesHtml += `<div class="d-flex align-items-center gap-2 me-3"><img src="${u.photoURL}" class="rounded-circle" width="20"><span class="small">${u.name}</span></div>`;
+                    if(u) assigneesHtml += `<div class="d-flex align-items-center gap-2 me-3 mb-1"><img src="${u.photoURL}" class="rounded-circle" width="25"><span class="small">${u.name}</span></div>`;
                 });
+                assigneesHtml = `<div class="d-flex flex-wrap">${assigneesHtml}</div>`;
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
             document.getElementById('td-desc').innerText = t.description || 'Açıklama yok.';
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
-            document.getElementById('td-stars').innerHTML = starsHtml;
+            document.getElementById('td-stars-wrapper').innerHTML = starsHtml; // Fixed ID usage
+            
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
             if(t.statusMap) {
                 Object.entries(t.statusMap).forEach(([uid, status]) => {
@@ -633,12 +682,10 @@
             let to = "Herkes", uid = null, uids = [];
             if(type === 'department') to = document.getElementById('t-dept').value;
             if(type === 'user') {
-                document.querySelectorAll('#user-multiselect input:checked').forEach(cb => {
-                    uids.push(cb.value);
-                });
+                document.querySelectorAll('#user-multiselect input:checked').forEach(cb => { uids.push(cb.value); });
                 if(uids.length === 0) { showToast("En az bir kişi seçmelisiniz."); return; }
                 to = uids.length + " Kişi";
-                uid = uids[0]; // Legacy support
+                uid = uids[0];
             }
             
             const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, assignedToUids: uids, importance: imp, deadline: deadline };
@@ -648,9 +695,22 @@
                 showToast("Görev güncellendi!");
             } else {
                 taskData.createdByUid = curUser.uid; taskData.creatorName = uData.name; taskData.creatorPhoto = uData.photoURL; taskData.createdAt = new Date(); taskData.statusMap = {};
-                uids.forEach(id => taskData.statusMap[id] = 'pending');
+                if(type === 'user') {
+                    uids.forEach(id => taskData.statusMap[id] = 'pending');
+                }
                 const ref = await addDoc(collection(db,"tasks"), taskData);
-                uids.forEach(id => addDoc(collection(db,"notifications"),{to:id,text:`Yeni Görev: ${title}`,read:false,createdAt:new Date(), type:'task', linkId: ref.id}));
+                
+                // NOTIFICATION LOGIC
+                const senderName = uData.name;
+                const notifData = {text: `${senderName} yeni bir görev ekledi: ${title}`, read:false, createdAt:new Date(), type:'task', linkId: ref.id};
+                
+                if(type === 'all') {
+                    allUsersCache.forEach(u => { if(u.uid !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); });
+                } else if (type === 'department') {
+                    allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); });
+                } else if (type === 'user') {
+                    uids.forEach(id => { if(id !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: id}); });
+                }
             }
             bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset(); setStars(0);
         });
@@ -688,7 +748,7 @@
                     const canDelete = (canManageUsers() && u.uid !== curUser.uid);
                     container.innerHTML += `
                     <div class="d-flex align-items-center justify-content-between p-2 mb-1 clickable" style="border-bottom:1px solid rgba(255,255,255,0.05)" onclick="openUserProfile('${u.uid}'); pushState()">
-                        <div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1 gap-2">${badges}</div></div></div>
+                        <div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1 gap-1">${badges}</div></div></div>
                         <div class="d-flex align-items-center gap-2">
                              ${canManageUsers() ? `<button class="btn btn-sm btn-dark text-warning border-secondary" onclick="event.stopPropagation();openUserEdit('${u.uid}'); pushState()"><i class="fas fa-edit"></i></button>` : ''}
                              <button class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2 text-white" onclick="event.stopPropagation();openChat('${[curUser.uid,u.uid].sort().join('_')}','${u.name}'); pushState()"><i class="far fa-paper-plane"></i></button>
@@ -894,7 +954,10 @@
                 ms.classList.remove('d-none');
                 ms.innerHTML = '';
                 allUsersCache.forEach(u => {
-                    ms.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}"><label class="form-check-label" for="u_${u.uid}">${u.name}</label></div>`;
+                    ms.innerHTML += `<div class="form-check p-2 border-bottom border-dark" style="cursor:pointer" onclick="this.querySelector('input').click()">
+                        <input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}" onclick="event.stopPropagation()">
+                        <label class="form-check-label ms-2" for="u_${u.uid}" style="pointer-events:none">${u.name}</label>
+                    </div>`;
                 });
             } else {
                 ms.classList.add('d-none');
@@ -903,18 +966,33 @@
         document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
         
         function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
+        
+        window.handleNotifClick = async (type, linkId) => {
+            bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();
+            
+            if(type === 'task' && linkId) {
+                if(!allTasksCache[linkId]) {
+                    try {
+                        const snap = await getDoc(doc(db,"tasks",linkId));
+                        if(snap.exists()) {
+                            allTasksCache[linkId] = {id: snap.id, ...snap.data()};
+                            openTaskDetail(linkId);
+                        } else { showToast("Görev bulunamadı."); }
+                    } catch(e) { console.error(e); }
+                } else { openTaskDetail(linkId); }
+                pushState();
+            } else if(type === 'chat' && linkId) {
+                const u = allUsersCache.find(x => x.uid === linkId);
+                if(u) { openChat([curUser.uid, linkId].sort().join('_'), u.name); pushState(); }
+            }
+        };
+
         window.openNotifs=async()=>{ 
             const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState(); const l=document.getElementById('notif-list'); l.innerHTML='...'; 
             const q = query(collection(db,"notifications"), where("to","==",curUser.uid)); const s=await getDocs(q); const n=[]; s.forEach(d=>n.push({id:d.id,...d.data()})); n.sort((a,b)=>b.createdAt-a.createdAt); 
             l.innerHTML=''; if(n.length===0)l.innerHTML='<div class="text-center p-3 text-muted">Yok.</div>'; 
             n.forEach(d=>{ 
-                let act = '';
-                if(d.type === 'task' && d.linkId) act = `onclick="openTaskDetail('${d.linkId}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"`;
-                else if(d.type === 'chat' && d.linkId) {
-                     const u = allUsersCache.find(x=>x.uid === d.linkId);
-                     if(u) act = `onclick="openChat('${[curUser.uid, d.linkId].sort().join('_')}', '${u.name}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"`;
-                }
-                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" ${act}><small>${d.text}</small></div>`; 
+                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" onclick="handleNotifClick('${d.type}', '${d.linkId}')"><small class="fw-bold">${d.text}</small></div>`; 
                 updateDoc(doc(db,"notifications",d.id),{read:true}); 
             }); 
             document.getElementById('notif-dot').style.display='none'; 
