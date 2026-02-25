@@ -348,7 +348,6 @@
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
         const canSeeAllTasks = () => isAdmin(); 
-        // FIX: YKY SEES ONLY OWN DEPT. YK, PRES, ADMIN SEE ALL.
         const canSeeAllChannels = () => uData.roles?.some(r => ['YK','Başkan','Admin'].includes(r));
         const isBoard = () => uData.roles?.some(r => ['YK','YKY','Başkan','Admin'].includes(r));
 
@@ -442,80 +441,96 @@
             return `<div class="d-flex flex-column align-items-end"><span class="small text-muted">${dateStr}</span><span class="badge bg-warning text-dark" style="font-size:10px">${timeRem} kaldı</span></div>`;
         }
 
+        // --- YENİ RENDER FONKSİYONU ---
+        // Bu fonksiyon görevleri ekrana basar. Hem listenTasks hem de listenTeam tarafından çağrılır.
+        window.renderTasksToPage = () => {
+             const list = document.getElementById('task-list'); 
+             list.innerHTML = ''; 
+             
+             // allTasksCache bir obje olduğu için diziye çeviriyoruz
+             let tempArr = Object.values(allTasksCache);
+             
+             // Sıralama: En yeni en üstte
+             tempArr.sort((a,b) => b.createdAt - a.createdAt);
+             
+             // Filtreleri kontrol et
+             const filterBtn = document.querySelector('.btn-outline-secondary.active');
+             const filter = filterBtn ? filterBtn.innerText : 'Tümü';
+             const { start, end } = getWeekRange();
+
+             tempArr.forEach(t => {
+                let myStatus = 'pending';
+                if(t.statusMap) {
+                    if(t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
+                    else if(t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap)[0] || 'pending';
+                }
+                
+                if(filter === 'Bu Hafta') {
+                    const tDate = t.createdAt.toDate();
+                    if(tDate < start || tDate > end) return;
+                }
+                if(filter === 'Başlamadı' && myStatus !== 'pending') return;
+                if(filter === 'Yapılıyor' && myStatus !== 'progress') return;
+                if(filter === 'Bitti' && myStatus !== 'done') return;
+
+                let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
+                const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
+                const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
+                const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                
+                const dlBadge = formatDeadline(t.deadline);
+                const canEdit = (t.createdByUid === curUser.uid || isAdmin());
+
+                let assigneesHtml = '';
+                if(t.assignedType === 'user' && t.assignedToUid) {
+                    // İşte burası artık güncel allUsersCache'den okuyacak!
+                    const u = allUsersCache.find(x => x.uid === t.assignedToUid);
+                    const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
+                    const n = u ? u.name : t.assignedTo;
+                    assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
+                } else {
+                    const abbr = DEPT_ABBR[t.assignedTo] || t.assignedTo;
+                    assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`;
+                }
+
+                list.innerHTML += `
+                <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
+                    <div class="task-right-panel">
+                        ${canEdit ? `<div class="task-icons">
+                            <i class="fas fa-edit text-warning clickable" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
+                            <i class="fas fa-trash text-danger clickable" onclick="event.stopPropagation();delTask('${t.id}')"></i>
+                        </div>` : ''}
+                        ${dlBadge}
+                    </div>
+                    
+                    <div class="task-card-content" style="margin-right: 90px;">
+                        <h6 class="fw-bold mb-1 text-truncate">${t.title}</h6>
+                        <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
+                    </div>
+
+                    <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${t.description || ''}</p>
+                    
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
+                        ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
+                    </div>
+                </div>`;
+            });
+            calcSuccessRate();
+        };
+
         function listenTasks() {
             if(unsubTasks) unsubTasks();
             unsubTasks = onSnapshot(collection(db,"tasks"), s => {
-                const list = document.getElementById('task-list'); list.innerHTML = ''; allTasksCache = {};
-                let tempArr = [];
+                allTasksCache = {}; 
                 s.forEach(d => {
-                    const t = { id: d.id, ...d.data() }; allTasksCache[t.id] = t;
+                    const t = { id: d.id, ...d.data() }; 
                     const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
-                    if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { tempArr.push(t); }
+                    if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { 
+                        allTasksCache[t.id] = t; 
+                    }
                 });
-                tempArr.sort((a,b) => b.createdAt - a.createdAt);
-                
-                const filter = document.querySelector('.btn-outline-secondary.active').innerText;
-                const { start, end } = getWeekRange();
-
-                tempArr.forEach(t => {
-                    let myStatus = 'pending';
-                    if(t.statusMap) {
-                        if(t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
-                        else if(t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap)[0] || 'pending';
-                    }
-                    
-                    if(filter === 'Bu Hafta') {
-                        const tDate = t.createdAt.toDate();
-                        if(tDate < start || tDate > end) return;
-                    }
-                    if(filter === 'Başlamadı' && myStatus !== 'pending') return;
-                    if(filter === 'Yapılıyor' && myStatus !== 'progress') return;
-                    if(filter === 'Bitti' && myStatus !== 'done') return;
-
-                    let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
-                    const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
-                    const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
-                    
-                    const dlBadge = formatDeadline(t.deadline);
-                    const canEdit = (t.createdByUid === curUser.uid || isAdmin());
-
-                    let assigneesHtml = '';
-                    if(t.assignedType === 'user' && t.assignedToUid) {
-                        const u = allUsersCache.find(x => x.uid === t.assignedToUid);
-                        const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
-                        const n = u ? u.name : t.assignedTo;
-                        assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
-                    } else {
-                        // GUNCELLEME: Departman kisaltmasi kullanma
-                        const abbr = DEPT_ABBR[t.assignedTo] || t.assignedTo;
-                        assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`;
-                    }
-
-                    list.innerHTML += `
-                    <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
-                        <div class="task-right-panel">
-                            ${canEdit ? `<div class="task-icons">
-                                <i class="fas fa-edit text-warning clickable" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
-                                <i class="fas fa-trash text-danger clickable" onclick="event.stopPropagation();delTask('${t.id}')"></i>
-                            </div>` : ''}
-                            ${dlBadge}
-                        </div>
-                        
-                        <div class="task-card-content" style="margin-right: 90px;">
-                            <h6 class="fw-bold mb-1 text-truncate">${t.title}</h6>
-                            <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
-                        </div>
-
-                        <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${t.description || ''}</p>
-                        
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
-                            ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
-                        </div>
-                    </div>`;
-                });
-                calcSuccessRate();
+                renderTasksToPage(); // Veri geldiğinde render et
             });
         }
 
@@ -595,7 +610,6 @@
             for(let i=0; i<5; i++) stars[i].className = i < newVal ? 'fas fa-star clickable' : 'far fa-star clickable'; 
         };
 
-        // FIXED SAVE TASK FUNCTION
         window.saveTask = async () => {
             try {
                 const editId = document.getElementById('t-id').value;
@@ -638,10 +652,29 @@
 
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; new bootstrap.Modal(document.getElementById('modal-status')).show(); };
         window.updateTaskStatus = async (status) => { if(!selectedTaskForStatus) return; await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide(); };
-        window.filterTasks = (f, b) => { document.querySelectorAll('#view-tasks .btn-outline-secondary').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); if(unsubTasks) { unsubTasks(); listenTasks(); } };
+        
+        // --- FILTER TASKS ---
+        window.filterTasks = (f, b) => { 
+            document.querySelectorAll('#view-tasks .btn-outline-secondary').forEach(btn => btn.classList.remove('active')); 
+            b.classList.add('active'); 
+            // Burada renderTasksToPage çağırmak yeterli, tekrar listener açmaya gerek yok.
+            renderTasksToPage();
+        };
+        
         window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
 
-        function listenTeam() { unsubTeam = onSnapshot(collection(db,"users"), s => { allUsersCache = []; s.forEach(d => { const u = d.data(); if(!u.isBanned) allUsersCache.push(u); }); renderTeam(); }); }
+        function listenTeam() { 
+            unsubTeam = onSnapshot(collection(db,"users"), s => { 
+                allUsersCache = []; 
+                s.forEach(d => { 
+                    const u = d.data(); 
+                    if(!u.isBanned) allUsersCache.push(u); 
+                }); 
+                renderTeam(); 
+                // ÖNEMLİ EKLEME: Ekip bilgisi (fotoğraf vs.) güncellenince görev kartlarını da güncelle
+                renderTasksToPage();
+            }); 
+        }
         
         window.renderTeam = (filter='') => {
             const list = document.getElementById('team-list'); list.innerHTML = ''; const f = filter.toLowerCase();
@@ -900,10 +933,6 @@
             document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); 
             document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); 
         };
-        window.togT=(v)=>{
-            document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
-            document.getElementById('t-user').classList.toggle('d-none',v!=='user');
-        };
         document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
         
         function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
@@ -942,7 +971,7 @@
         async function loadRecentDMs(){ 
             if(unsubDMs)unsubDMs(); 
             unsubDMs=onSnapshot(collection(db,"messages"),s=>{ 
-                const pairs = new Map(); // Use Map to store [uid, timestamp]
+                const pairs = new Map(); 
                 s.forEach(d=>{ 
                     const m = d.data();
                     const c=m.channel; 
@@ -955,7 +984,6 @@
                     }
                 }); 
                 
-                // Convert to array and Sort by timestamp desc
                 const sortedPairs = Array.from(pairs.entries()).sort((a,b) => b[1] - a[1]);
                 
                 const l=document.getElementById('dm-list');
