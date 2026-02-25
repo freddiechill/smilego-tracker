@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V14.0 - UX Master</title>
+    <title>SmileGO V21.0 - Final Polish</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -50,41 +50,43 @@
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; }
-        
         .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
         .chat-row.right { justify-content: flex-end; }
         .chat-row.left { justify-content: flex-start; }
         .chat-avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; flex-shrink: 0; } 
-
-        .msg-bubble { 
-            max-width: 80%; padding: 8px 12px; border-radius: 16px; 
-            font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; 
-            display: flex; flex-direction: column;
-        }
+        .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 16px; font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; display: flex; flex-direction: column; }
         .bubble-sent { background: var(--sent-bg); color: #fff; border-top-right-radius: 2px; margin-left: auto; }
         .bubble-received { background: var(--recv-bg); color: #fff; border-top-left-radius: 2px; margin-right: auto; }
-        
+        .msg-bubble a { color: #93c5fd; text-decoration: underline; word-break: break-all; }
         .sender-header { margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; line-height: 1.2; }
         .sender-name { font-weight: 800; font-size: 13px; }
         .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
-        
         .chat-meta { font-size: 9px; opacity: 0.6; text-align: right; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
         .edited-label { font-style: italic; }
-
-        /* Reactions - Snug Fit */
         .reaction-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: -2px; margin-bottom: 6px; position: relative; z-index: 2; }
         .reaction-pill { background: #222; border: 1px solid #444; border-radius: 10px; padding: 1px 6px; font-size: 10px; cursor: pointer; display: flex; align-items: center; gap: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-        
-        /* Badges */
         .chat-badge { font-size: 9px; padding: 1px 4px; border-radius: 4px; font-weight: 600; display: inline-block; }
         .cb-role { background: #3f3f46; color: #ddd; }
         .cb-dept { border: 1px solid #52525b; color: #a1a1aa; background: transparent; }
 
-        /* TOAST & CONFIRM */
+        /* Star & Status & UX */
+        #star-select { display: flex; gap: 15px; align-items: center; }
+        #star-select i { font-size: 24px; cursor: pointer; width: 24px; text-align: center; }
+        #td-status-list > div:last-child { border-bottom: none !important; }
+        .dept-group > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
+        #notif-list > div:last-child { border-bottom: none !important; }
+
+        /* Leaderboard Tabs */
+        .lb-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
+        .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
+
+        #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; overflow: hidden; }
+        #img-viewer img { max-width: 100%; max-height: 100%; transition: transform 0.1s ease-out; }
+
         #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
         #app-toast.show { transform: translateX(-50%) translateY(0); }
         
-        /* CONTEXT MENU */
         #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
         .ctx-reactions { display: flex; padding: 10px; gap: 5px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: #252529; }
         .ctx-emoji { font-size: 20px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 50%; }
@@ -93,20 +95,17 @@
         .ctx-item:active { background: #333; }
         .ctx-item.delete { color: #ff6b6b; }
 
-        /* General UI Fixes */
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 5px; border: 1px solid #27272a; margin-bottom: 10px; }
         .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover; }
-        .role-badge { font-size: 9px; padding: 2px 5px; border-radius: 4px; background: #333; color: #ccc; margin-left: 3px; }
+        
+        /* Updated Profile Badge Style */
+        .role-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: #333; color: #ccc; border: 1px solid #444; }
+        
         .search-list { max-height: 200px; overflow-y: auto; background: #202023; border: 1px solid #333; border-radius: 0 0 12px 12px; display: none; position: absolute; width: 100%; z-index: 1000; }
         .search-list div { padding: 10px; cursor: pointer; border-bottom: 1px solid #2a2a2d; font-size: 13px; }
         .search-list div:hover { background: var(--primary); color: black; }
-        
-        /* Removing last border */
-        .dept-group > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
-        #notif-list > div:last-child { border-bottom: none !important; }
 
-        /* Progress Ring */
         .progress-ring { width: 60px; height: 60px; }
         .progress-ring__bg { stroke: rgba(255,255,255,0.1); }
         .progress-ring__circle { transition: 0.35s stroke-dashoffset; transform: rotate(-90deg); transform-origin: 50% 50%; }
@@ -138,7 +137,11 @@
     </div>
 
     <div id="loading-overlay"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div></div>
-    <div id="img-viewer"><button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="document.getElementById('img-viewer').style.display='none'"><i class="fas fa-times"></i></button><img id="img-viewer-src" src=""></div>
+    
+    <div id="img-viewer">
+        <button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
+        <img id="img-viewer-src" src="">
+    </div>
 
     <div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10000;">
         <div id="auth-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, #312e81 0%, #09090b 60%);z-index:-1"></div>
@@ -168,6 +171,7 @@
             <button id="btn-add-task" class="btn-primary-soft mb-4 shadow-sm" onclick="openTaskModal()"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
             <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
                 <button class="btn btn-sm btn-outline-secondary rounded-pill active" onclick="filterTasks('all', this)">Tümü</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('week', this)">Bu Hafta</button>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('pending', this)">Başlamadı</button>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('progress', this)">Yapılıyor</button>
                 <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="filterTasks('done', this)">Bitti</button>
@@ -183,7 +187,7 @@
         </div>
 
         <div id="view-team" class="main-content">
-            <input type="text" class="form-control mb-4" placeholder="Ekipte ara..." onkeyup="renderTeam(this.value)">
+            <input type="text" class="form-control mb-4" placeholder="Ekipte ara (İsim, Rol, Dept)..." onkeyup="renderTeam(this.value)">
             <div id="team-list"></div>
         </div>
 
@@ -195,7 +199,8 @@
                     <input type="file" id="file-inp" class="d-none" accept="image/*" onchange="uploadPhoto(this)">
                 </div>
                 <h4 id="prof-name" class="fw-bold mb-1">...</h4>
-                <div id="prof-roles" class="d-flex justify-content-center gap-1 mb-2"></div>
+                <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
+                
                 <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
                     <svg class="progress-ring" width="60" height="60">
@@ -208,6 +213,13 @@
                 <h6 class="fw-bold text-muted mb-3">KİŞİSEL BİLGİLER</h6>
                 <div class="mb-3 position-relative"><label class="small text-muted">Üniversite</label><input type="text" class="form-control" id="inp-uni" placeholder="Üniversite Ara..." onkeyup="filterSearch('uni')"><div class="search-list" id="list-uni"></div></div>
                 <div class="mb-3 position-relative"><label class="small text-muted">Bölüm</label><input type="text" class="form-control" id="inp-sec" placeholder="Bölüm Ara..." onkeyup="filterSearch('sec')"><div class="search-list" id="list-sec"></div></div>
+                <div class="row">
+                    <div class="col-6 mb-3"><label class="small text-muted">İl</label><input type="text" class="form-control" id="inp-city" placeholder="İl"></div>
+                    <div class="col-6 mb-3"><label class="small text-muted">İlçe</label><input type="text" class="form-control" id="inp-dist" placeholder="İlçe"></div>
+                </div>
+                <div class="mb-3"><label class="small text-muted">Doğum Tarihi</label><input type="date" class="form-control" id="inp-dob"></div>
+                <div class="mb-3"><label class="small text-muted">Telefon</label><input type="tel" class="form-control" id="inp-phone" placeholder="0555..."></div>
+                <div class="mb-3"><label class="small text-muted">E-Posta</label><input type="email" class="form-control" id="inp-email" placeholder="iletisim@..."></div>
                 <button class="btn btn-sm btn-success w-100" onclick="saveEduInfo()">Bilgileri Kaydet</button>
              </div>
              <div class="card-custom mt-2">
@@ -249,19 +261,44 @@
     
     <div class="modal fade" id="modal-reactions" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Tepkiler</h5><div id="reaction-list" style="max-height:300px;overflow-y:auto"></div><div class="d-flex justify-content-end mt-2"><button class="btn btn-dark btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
-    <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Yeni Görev</h5><form id="form-task">
-        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required><textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
+    <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Görevi Yönet</h5><form id="form-task">
+        <input type="hidden" id="t-id">
+        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required>
+        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
+        <div class="mb-3"><label class="small text-muted">Son Tarih (Opsiyonel)</label><input type="datetime-local" id="t-deadline" class="form-control"></div>
         <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
-        <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select><select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select><button class="btn-primary-soft">Oluştur</button>
+        <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
+        <select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select>
+        <button class="btn-primary-soft" id="btn-save-task">Kaydet</button>
     </form></div></div></div>
 
-    <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-stars" class="mb-3 text-warning small"></div><p class="text-muted small" id="td-desc">...</p><hr class="border-secondary"><h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
+    <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div style="flex:1; margin-right:10px;">
+                <h5 class="fw-bold mb-1" id="td-title">...</h5>
+                <div id="td-stars" class="text-warning small"></div>
+            </div>
+            <div class="text-end" id="td-meta">
+                </div>
+        </div>
+        <div class="bg-dark p-2 rounded mb-3 small text-muted" id="td-desc" style="max-height:100px;overflow-y:auto"></div>
+        <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6>
+        <div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div>
+        <div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div>
+    </div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
         <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="80" height="80"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div></div>
-        <div class="mb-3 text-start"><div class="small text-muted"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div><div class="small text-muted"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div></div>
-        <div class="card-custom bg-dark p-3 d-flex align-items-center justify-content-between mb-3"><div class="text-start"><div class="text-muted small">Genel Başarı</div><h4 class="fw-bold m-0" id="vp-rate">0%</h4></div><svg class="progress-ring" width="50" height="50"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="21" cx="25" cy="25"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="21" cx="25" cy="25" id="vp-circle" stroke-dasharray="131.95" stroke-dashoffset="131.95"/></svg></div>
+        <div class="mb-3 text-start">
+             <div class="small text-muted mb-1"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div>
+             <div class="small text-muted mb-1"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div>
+             <div class="small text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i> <span id="vp-address" class="text-white">...</span></div>
+             <div class="small text-muted mb-1"><i class="fas fa-birthday-cake me-1"></i> <span id="vp-dob" class="text-white">...</span></div>
+             <div class="small text-muted mb-1"><i class="fas fa-phone me-1"></i> <span id="vp-phone" class="text-white">...</span></div>
+             <div class="small text-muted"><i class="fas fa-envelope me-1"></i> <span id="vp-email" class="text-white">...</span></div>
+        </div>
+        <div class="card-custom bg-dark p-3 d-flex align-items-center justify-content-between mb-3"><div class="text-start"><div class="text-muted small">Genel Başarı</div><h4 class="fw-bold m-0" id="vp-rate">0%</h4></div><svg width="50" height="50" viewBox="0 0 60 60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="vp-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg></div>
         <h6 class="small fw-bold text-muted mb-2">SOSYAL MEDYA</h6><div id="vp-socials" class="d-flex justify-content-center gap-3 fs-3"></div>
     </div></div></div>
 
@@ -283,25 +320,32 @@
         const DEPTS = ["Organizasyonel Gelişim","Sosyal Medya","Bölge Koordinatörlüğü","Psikolog İlişkileri","Data & Planlama","Kurumsal İletişim", "Yazılım"];
         const DEPT_ABBR = { "Sosyal Medya": "SMD", "Psikolog İlişkileri": "PİD", "Data & Planlama": "DPD", "Bölge Koordinatörlüğü": "BKD", "Kurumsal İletişim": "KİD", "Organizasyonel Gelişim": "OGD", "Yazılım": "YD" };
         const ROLES = ["Başkan", "YK", "YKY", "Üye", "Admin"];
-        const UNIVERSITIES = ["Sakarya Üniversitesi", "Sakarya Uygulamalı Bilimler Üniversitesi", "İstanbul Üniversitesi", "ODTÜ", "İTÜ", "Boğaziçi Üniversitesi", "Marmara Üniversitesi", "Yıldız Teknik Üniversitesi", "Hacettepe Üniversitesi", "Ankara Üniversitesi", "Ege Üniversitesi", "Dokuz Eylül Üniversitesi", "Gazi Üniversitesi", "Anadolu Üniversitesi", "Akdeniz Üniversitesi", "Çukurova Üniversitesi", "Bilkent Üniversitesi", "Koç Üniversitesi", "Sabancı Üniversitesi", "Yeditepe Üniversitesi", "Bahçeşehir Üniversitesi", "Kocaeli Üniversitesi", "Düzce Üniversitesi", "Bolu Abant İzzet Baysal Üniversitesi"];
-        const DEPARTMENTS_UNI = ["Görsel İletişim Tasarımı", "İletişim Tasarımı", "Grafik Tasarım", "Çizgi Film ve Animasyon", "Radyo, Televizyon ve Sinema", "Halkla İlişkiler ve Reklamcılık", "Yeni Medya ve İletişim", "Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Endüstri Mühendisliği", "İşletme", "İktisat", "Maliye", "Uluslararası İlişkiler", "Siyaset Bilimi ve Kamu Yönetimi", "Psikoloji", "Sosyoloji", "Felsefe", "Hukuk", "Tıp", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Mimarlık", "İç Mimarlık", "Şehir ve Bölge Planlama", "Özel Eğitim Öğretmenliği", "Okul Öncesi Öğretmenliği", "Sınıf Öğretmenliği", "İngilizce Öğretmenliği", "Matematik", "Fizik", "Kimya", "Biyoloji", "Tarih", "Coğrafya", "Türk Dili ve Edebiyatı"];
+        const UNIVERSITIES = ["Sakarya Üniversitesi", "Sakarya Uygulamalı Bilimler Üniversitesi", "İstanbul Üniversitesi", "ODTÜ", "İTÜ", "Boğaziçi Üniversitesi", "Marmara Üniversitesi", "Yıldız Teknik Üniversitesi", "Hacettepe Üniversitesi", "Ankara Üniversitesi", "Ege Üniversitesi", "Dokuz Eylül Üniversitesi", "Gazi Üniversitesi", "Anadolu Üniversitesi", "Akdeniz Üniversitesi", "Çukurova Üniversitesi", "Bilkent Üniversitesi", "Koç Üniversitesi", "Sabancı Üniversitesi", "Yeditepe Üniversitesi", "Bahçeşehir Üniversitesi", "Kocaeli Üniversitesi", "Düzce Üniversitesi", "Bolu Abant İzzet Baysal Üniversitesi", "Galatasaray Üniversitesi", "Mimar Sinan Güzel Sanatlar Üniversitesi"];
+        const DEPARTMENTS_UNI = ["Görsel İletişim Tasarımı", "İletişim Tasarımı", "Grafik Tasarım", "Çizgi Film ve Animasyon", "Radyo, Televizyon ve Sinema", "Halkla İlişkiler ve Reklamcılık", "Yeni Medya ve İletişim", "Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Endüstri Mühendisliği", "İşletme", "İktisat", "Maliye", "Uluslararası İlişkiler", "Siyaset Bilimi ve Kamu Yönetimi", "Psikoloji", "Sosyoloji", "Felsefe", "Hukuk", "Tıp", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Mimarlık", "İç Mimarlık", "Şehir ve Bölge Planlama", "Özel Eğitim Öğretmenliği", "Okul Öncesi Öğretmenliği", "Sınıf Öğretmenliği", "İngilizce Öğretmenliği", "Matematik", "Fizik", "Kimya", "Biyoloji", "Tarih", "Coğrafya", "Türk Dili ve Edebiyatı", "Endüstriyel Tasarım", "Moda Tasarımı", "Resim", "Heykel", "Seramik"];
 
         let curUser=null, uData={}, activeChatId=null;
         let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null, unsubDMs=null;
         let allUsersCache=[], allTasksCache={};
         let selectedTaskForStatus = null, selectedUserForEdit = null, selectedMsg = null, longPressTimer = null;
+        let lbMode = 'genel';
 
-        // Custom Toast & Confirm
+        const NAME_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e', '#e879f9', '#2dd4bf'];
+        function getUserColor(uid) { let hash = 0; for (let i = 0; i < uid.length; i++) { hash = uid.charCodeAt(i) + ((hash << 5) - hash); } return NAME_COLORS[Math.abs(hash) % NAME_COLORS.length]; }
+
         window.showToast = (msg) => { const t = document.getElementById('app-toast'); document.getElementById('toast-msg').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
         window.alert = window.showToast;
-        window.customConfirm = (text, cb) => {
-            document.getElementById('confirm-text').innerText = text;
-            const modal = new bootstrap.Modal(document.getElementById('modal-confirm'));
-            document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); };
-            modal.show();
-        };
+        window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = new bootstrap.Modal(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
-        // Mobile Back Button Logic (History API)
+        // Helper for Calendar Week (Mon-Sun)
+        function getWeekRange() {
+            const now = new Date();
+            const day = now.getDay(); 
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const start = new Date(now.setDate(diff)); start.setHours(0,0,0,0);
+            const end = new Date(start); end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
+            return { start, end };
+        }
+
         let chatOpen = false;
         window.onpopstate = () => {
             if(chatOpen) { closeChat(); return; }
@@ -309,11 +353,6 @@
             if(activeModal) { bootstrap.Modal.getInstance(activeModal).hide(); }
         };
         const pushState = () => window.history.pushState(null, null, window.location.href);
-
-        function stringToColor(str) {
-            let hash = 0; for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
-            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase(); return '#' + "00000".substring(0, 6 - c.length) + c;
-        }
 
         onAuthStateChanged(auth, async u => {
             if(u){
@@ -355,9 +394,25 @@
             document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
             document.getElementById('prof-name').innerText = uData.name;
             const rDiv = document.getElementById('prof-roles'); rDiv.innerHTML='';
+            
+            // FIXED SPACING USING CLASS GAP
+            rDiv.className = "d-flex justify-content-center flex-wrap gap-2 mb-2"; 
+            
             uData.roles.forEach(r => rDiv.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
+            uData.departments.forEach(d => { 
+                const abbr = DEPT_ABBR[d] || d.substring(0,3); 
+                rDiv.innerHTML += `<span class="badge bg-dark border border-secondary text-muted small">${abbr}</span>`; 
+            });
+
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
+            
+            document.getElementById('inp-city').value = uData.city || '';
+            document.getElementById('inp-dist').value = uData.district || '';
+            document.getElementById('inp-dob').value = uData.dob || '';
+            document.getElementById('inp-phone').value = uData.phone || '';
+            document.getElementById('inp-email').value = uData.contactEmail || uData.email || '';
+
             if(uData.socials) { ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { document.getElementById(`sm-${k}`).value = uData.socials[k] || ''; }); }
             calcSuccessRate();
         };
@@ -371,7 +426,18 @@
             circle.style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
         };
 
-        window.saveEduInfo = async () => { await updateDoc(doc(db,"users",curUser.uid), { university: document.getElementById('inp-uni').value, uni_dept: document.getElementById('inp-sec').value }); showToast("Kaydedildi!"); };
+        window.saveEduInfo = async () => { 
+            await updateDoc(doc(db,"users",curUser.uid), { 
+                university: document.getElementById('inp-uni').value, 
+                uni_dept: document.getElementById('inp-sec').value,
+                city: document.getElementById('inp-city').value,
+                district: document.getElementById('inp-dist').value,
+                dob: document.getElementById('inp-dob').value,
+                phone: document.getElementById('inp-phone').value,
+                contactEmail: document.getElementById('inp-email').value
+            }); 
+            showToast("Kaydedildi!"); 
+        };
         window.saveSocials = async () => { const soc = {}; ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { const v = document.getElementById(`sm-${k}`).value.trim(); if(v) soc[k] = v; }); await updateDoc(doc(db,"users",curUser.uid), { socials: soc }); showToast("Kaydedildi!"); };
 
         window.filterSearch = (type) => {
@@ -381,6 +447,25 @@
             source.filter(s => s.toLowerCase().includes(val)).forEach(m => { const d = document.createElement('div'); d.innerText = m; d.onclick = () => { inp.value = m; list.style.display='none'; }; list.appendChild(d); });
             list.style.display = 'block';
         };
+
+        function linkify(text) {
+            const urlRegex = /((https?:\/\/)|(www\.))?[\w-]+\.[\w.\/]+(\?[\w=&]*)?/g;
+            return text.replace(urlRegex, function(url) {
+                let href = url;
+                if (!href.match(/^https?:\/\//)) { href = 'https://' + href; }
+                return `<a href="${href}" target="_blank">${url}</a>`;
+            });
+        }
+
+        function formatDeadline(dl) {
+            if(!dl) return '';
+            const diff = new Date(dl) - new Date();
+            if(diff < 0) return '<span class="badge bg-danger ms-2" style="font-size:10px">Süre Doldu!</span>';
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if(days > 0) return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${days} gün kaldı</span>`;
+            return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${hours} saat kaldı</span>`;
+        }
 
         function listenTasks() {
             if(unsubTasks) unsubTasks();
@@ -395,9 +480,16 @@
                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
                 
                 const filter = document.querySelector('.btn-outline-secondary.active').innerText;
+                const { start, end } = getWeekRange();
+
                 tempArr.forEach(t => {
                     let myStatus = t.statusMap && t.statusMap[curUser.uid] ? t.statusMap[curUser.uid] : 'pending';
                     if(t.assignedType === 'user' && t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap || {})[0] || 'pending';
+                    
+                    if(filter === 'Bu Hafta') {
+                        const tDate = t.createdAt.toDate();
+                        if(tDate < start || tDate > end) return;
+                    }
                     if(filter === 'Başlamadı' && myStatus !== 'pending') return;
                     if(filter === 'Yapılıyor' && myStatus !== 'progress') return;
                     if(filter === 'Bitti' && myStatus !== 'done') return;
@@ -406,12 +498,18 @@
                     const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                     const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
                     const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                    
+                    const dlBadge = formatDeadline(t.deadline);
+                    const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
                     list.innerHTML += `
                     <div class="card-custom" onclick="openTaskDetail('${t.id}'); pushState()">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <div><span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span> ${starsHtml}</div>
-                            ${(t.createdByUid === curUser.uid || isAdmin()) ? `<i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>` : ''}
+                            <div><span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span> ${starsHtml} ${dlBadge}</div>
+                            ${canEdit ? `<div class="d-flex gap-2">
+                                <i class="fas fa-edit text-warning" style="font-size:14px" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
+                                <i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>
+                            </div>` : ''}
                         </div>
                         <h6 class="fw-bold mb-1">${t.title}</h6>
                         <p class="text-muted small mb-2 text-truncate">${t.description || ''}</p>
@@ -425,16 +523,46 @@
             });
         }
 
-        window.openTaskModal = async () => {
+        window.openTaskModal = async (editId = null) => {
+            document.getElementById('form-task').reset(); 
+            document.getElementById('t-id').value = '';
+            setStars(0);
+            
             const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
             const snap = await getDocs(collection(db,"users"));
-            snap.forEach(d => { if(d.id !== curUser.uid) userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; });
+            snap.forEach(d => { 
+                if(d.id !== curUser.uid && !d.data().isBanned)
+                    userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; 
+            });
+
+            if(editId) {
+                const t = allTasksCache[editId];
+                if(t) {
+                    document.getElementById('t-id').value = editId;
+                    document.getElementById('t-title').value = t.title;
+                    document.getElementById('t-desc').value = t.description;
+                    document.getElementById('t-deadline').value = t.deadline || '';
+                    setStars(t.importance || 0);
+                    document.getElementById('t-type').value = t.assignedType;
+                    togT(t.assignedType);
+                    setTimeout(() => {
+                        if(t.assignedType === 'department') document.getElementById('t-dept').value = t.assignedTo;
+                        if(t.assignedType === 'user') document.getElementById('t-user').value = t.assignedToUid;
+                    }, 100);
+                }
+            }
+
             new bootstrap.Modal(document.getElementById('modal-task')).show(); pushState();
         };
 
         window.openTaskDetail = (tid) => {
             const t = allTasksCache[tid]; if(!t) return;
             document.getElementById('td-title').innerText = t.title;
+            
+            const dateStr = t.deadline ? new Date(t.deadline).toLocaleString('tr-TR', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
+            const badge = formatDeadline(t.deadline);
+            document.getElementById('td-meta').innerHTML = t.deadline ? `<div class="small fw-bold">${dateStr}</div>${badge}` : '';
+
             document.getElementById('td-desc').innerText = t.description || 'Açıklama yok.';
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
             document.getElementById('td-stars').innerHTML = starsHtml;
@@ -451,16 +579,35 @@
             new bootstrap.Modal(document.getElementById('modal-task-detail')).show();
         };
 
-        window.setStars = (n) => { document.getElementById('t-stars').value = n; const stars = document.getElementById('star-select').getElementsByTagName('i'); for(let i=0; i<5; i++) stars[i].className = i < n ? 'fas fa-star clickable' : 'far fa-star clickable'; };
+        window.setStars = (n) => { 
+            const current = parseInt(document.getElementById('t-stars').value || 0);
+            const newVal = (current === n) ? 0 : n; 
+            document.getElementById('t-stars').value = newVal; 
+            const stars = document.getElementById('star-select').getElementsByTagName('i'); 
+            for(let i=0; i<5; i++) stars[i].className = i < newVal ? 'fas fa-star clickable' : 'far fa-star clickable'; 
+        };
+
         document.getElementById('form-task').addEventListener('submit', async e => {
             e.preventDefault();
+            const editId = document.getElementById('t-id').value;
             const title = document.getElementById('t-title').value, desc = document.getElementById('t-desc').value, type = document.getElementById('t-type').value, imp = parseInt(document.getElementById('t-stars').value);
+            const deadline = document.getElementById('t-deadline').value;
+            
             let to = "Herkes", uid = null;
             if(type === 'department') to = document.getElementById('t-dept').value;
             if(type === 'user') { const el = document.getElementById('t-user'); to = el.options[el.selectedIndex].text; uid = el.value; const roles = el.options[el.selectedIndex].getAttribute('data-role'); if(uData.roles.includes('Üye') && uData.roles.length===1 && (roles.includes('YK') || roles.includes('Başkan'))) { showToast("Yetkisiz işlem."); return; } }
-            let initialStatusMap = {}; if(type === 'user' && uid) initialStatusMap[uid] = 'pending';
-            await addDoc(collection(db,"tasks"), { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, importance: imp, createdByUid: curUser.uid, creatorName: uData.name, creatorPhoto: uData.photoURL, createdAt: new Date(), statusMap: initialStatusMap });
-            if(uid) addDoc(collection(db,"notifications"),{to:uid,text:`Yeni Görev: ${title}`,read:false,createdAt:new Date(), type:'task', linkId: null});
+            
+            const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, importance: imp, deadline: deadline };
+
+            if(editId) {
+                await updateDoc(doc(db, "tasks", editId), taskData);
+                showToast("Görev güncellendi!");
+            } else {
+                taskData.createdByUid = curUser.uid; taskData.creatorName = uData.name; taskData.creatorPhoto = uData.photoURL; taskData.createdAt = new Date(); taskData.statusMap = {};
+                if(type === 'user' && uid) taskData.statusMap[uid] = 'pending';
+                const ref = await addDoc(collection(db,"tasks"), taskData);
+                if(uid) addDoc(collection(db,"notifications"),{to:uid,text:`Yeni Görev: ${title}`,read:false,createdAt:new Date(), type:'task', linkId: ref.id});
+            }
             bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset(); setStars(0);
         });
 
@@ -476,7 +623,8 @@
             const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
             
             allUsersCache.forEach(u => {
-                if(f && !u.name.toLowerCase().includes(f)) return;
+                const searchStr = (u.name + ' ' + (u.roles||[]).join(' ') + ' ' + (u.departments||[]).map(d=>DEPT_ABBR[d]||d).join(' ')).toLowerCase();
+                if(f && !searchStr.includes(f)) return;
                 let placed = false;
                 u.departments?.forEach(d => { if(DEPTS.includes(d)) { groups[d].push(u); placed=true; } });
                 if(!placed) groups["Diğer"].push(u);
@@ -515,13 +663,23 @@
             const bdg = document.getElementById('vp-badges'); bdg.innerHTML = '';
             u.roles?.forEach(r => bdg.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); bdg.innerHTML += `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
+            
             document.getElementById('vp-uni').innerText = u.university || 'Belirtilmemiş';
             document.getElementById('vp-dept').innerText = u.uni_dept || 'Belirtilmemiş';
+            
+            const dobRaw = u.dob || '';
+            const dobFormatted = dobRaw ? dobRaw.split('-').reverse().join('.') : 'Belirtilmemiş';
+            document.getElementById('vp-dob').innerText = dobFormatted;
+            
+            document.getElementById('vp-address').innerText = (u.city && u.district) ? `${u.city} / ${u.district}` : 'Adres Girilmemiş';
+            document.getElementById('vp-phone').innerText = u.phone || 'Belirtilmemiş';
+            document.getElementById('vp-email').innerText = u.contactEmail || u.email || 'Belirtilmemiş';
+
             let total = 0, done = 0;
             Object.values(allTasksCache).forEach(t => { if(t.statusMap && t.statusMap[uid]) { total++; if(t.statusMap[uid] === 'done') done++; } });
             const rate = total === 0 ? 0 : Math.round((done/total)*100);
             document.getElementById('vp-rate').innerText = `%${rate}`;
-            document.getElementById('vp-circle').style.strokeDashoffset = (131.95 * (100 - rate)) / 100;
+            document.getElementById('vp-circle').style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
             const socBox = document.getElementById('vp-socials'); socBox.innerHTML = '';
             if(u.socials) {
                 if(u.socials.linkedin) socBox.innerHTML += `<a href="https://linkedin.com/in/${u.socials.linkedin}" target="_blank" class="text-secondary"><i class="fab fa-linkedin"></i></a>`;
@@ -566,7 +724,7 @@
                 let html = '';
                 msgs.forEach(m => {
                     const me = m.senderId === curUser.uid;
-                    let content = m.text; if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                    let content = linkify(m.text || ''); if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                     
                     let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
                     const sender = allUsersCache.find(u => u.uid === m.senderId);
@@ -586,7 +744,7 @@
                     }
 
                     const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, reactions: m.reactions}).replace(/"/g, '&quot;');
-                    const nameColor = me ? '#fff' : stringToColor(m.senderName || "User");
+                    const nameColor = me ? '#fff' : getUserColor(m.senderId);
 
                     html += `
                     <div class="chat-row ${me?'right':'left'}">
@@ -619,129 +777,123 @@
 
         window.handleMsgCtx = (e, msg) => {
             if(window.navigator.vibrate) window.navigator.vibrate(50);
-            selectedMsg = msg;
-            let html = '';
-            const isMine = msg.senderId === curUser.uid;
+            selectedMsg = msg; let html = ''; const isMine = msg.senderId === curUser.uid;
             if(isMine) html += `<div class="ctx-item" onclick="editMsg()"><i class="fas fa-pen"></i> Düzenle</div>`;
             if(isMine || isAdmin()) html += `<div class="ctx-item delete" onclick="deleteMsg('all')"><i class="fas fa-trash"></i> Herkes için Sil</div>`;
             html += `<div class="ctx-item delete" onclick="deleteMsg('me')"><i class="fas fa-trash-alt"></i> Benden Sil</div>`;
             document.getElementById('ctx-options').innerHTML = html;
-            let x = e.clientX, y = e.clientY;
-            if(x + 200 > window.innerWidth) x -= 200;
-            if(y + 200 > window.innerHeight) y -= 200;
-            ctx.style.top = y + 'px'; ctx.style.left = x + 'px'; ctx.style.display = 'flex';
+            let x = e.clientX, y = e.clientY; if(x+200>window.innerWidth)x-=200; if(y+200>window.innerHeight)y-=200;
+            ctx.style.top=y+'px'; ctx.style.left=x+'px'; ctx.style.display='flex';
         };
-        document.addEventListener('click', (e) => { if(!ctx.contains(e.target)) ctx.style.display='none'; });
-
-        window.addReaction = async (emoji) => {
-            ctx.style.display='none'; if(!selectedMsg) return;
-            const current = selectedMsg.reactions || {};
-            if(current[curUser.uid] && current[curUser.uid].emoji === emoji) { await updateDoc(doc(db,"messages",selectedMsg.id), { [`reactions.${curUser.uid}`]: deleteField() }); } 
-            else { await updateDoc(doc(db,"messages",selectedMsg.id), { [`reactions.${curUser.uid}`]: { emoji: emoji, name: uData.name, uid: curUser.uid } }); }
-        };
-
-        window.openReactionDetails = (msgId) => {
-            const msgs = allTasksCache['msgs'] || [];
-            const m = msgs.find(x => x.id === msgId); if(!m || !m.reactions) return;
-            const list = document.getElementById('reaction-list'); list.innerHTML = '';
-            Object.values(m.reactions).forEach(r => {
-                const u = allUsersCache.find(user => user.uid === r.uid);
-                const photo = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
-                list.innerHTML += `<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${photo}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`;
-            });
-            new bootstrap.Modal(document.getElementById('modal-reactions')).show();
+        document.addEventListener('click', (e)=>{if(!ctx.contains(e.target))ctx.style.display='none';});
+        window.addReaction = async (emoji) => { ctx.style.display='none'; if(!selectedMsg)return; const c=selectedMsg.reactions||{}; if(c[curUser.uid]&&c[curUser.uid].emoji===emoji)await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:deleteField()}); else await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:{emoji,name:uData.name,uid:curUser.uid}}); };
+        window.openReactionDetails = (mid) => { const m = allTasksCache['msgs']?.find(x=>x.id===mid); if(!m?.reactions)return; const l=document.getElementById('reaction-list'); l.innerHTML=''; Object.values(m.reactions).forEach(r=>{ const u=allUsersCache.find(x=>x.uid===r.uid); l.innerHTML+=`<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${u?.photoURL}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`; }); new bootstrap.Modal(document.getElementById('modal-reactions')).show(); };
+        window.deleteMsg = async (t) => { ctx.style.display='none'; if(t==='all'){ customConfirm("Herkesden sil?",async()=>await deleteDoc(doc(db,"messages",selectedMsg.id))); } else { await updateDoc(doc(db,"messages",selectedMsg.id),{deletedFor:arrayUnion(curUser.uid)}); showToast("Silindi."); } };
+        window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
+        window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
+        document.getElementById('chat-file-inp').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.readAsDataURL(f); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=async()=>{ const c=document.createElement('canvas'); const x=c.getContext('2d'); let w=i.width,h=i.height,m=800; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; x.drawImage(i,0,0,w,h); await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); } } });
+        
+        window.switchLB = (mode, el) => {
+            lbMode = mode;
+            document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            openLeaderboard(true);
         };
 
-        window.deleteMsg = async (type) => {
-            ctx.style.display='none';
-            if(type === 'all') { customConfirm("Bu mesaj herkesden silinecek?", async () => await deleteDoc(doc(db,"messages",selectedMsg.id))); } 
-            else { await updateDoc(doc(db,"messages",selectedMsg.id), { deletedFor: arrayUnion(curUser.uid) }); showToast("Mesaj sizden silindi."); }
-        };
-
-        window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value = selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
-        window.submitEditMsg = async () => { const txt = document.getElementById('edit-msg-input').value; await updateDoc(doc(db,"messages",selectedMsg.id), { text: txt, isEdited: true }); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
-
-        document.getElementById('chat-file-inp').addEventListener('change', async e => {
-            const f = e.target.files[0]; if(!f || !activeChatId) return;
-            const btn = document.querySelector('#chat-form button[type=button]'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            const reader = new FileReader(); reader.readAsDataURL(f);
-            reader.onload = (ev) => {
-                const img = new Image(); img.src = ev.target.result;
-                img.onload = async () => {
-                    const c = document.createElement('canvas'); const ctx = c.getContext('2d');
-                    let w = img.width, h = img.height; const max = 800;
-                    if(w>h){if(w>max){h*=max/w;w=max;}}else{if(h>max){w*=max/h;h=max;}}
-                    c.width=w; c.height=h; ctx.drawImage(img,0,0,w,h);
-                    await addDoc(collection(db,"messages"), { type: 'image', url: c.toDataURL('image/jpeg',0.6), channel: activeChatId, senderId: curUser.uid, senderName: uData.name, createdAt: new Date() });
-                    btn.innerHTML = '<i class="fas fa-paperclip"></i>'; notifyChat(activeChatId);
-                };
-            };
-        });
-
-        window.openLeaderboard = () => {
+        window.openLeaderboard = (refresh = false) => {
             const list = document.getElementById('lb-list'); list.innerHTML = '';
             const scores = [];
+            const { start, end } = getWeekRange();
+
             allUsersCache.forEach(u => {
+                if(!isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
+
                 let total = 0, done = 0;
-                Object.values(allTasksCache).forEach(t => { if(t.statusMap && t.statusMap[u.uid]) { total++; if(t.statusMap[u.uid] === 'done') done++; } });
-                const rate = total === 0 ? 0 : (done/total)*100; scores.push({ ...u, rate, done, total });
+                Object.values(allTasksCache).forEach(t => {
+                    if(lbMode === 'haftalik') {
+                        const tDate = t.createdAt.toDate();
+                        if(tDate < start || tDate > end) return;
+                    }
+
+                    if(t.statusMap && t.statusMap[u.uid]) { 
+                        total++; 
+                        if(t.statusMap[u.uid] === 'done') done++; 
+                    } 
+                });
+                
+                if(total > 0 || isAdmin()) {
+                    scores.push({ ...u, rate: total===0?0:(done/total)*100, done, total });
+                }
             });
             scores.sort((a,b) => b.rate - a.rate);
+            
+            if(scores.length === 0) list.innerHTML = '<div class="text-center text-muted mt-3">Veri yok.</div>';
+
             scores.forEach((s, idx) => {
                 list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary"><div class="d-flex align-items-center gap-3"><div class="fw-bold" style="width:20px;">${idx+1}</div><img src="${s.photoURL}" class="rounded-circle" width="35"><div><div class="fw-bold small">${s.name}</div><div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div></div></div><div class="fw-bold text-success">%${Math.round(s.rate)}</div></div>`;
             });
-            new bootstrap.Modal(document.getElementById('modal-leaderboard')).show(); pushState();
+            
+            if(!refresh) new bootstrap.Modal(document.getElementById('modal-leaderboard')).show(); pushState();
         };
 
-        window.goTab = (t,b) => { document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); };
+        window.goTab = (t,b) => { 
+            const titles = {'tasks':'Görev Panosu','messages':'Sohbetler','team':'Ekip Listesi','profile':'Profilim'};
+            document.getElementById('page-title').innerText = titles[t];
+            document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); 
+            document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); 
+        };
         window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
-        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; notifyChat(activeChatId);});
-        function notifyChat(cid) { if(cid.includes('_')){ const tg=cid.split('_').find(x=>x!==curUser.uid); addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date(), type:'chat', linkId:curUser.uid}); } }
-        function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false), orderBy('createdAt', 'desc')), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
+        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
         
-        window.openNotifs=async()=>{ 
-            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState();
-            const l=document.getElementById('notif-list'); l.innerHTML='...'; 
-            const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid), orderBy('createdAt', 'desc'))); 
-            l.innerHTML=''; 
-            s.forEach(d=>{ 
-                const n = d.data(); 
-                let action = '';
-                if(n.type === 'chat' && n.linkId) {
-                    const sender = allUsersCache.find(x => x.uid === n.linkId);
-                    if(sender) action = `onclick="openChat('${[curUser.uid, n.linkId].sort().join('_')}', '${sender.name}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide()"`;
-                } else if(n.type === 'task' && n.linkId) {
-                    action = `onclick="openTaskDetail('${n.linkId}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide(); pushState()"`;
+        function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
+        
+        window.handleNotifClick = async (type, linkId) => {
+            bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();
+            
+            if(type === 'task' && linkId) {
+                // If not in cache, fetch it
+                if(!allTasksCache[linkId]) {
+                    try {
+                        const snap = await getDoc(doc(db,"tasks",linkId));
+                        if(snap.exists()) {
+                            allTasksCache[linkId] = {id: snap.id, ...snap.data()};
+                            openTaskDetail(linkId);
+                        } else {
+                            showToast("Görev bulunamadı veya silinmiş.");
+                        }
+                    } catch(e) { console.error(e); }
+                } else {
+                    openTaskDetail(linkId);
                 }
-                
-                if(!action && n.text.includes('mesaj')) { action = `onclick="bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide()"`; }
+                pushState();
+            } else if(type === 'chat' && linkId) {
+                const u = allUsersCache.find(x => x.uid === linkId);
+                if(u) {
+                    openChat([curUser.uid, linkId].sort().join('_'), u.name);
+                    pushState();
+                }
+            }
+        };
 
-                l.innerHTML+=`<div class="p-3 border-bottom border-secondary ${n.read?'opacity-50':''} clickable" style="cursor:pointer" ${action}><small class="fw-bold">${n.text}</small></div>`; 
+        window.openNotifs=async()=>{ 
+            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState(); const l=document.getElementById('notif-list'); l.innerHTML='...'; 
+            const q = query(collection(db,"notifications"), where("to","==",curUser.uid)); const s=await getDocs(q); const n=[]; s.forEach(d=>n.push({id:d.id,...d.data()})); n.sort((a,b)=>b.createdAt-a.createdAt); 
+            l.innerHTML=''; if(n.length===0)l.innerHTML='<div class="text-center p-3 text-muted">Yok.</div>'; 
+            n.forEach(d=>{ 
+                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" onclick="handleNotifClick('${d.type}', '${d.linkId}')"><small class="fw-bold">${d.text}</small></div>`; 
                 updateDoc(doc(db,"notifications",d.id),{read:true}); 
             }); 
             document.getElementById('notif-dot').style.display='none'; 
-        }
-
-        async function loadRecentDMs() { 
-            if(unsubDMs) unsubDMs();
-            unsubDMs = onSnapshot(collection(db, "messages"), s => {
-                const dList = document.getElementById('dm-list'); 
-                let pairs = new Set();
-                s.forEach(d => { const c = d.data().channel; if(c && c.includes('_') && c.includes(curUser.uid)) { const other = c.split('_').find(x => x!==curUser.uid); pairs.add(other); } }); 
-                dList.innerHTML = ''; 
-                if(pairs.size === 0) dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>';
-                pairs.forEach(uid => { 
-                    const u = allUsersCache.find(x=>x.uid===uid); 
-                    if(u) dList.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,uid].sort().join('_')}','${u.name}'); pushState()"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; 
-                }); 
-            });
-        }
+        };
         
-        window.logout = () => signOut(auth);
+        async function loadRecentDMs(){ if(unsubDMs)unsubDMs(); unsubDMs=onSnapshot(collection(db,"messages"),s=>{ const l=document.getElementById('dm-list'); const p=new Set(); s.forEach(d=>{ const c=d.data().channel; if(c&&c.includes('_')&&c.includes(curUser.uid)) p.add(c.split('_').find(x=>x!==curUser.uid)); }); l.innerHTML=''; p.forEach(id=>{ const u=allUsersCache.find(x=>x.uid===id); if(u)l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,id].sort().join('_')}','${u.name}');pushState()"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; }); }); }
+        
+        window.logout=()=>signOut(auth);
         document.getElementById('form-register').addEventListener('submit',async e=>{ e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{ uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false, roles: ['Üye'], departments: ['...'] }); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(err){ showToast(err.message) } });
         document.getElementById('form-login').addEventListener('submit',async e=>{ e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ showToast("Hata: " + err.message); } });
         window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
-        window.openImgViewer = (src) => { document.getElementById('img-viewer-src').src = src; document.getElementById('img-viewer').style.display='flex'; }
+        window.closeImgViewer=()=>{document.getElementById('img-viewer').style.display='none';};
+        window.openImgViewer=(src)=>{document.getElementById('img-viewer-src').src=src;document.getElementById('img-viewer').style.display='flex';};
     </script>
 </body>
 </html>
