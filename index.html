@@ -74,7 +74,7 @@
             position: absolute; top: 12px; right: 12px; 
             display: flex; flex-direction: column; align-items: flex-end; gap: 4px; 
             width: 110px; pointer-events: none;
-            text-align: right; /* GUNCELLEME: Saga dayali */
+            text-align: right;
         }
         .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; justify-content: flex-end; }
         .task-icons i { cursor: pointer; }
@@ -485,10 +485,11 @@
                         const u = allUsersCache.find(x => x.uid === t.assignedToUid);
                         const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                         const n = u ? u.name : t.assignedTo;
-                        // GUNCELLEME: Padding arttirildi (px-3 py-1)
                         assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
                     } else {
-                        assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span>`;
+                        // GUNCELLEME: Departman kisaltmasi kullanma
+                        const abbr = DEPT_ABBR[t.assignedTo] || t.assignedTo;
+                        assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`;
                     }
 
                     list.innerHTML += `
@@ -565,7 +566,6 @@
                  const u = allUsersCache.find(x => x.uid === t.assignedToUid);
                  const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                  const n = u ? u.name : t.assignedTo;
-                 // GUNCELLEME: Padding burada da eklendi
                  assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="25"><span class="small">${n}</span></div>`;
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
@@ -648,7 +648,6 @@
             const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
             
             allUsersCache.forEach(u => {
-                // GUNCELLEME: Admin rolu varsa listeye ekleme
                 if(u.roles && u.roles.includes('Admin')) return;
 
                 const searchStr = (u.name + ' ' + (u.roles||[]).join(' ') + ' ' + (u.departments||[]).map(d=>DEPT_ABBR[d]||d).join(' ')).toLowerCase();
@@ -824,8 +823,25 @@
             if(isMine || isAdmin()) html += `<div class="ctx-item delete" onclick="deleteMsg('all')"><i class="fas fa-trash"></i> Herkes için Sil</div>`;
             html += `<div class="ctx-item delete" onclick="deleteMsg('me')"><i class="fas fa-trash-alt"></i> Benden Sil</div>`;
             document.getElementById('ctx-options').innerHTML = html;
-            let x = e.clientX, y = e.clientY; if(x+200>window.innerWidth)x-=200; if(y+200>window.innerHeight)y-=200;
-            ctx.style.top=y+'px'; ctx.style.left=x+'px'; ctx.style.display='flex';
+            
+            ctx.style.display='flex';
+            const menuWidth = ctx.offsetWidth;
+            const menuHeight = ctx.offsetHeight;
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+
+            let x = e.clientX;
+            let y = e.clientY;
+
+            if (x + menuWidth > winW) {
+                x = winW - menuWidth - 10;
+            }
+            if (y + menuHeight > winH) {
+                y = e.clientY - menuHeight;
+            }
+
+            ctx.style.top = y + 'px'; 
+            ctx.style.left = x + 'px';
         };
         document.addEventListener('click', (e)=>{if(!ctx.contains(e.target))ctx.style.display='none';});
         window.addReaction = async (emoji) => { ctx.style.display='none'; if(!selectedMsg)return; const c=selectedMsg.reactions||{}; if(c[curUser.uid]&&c[curUser.uid].emoji===emoji)await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:deleteField()}); else await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:{emoji,name:uData.name,uid:curUser.uid}}); };
