@@ -73,11 +73,12 @@
         .task-right-panel { 
             position: absolute; top: 12px; right: 12px; 
             display: flex; flex-direction: column; align-items: flex-end; gap: 4px; 
-            width: 100px; pointer-events: none;
+            width: 110px; pointer-events: none;
+            text-align: right; /* GUNCELLEME: Saga dayali */
         }
-        .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; }
+        .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; justify-content: flex-end; }
         .task-icons i { cursor: pointer; }
-        .task-card-content { margin-right: 100px; }
+        .task-card-content { margin-right: 115px; }
 
         /* Filters */
         .filter-scroll-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap; -webkit-overflow-scrolling: touch; }
@@ -484,7 +485,8 @@
                         const u = allUsersCache.find(x => x.uid === t.assignedToUid);
                         const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                         const n = u ? u.name : t.assignedTo;
-                        assigneesHtml = `<div class="d-flex align-items-center gap-2 p-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
+                        // GUNCELLEME: Padding arttirildi (px-3 py-1)
+                        assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
                     } else {
                         assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span>`;
                     }
@@ -563,7 +565,8 @@
                  const u = allUsersCache.find(x => x.uid === t.assignedToUid);
                  const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                  const n = u ? u.name : t.assignedTo;
-                 assigneesHtml = `<div class="d-flex align-items-center gap-2 p-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="25"><span class="small">${n}</span></div>`;
+                 // GUNCELLEME: Padding burada da eklendi
+                 assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="25"><span class="small">${n}</span></div>`;
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
@@ -645,6 +648,9 @@
             const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
             
             allUsersCache.forEach(u => {
+                // GUNCELLEME: Admin rolu varsa listeye ekleme
+                if(u.roles && u.roles.includes('Admin')) return;
+
                 const searchStr = (u.name + ' ' + (u.roles||[]).join(' ') + ' ' + (u.departments||[]).map(d=>DEPT_ABBR[d]||d).join(' ')).toLowerCase();
                 if(f && !searchStr.includes(f)) return;
                 let placed = false;
