@@ -98,10 +98,7 @@
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 5px; border: 1px solid #27272a; margin-bottom: 10px; }
         .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover; }
-        
-        /* Updated Profile Badge Style */
         .role-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: #333; color: #ccc; border: 1px solid #444; }
-        
         .search-list { max-height: 200px; overflow-y: auto; background: #202023; border: 1px solid #333; border-radius: 0 0 12px 12px; display: none; position: absolute; width: 100%; z-index: 1000; }
         .search-list div { padding: 10px; cursor: pointer; border-bottom: 1px solid #2a2a2d; font-size: 13px; }
         .search-list div:hover { background: var(--primary); color: black; }
@@ -114,6 +111,10 @@
         .st-pending { background: rgba(255,255,255,0.1); color: #aaa; }
         .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
         .st-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+
+        .avatar-stack { display: flex; align-items: center; }
+        .avatar-stack img { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #18181b; margin-left: -8px; object-fit: cover; }
+        .avatar-stack img:first-child { margin-left: 0; }
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000007; display: none; align-items: center; justify-content: center; flex-direction: column; }
         #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; }
@@ -258,7 +259,6 @@
     </div>
 
     <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
-    
     <div class="modal fade" id="modal-reactions" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Tepkiler</h5><div id="reaction-list" style="max-height:300px;overflow-y:auto"></div><div class="d-flex justify-content-end mt-2"><button class="btn btn-dark btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Görevi Yönet</h5><form id="form-task">
@@ -268,7 +268,10 @@
         <div class="mb-3"><label class="small text-muted">Son Tarih (Opsiyonel)</label><input type="datetime-local" id="t-deadline" class="form-control"></div>
         <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
         <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
-        <select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select>
+        <select id="t-dept" class="form-select mb-3"></select>
+        
+        <div id="user-multiselect" class="d-none border border-secondary rounded p-2 mb-3" style="max-height:150px; overflow-y:auto;"></div>
+        
         <button class="btn-primary-soft" id="btn-save-task">Kaydet</button>
     </form></div></div></div>
 
@@ -276,16 +279,13 @@
         <div class="d-flex justify-content-between align-items-start mb-3">
             <div style="flex:1; margin-right:10px;">
                 <h5 class="fw-bold mb-1" id="td-title">...</h5>
+                <div id="td-assignees" class="d-flex align-items-center mb-1"></div>
                 <div id="td-stars" class="text-warning small"></div>
             </div>
-            <div class="text-end" id="td-meta">
-                </div>
+            <div class="text-end" id="td-meta"></div>
         </div>
         <div class="bg-dark p-2 rounded mb-3 small text-muted" id="td-desc" style="max-height:100px;overflow-y:auto"></div>
-        <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6>
-        <div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div>
-        <div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div>
-    </div></div></div>
+        <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
@@ -303,7 +303,13 @@
     </div></div></div>
 
     <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6><div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div><button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button></div></div></div>
-    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-primary p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div><div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
+    
+    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden">
+        <div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div>
+        <div class="lb-tabs"><div class="lb-tab active" onclick="switchLB('genel', this)">Genel</div><div class="lb-tab" onclick="switchLB('haftalik', this)">Haftalık</div></div>
+        <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div>
+    </div></div></div>
+
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
 
@@ -336,7 +342,6 @@
         window.alert = window.showToast;
         window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = new bootstrap.Modal(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
-        // Helper for Calendar Week (Mon-Sun)
         function getWeekRange() {
             const now = new Date();
             const day = now.getDay(); 
@@ -394,25 +399,19 @@
             document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
             document.getElementById('prof-name').innerText = uData.name;
             const rDiv = document.getElementById('prof-roles'); rDiv.innerHTML='';
-            
-            // FIXED SPACING USING CLASS GAP
             rDiv.className = "d-flex justify-content-center flex-wrap gap-2 mb-2"; 
-            
             uData.roles.forEach(r => rDiv.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             uData.departments.forEach(d => { 
                 const abbr = DEPT_ABBR[d] || d.substring(0,3); 
                 rDiv.innerHTML += `<span class="badge bg-dark border border-secondary text-muted small">${abbr}</span>`; 
             });
-
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
-            
             document.getElementById('inp-city').value = uData.city || '';
             document.getElementById('inp-dist').value = uData.district || '';
             document.getElementById('inp-dob').value = uData.dob || '';
             document.getElementById('inp-phone').value = uData.phone || '';
             document.getElementById('inp-email').value = uData.contactEmail || uData.email || '';
-
             if(uData.socials) { ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { document.getElementById(`sm-${k}`).value = uData.socials[k] || ''; }); }
             calcSuccessRate();
         };
@@ -448,6 +447,22 @@
             list.style.display = 'block';
         };
 
+        window.togT=(v)=>{
+            document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
+            // Hide normal Select, Show Multi-Select
+            document.getElementById('t-user').classList.add('d-none'); // Always hide the old select
+            const ms = document.getElementById('user-multiselect');
+            if(v === 'user') {
+                ms.classList.remove('d-none');
+                ms.innerHTML = '';
+                allUsersCache.forEach(u => {
+                    ms.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}"><label class="form-check-label" for="u_${u.uid}">${u.name}</label></div>`;
+                });
+            } else {
+                ms.classList.add('d-none');
+            }
+        };
+
         function linkify(text) {
             const urlRegex = /((https?:\/\/)|(www\.))?[\w-]+\.[\w.\/]+(\?[\w=&]*)?/g;
             return text.replace(urlRegex, function(url) {
@@ -459,12 +474,16 @@
 
         function formatDeadline(dl) {
             if(!dl) return '';
-            const diff = new Date(dl) - new Date();
-            if(diff < 0) return '<span class="badge bg-danger ms-2" style="font-size:10px">Süre Doldu!</span>';
+            const date = new Date(dl);
+            const dateStr = date.toLocaleString('tr-TR', { day: 'numeric', month: 'short', weekday: 'short', hour: '2-digit', minute: '2-digit' });
+            
+            const diff = date - new Date();
+            if(diff < 0) return `<span class="badge bg-danger ms-2" style="font-size:10px">${dateStr} (Süre Doldu)</span>`;
+            
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            if(days > 0) return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${days} gün kaldı</span>`;
-            return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${hours} saat kaldı</span>`;
+            const timeRem = days > 0 ? `${days} gün` : `${hours} saat`;
+            return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${dateStr} (${timeRem})</span>`;
         }
 
         function listenTasks() {
@@ -474,7 +493,9 @@
                 let tempArr = [];
                 s.forEach(d => {
                     const t = { id: d.id, ...d.data() }; allTasksCache[t.id] = t;
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                    const isAssignedToMe = (t.assignedType==='all') || 
+                                           (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || 
+                                           (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
                     if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { tempArr.push(t); }
                 });
                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
@@ -483,8 +504,11 @@
                 const { start, end } = getWeekRange();
 
                 tempArr.forEach(t => {
-                    let myStatus = t.statusMap && t.statusMap[curUser.uid] ? t.statusMap[curUser.uid] : 'pending';
-                    if(t.assignedType === 'user' && t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap || {})[0] || 'pending';
+                    let myStatus = 'pending';
+                    if(t.statusMap) {
+                        if(t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
+                        else if(t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap)[0] || 'pending';
+                    }
                     
                     if(filter === 'Bu Hafta') {
                         const tDate = t.createdAt.toDate();
@@ -497,15 +521,28 @@
                     let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                     const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                     const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
                     
                     const dlBadge = formatDeadline(t.deadline);
                     const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
+                    // Avatars for Assignees
+                    let assigneesHtml = '';
+                    if(t.assignedType === 'user' && t.assignedToUids) {
+                        assigneesHtml = '<div class="avatar-stack">';
+                        t.assignedToUids.forEach(uid => {
+                            const u = allUsersCache.find(x => x.uid === uid);
+                            if(u) assigneesHtml += `<img src="${u.photoURL}" title="${u.name}">`;
+                        });
+                        assigneesHtml += '</div>';
+                    } else {
+                        assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span>`;
+                    }
+
                     list.innerHTML += `
                     <div class="card-custom" onclick="openTaskDetail('${t.id}'); pushState()">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <div><span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span> ${starsHtml} ${dlBadge}</div>
+                            <div class="d-flex align-items-center gap-2">${assigneesHtml} ${starsHtml} ${dlBadge}</div>
                             ${canEdit ? `<div class="d-flex gap-2">
                                 <i class="fas fa-edit text-warning" style="font-size:14px" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
                                 <i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>
@@ -527,14 +564,8 @@
             document.getElementById('form-task').reset(); 
             document.getElementById('t-id').value = '';
             setStars(0);
+            document.getElementById('user-multiselect').classList.add('d-none');
             
-            const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
-            const snap = await getDocs(collection(db,"users"));
-            snap.forEach(d => { 
-                if(d.id !== curUser.uid && !d.data().isBanned)
-                    userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; 
-            });
-
             if(editId) {
                 const t = allTasksCache[editId];
                 if(t) {
@@ -545,10 +576,7 @@
                     setStars(t.importance || 0);
                     document.getElementById('t-type').value = t.assignedType;
                     togT(t.assignedType);
-                    setTimeout(() => {
-                        if(t.assignedType === 'department') document.getElementById('t-dept').value = t.assignedTo;
-                        if(t.assignedType === 'user') document.getElementById('t-user').value = t.assignedToUid;
-                    }, 100);
+                    // Pre-select logic would go here for edits
                 }
             }
 
@@ -559,9 +587,18 @@
             const t = allTasksCache[tid]; if(!t) return;
             document.getElementById('td-title').innerText = t.title;
             
-            const dateStr = t.deadline ? new Date(t.deadline).toLocaleString('tr-TR', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
-            const badge = formatDeadline(t.deadline);
-            document.getElementById('td-meta').innerHTML = t.deadline ? `<div class="small fw-bold">${dateStr}</div>${badge}` : '';
+            const dlBadge = formatDeadline(t.deadline);
+            document.getElementById('td-meta').innerHTML = dlBadge;
+
+            // Avatars in Detail
+            let assigneesHtml = '';
+            if(t.assignedType === 'user' && t.assignedToUids) {
+                t.assignedToUids.forEach(uid => {
+                    const u = allUsersCache.find(x => x.uid === uid);
+                    if(u) assigneesHtml += `<div class="d-flex align-items-center gap-2 me-3"><img src="${u.photoURL}" class="rounded-circle" width="20"><span class="small">${u.name}</span></div>`;
+                });
+            } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
+            document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
             document.getElementById('td-desc').innerText = t.description || 'Açıklama yok.';
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
@@ -593,20 +630,27 @@
             const title = document.getElementById('t-title').value, desc = document.getElementById('t-desc').value, type = document.getElementById('t-type').value, imp = parseInt(document.getElementById('t-stars').value);
             const deadline = document.getElementById('t-deadline').value;
             
-            let to = "Herkes", uid = null;
+            let to = "Herkes", uid = null, uids = [];
             if(type === 'department') to = document.getElementById('t-dept').value;
-            if(type === 'user') { const el = document.getElementById('t-user'); to = el.options[el.selectedIndex].text; uid = el.value; const roles = el.options[el.selectedIndex].getAttribute('data-role'); if(uData.roles.includes('Üye') && uData.roles.length===1 && (roles.includes('YK') || roles.includes('Başkan'))) { showToast("Yetkisiz işlem."); return; } }
+            if(type === 'user') {
+                document.querySelectorAll('#user-multiselect input:checked').forEach(cb => {
+                    uids.push(cb.value);
+                });
+                if(uids.length === 0) { showToast("En az bir kişi seçmelisiniz."); return; }
+                to = uids.length + " Kişi";
+                uid = uids[0]; // Legacy support
+            }
             
-            const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, importance: imp, deadline: deadline };
+            const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, assignedToUids: uids, importance: imp, deadline: deadline };
 
             if(editId) {
                 await updateDoc(doc(db, "tasks", editId), taskData);
                 showToast("Görev güncellendi!");
             } else {
                 taskData.createdByUid = curUser.uid; taskData.creatorName = uData.name; taskData.creatorPhoto = uData.photoURL; taskData.createdAt = new Date(); taskData.statusMap = {};
-                if(type === 'user' && uid) taskData.statusMap[uid] = 'pending';
+                uids.forEach(id => taskData.statusMap[id] = 'pending');
                 const ref = await addDoc(collection(db,"tasks"), taskData);
-                if(uid) addDoc(collection(db,"notifications"),{to:uid,text:`Yeni Görev: ${title}`,read:false,createdAt:new Date(), type:'task', linkId: ref.id});
+                uids.forEach(id => addDoc(collection(db,"notifications"),{to:id,text:`Yeni Görev: ${title}`,read:false,createdAt:new Date(), type:'task', linkId: ref.id}));
             }
             bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset(); setStars(0);
         });
@@ -644,7 +688,7 @@
                     const canDelete = (canManageUsers() && u.uid !== curUser.uid);
                     container.innerHTML += `
                     <div class="d-flex align-items-center justify-content-between p-2 mb-1 clickable" style="border-bottom:1px solid rgba(255,255,255,0.05)" onclick="openUserProfile('${u.uid}'); pushState()">
-                        <div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1">${badges}</div></div></div>
+                        <div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1 gap-2">${badges}</div></div></div>
                         <div class="d-flex align-items-center gap-2">
                              ${canManageUsers() ? `<button class="btn btn-sm btn-dark text-warning border-secondary" onclick="event.stopPropagation();openUserEdit('${u.uid}'); pushState()"><i class="fas fa-edit"></i></button>` : ''}
                              <button class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2 text-white" onclick="event.stopPropagation();openChat('${[curUser.uid,u.uid].sort().join('_')}','${u.name}'); pushState()"><i class="far fa-paper-plane"></i></button>
@@ -842,45 +886,35 @@
             document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); 
             document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); 
         };
-        window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
+        window.togT=(v)=>{
+            document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
+            document.getElementById('t-user').classList.add('d-none');
+            const ms = document.getElementById('user-multiselect');
+            if(v === 'user') {
+                ms.classList.remove('d-none');
+                ms.innerHTML = '';
+                allUsersCache.forEach(u => {
+                    ms.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}"><label class="form-check-label" for="u_${u.uid}">${u.name}</label></div>`;
+                });
+            } else {
+                ms.classList.add('d-none');
+            }
+        };
         document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
         
         function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
-        
-        window.handleNotifClick = async (type, linkId) => {
-            bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();
-            
-            if(type === 'task' && linkId) {
-                // If not in cache, fetch it
-                if(!allTasksCache[linkId]) {
-                    try {
-                        const snap = await getDoc(doc(db,"tasks",linkId));
-                        if(snap.exists()) {
-                            allTasksCache[linkId] = {id: snap.id, ...snap.data()};
-                            openTaskDetail(linkId);
-                        } else {
-                            showToast("Görev bulunamadı veya silinmiş.");
-                        }
-                    } catch(e) { console.error(e); }
-                } else {
-                    openTaskDetail(linkId);
-                }
-                pushState();
-            } else if(type === 'chat' && linkId) {
-                const u = allUsersCache.find(x => x.uid === linkId);
-                if(u) {
-                    openChat([curUser.uid, linkId].sort().join('_'), u.name);
-                    pushState();
-                }
-            }
-        };
-
         window.openNotifs=async()=>{ 
             const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState(); const l=document.getElementById('notif-list'); l.innerHTML='...'; 
             const q = query(collection(db,"notifications"), where("to","==",curUser.uid)); const s=await getDocs(q); const n=[]; s.forEach(d=>n.push({id:d.id,...d.data()})); n.sort((a,b)=>b.createdAt-a.createdAt); 
             l.innerHTML=''; if(n.length===0)l.innerHTML='<div class="text-center p-3 text-muted">Yok.</div>'; 
             n.forEach(d=>{ 
-                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" onclick="handleNotifClick('${d.type}', '${d.linkId}')"><small class="fw-bold">${d.text}</small></div>`; 
+                let act = '';
+                if(d.type === 'task' && d.linkId) act = `onclick="openTaskDetail('${d.linkId}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"`;
+                else if(d.type === 'chat' && d.linkId) {
+                     const u = allUsersCache.find(x=>x.uid === d.linkId);
+                     if(u) act = `onclick="openChat('${[curUser.uid, d.linkId].sort().join('_')}', '${u.name}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();"`;
+                }
+                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" ${act}><small>${d.text}</small></div>`; 
                 updateDoc(doc(db,"notifications",d.id),{read:true}); 
             }); 
             document.getElementById('notif-dot').style.display='none'; 
@@ -897,4 +931,3 @@
     </script>
 </body>
 </html>
-
