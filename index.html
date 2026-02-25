@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V25.0 - Final Stable</title>
+    <title>SmileGO Tracker</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -36,24 +36,21 @@
         .bottom-nav { height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; }
         .main-content { position: fixed; top: 70px; bottom: 85px; width: 100%; overflow-y: auto; padding: 20px; display: none; z-index: 1; }
         .main-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Helpers */
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .card-custom { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition:0.2s; position: relative; }
         .card-custom:active { background: #202023; }
         .form-control, .form-select { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 12px; border-radius: 12px; font-size: 14px; }
-        .form-control:focus, .form-select:focus { background: #27272a; color: white; border-color: var(--primary); box-shadow: none; }
         .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
-        
-        /* CHAT SYSTEM */
+
+        /* CHAT */
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
         .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; }
         .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
         .chat-row.right { justify-content: flex-end; }
         .chat-row.left { justify-content: flex-start; }
-        .chat-avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; flex-shrink: 0; } 
+        .chat-avatar-img { width: 35px; height: 35px; border-radius: 50% !important; object-fit: cover !important; flex-shrink: 0; } 
         .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 16px; font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; display: flex; flex-direction: column; }
         .bubble-sent { background: var(--sent-bg); color: #fff; border-top-right-radius: 2px; margin-left: auto; }
         .bubble-received { background: var(--recv-bg); color: #fff; border-top-left-radius: 2px; margin-right: auto; }
@@ -69,45 +66,30 @@
         .cb-role { background: #3f3f46; color: #ddd; }
         .cb-dept { border: 1px solid #52525b; color: #a1a1aa; background: transparent; }
 
-        /* Star & Status & UX */
+        /* Task & Stars */
         #star-select { display: flex; gap: 2px; align-items: center; }
         #star-select i { font-size: 24px; cursor: pointer; width: 24px; text-align: center; }
         
-        #td-status-list > div:last-child { border-bottom: none !important; }
-        .dept-group > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
-        #notif-list > div:last-child { border-bottom: none !important; }
-        #lb-list > div:last-child { border-bottom: none !important; }
-
-        .lb-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.1); }
-        .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
-        .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
-
-        /* HORIZONTAL SCROLLABLE FILTERS */
-        .filter-scroll-container {
-            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
+        .task-right-panel { 
+            position: absolute; top: 12px; right: 12px; 
+            display: flex; flex-direction: column; align-items: flex-end; gap: 4px; 
+            width: 100px; pointer-events: none;
         }
+        .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; }
+        .task-icons i { cursor: pointer; }
+        .task-card-content { margin-right: 100px; }
+
+        /* Filters */
+        .filter-scroll-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap; -webkit-overflow-scrolling: touch; }
         .filter-scroll-container::-webkit-scrollbar { display: none; }
-        .filter-btn { flex: 0 0 auto; width: auto; padding-left: 16px; padding-right: 16px; border-radius: 50px; font-size: 13px; }
+        .filter-btn { flex: 0 0 auto; min-width: auto; padding: 6px 16px; border-radius: 50px; font-size: 12px; }
 
-        #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; overflow: hidden; }
-        #img-viewer img { max-width: 100%; max-height: 100%; transition: transform 0.1s ease-out; }
-
-        #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
-        #app-toast.show { transform: translateX(-50%) translateY(0); }
-        
-        #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
-        .ctx-reactions { display: flex; padding: 10px; gap: 5px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: #252529; }
-        .ctx-emoji { font-size: 20px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 50%; }
-        .ctx-emoji:active { background: rgba(255,255,255,0.2); transform: scale(1.2); }
-        .ctx-item { padding: 12px 15px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; transition:0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .ctx-item:active { background: #333; }
-        .ctx-item.delete { color: #ff6b6b; }
-
+        /* General UI */
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 5px; border: 1px solid #27272a; margin-bottom: 10px; }
-        .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover; }
+        .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover !important; }
         .role-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; background: #333; color: #ccc; border: 1px solid #444; }
+        .dept-group > div:last-child, #td-status-list > div:last-child, #notif-list > div:last-child, #lb-list > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
         .search-list { max-height: 200px; overflow-y: auto; background: #202023; border: 1px solid #333; border-radius: 0 0 12px 12px; display: none; position: absolute; width: 100%; z-index: 1000; }
         .search-list div { padding: 10px; cursor: pointer; border-bottom: 1px solid #2a2a2d; font-size: 13px; }
         .search-list div:hover { background: var(--primary); color: black; }
@@ -121,9 +103,19 @@
         .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
         .st-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 
-        .avatar-stack { display: flex; align-items: center; }
-        .avatar-stack img { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #18181b; margin-left: -8px; object-fit: cover; }
-        .avatar-stack img:first-child { margin-left: 0; }
+        .lb-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
+        .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
+
+        #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
+        #app-toast.show { transform: translateX(-50%) translateY(0); }
+        
+        #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
+        .ctx-reactions { display: flex; padding: 10px; gap: 5px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: #252529; }
+        .ctx-emoji { font-size: 20px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 50%; }
+        .ctx-item { padding: 12px 15px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; transition:0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ctx-item:active { background: #333; }
+        .ctx-item.delete { color: #ff6b6b; }
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000007; display: none; align-items: center; justify-content: center; flex-direction: column; }
         #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; }
@@ -135,23 +127,10 @@
 <body>
 
     <div id="app-toast"><i class="fas fa-info-circle text-primary fs-5"></i><span id="toast-msg" class="fw-bold small">...</span></div>
-
     <div class="modal fade" id="modal-confirm" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-question-circle text-warning fa-3x mb-3"></i><h5 class="fw-bold mb-2">Emin misiniz?</h5><p class="text-muted small mb-4" id="confirm-text">...</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-dark border-secondary w-50" data-bs-dismiss="modal">İptal</button><button class="btn btn-danger w-50" id="confirm-btn-yes">Evet</button></div></div></div></div>
-
-    <div id="context-menu">
-        <div class="ctx-reactions">
-            <span class="ctx-emoji" onclick="addReaction('❤️')">❤️</span><span class="ctx-emoji" onclick="addReaction('👍')">👍</span><span class="ctx-emoji" onclick="addReaction('👎')">👎</span>
-            <span class="ctx-emoji" onclick="addReaction('🙏')">🙏</span><span class="ctx-emoji" onclick="addReaction('✍️')">✍️</span><span class="ctx-emoji" onclick="addReaction('✅')">✅</span>
-        </div>
-        <div id="ctx-options"></div>
-    </div>
-
+    <div id="context-menu"><div class="ctx-reactions"><span class="ctx-emoji" onclick="addReaction('❤️')">❤️</span><span class="ctx-emoji" onclick="addReaction('👍')">👍</span><span class="ctx-emoji" onclick="addReaction('👎')">👎</span><span class="ctx-emoji" onclick="addReaction('🙏')">🙏</span><span class="ctx-emoji" onclick="addReaction('✍️')">✍️</span><span class="ctx-emoji" onclick="addReaction('✅')">✅</span></div><div id="ctx-options"></div></div>
     <div id="loading-overlay"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div></div>
-    
-    <div id="img-viewer">
-        <button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
-        <img id="img-viewer-src" src="">
-    </div>
+    <div id="img-viewer"><button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button><img id="img-viewer-src" src=""></div>
 
     <div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10000;">
         <div id="auth-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, #312e81 0%, #09090b 60%);z-index:-1"></div>
@@ -170,73 +149,51 @@
             <h5 class="m-0 fw-bold" id="page-title">Görev Panosu</h5>
             <div class="d-flex gap-2 align-items-center">
                 <button class="header-icon-btn" onclick="openLeaderboard()"><i class="fas fa-trophy text-warning"></i></button>
-                <div class="position-relative">
-                    <button class="header-icon-btn" onclick="openNotifs()"><i class="fas fa-bell"></i></button>
-                    <div id="notif-dot" class="notif-dot" style="position:absolute;top:5px;right:5px;width:8px;height:8px;background:red;border-radius:50%;display:none;border:1px solid #000"></div>
-                </div>
+                <div class="position-relative"><button class="header-icon-btn" onclick="openNotifs()"><i class="fas fa-bell"></i></button><div id="notif-dot" class="notif-dot" style="position:absolute;top:5px;right:5px;width:8px;height:8px;background:red;border-radius:50%;display:none;border:1px solid #000"></div></div>
             </div>
         </header>
 
         <div id="view-tasks" class="main-content active">
             <button id="btn-add-task" class="btn-primary-soft mb-4 shadow-sm" onclick="openTaskModal()"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
             <div class="filter-scroll-container mb-3">
-                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('pending', this)">Başlamadı</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('progress', this)">Yapılıyor</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('done', this)">Bitti</button>
+                <button class="btn btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
+                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
+                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('pending', this)">Başlamadı</button>
+                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('progress', this)">Yapılıyor</button>
+                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('done', this)">Bitti</button>
             </div>
             <div id="task-list" class="d-flex flex-column gap-2"></div>
         </div>
 
-        <div id="view-messages" class="main-content">
-            <h6 class="text-muted small fw-bold mb-3 ls-1">GRUPLAR</h6>
-            <div id="channel-list" class="d-flex flex-column gap-2 mb-4"></div>
-            <h6 class="text-muted small fw-bold mb-3 ls-1">ÖZEL MESAJLAR</h6>
-            <div id="dm-list" class="d-flex flex-column gap-2"></div>
-        </div>
-
-        <div id="view-team" class="main-content">
-            <input type="text" class="form-control mb-4" placeholder="Ekipte ara (İsim, Rol, Dept)..." onkeyup="renderTeam(this.value)">
-            <div id="team-list"></div>
-        </div>
-
+        <div id="view-messages" class="main-content"><h6 class="text-muted small fw-bold mb-3 ls-1">GRUPLAR</h6><div id="channel-list" class="d-flex flex-column gap-2 mb-4"></div><h6 class="text-muted small fw-bold mb-3 ls-1">ÖZEL MESAJLAR</h6><div id="dm-list" class="d-flex flex-column gap-2"></div></div>
+        <div id="view-team" class="main-content"><input type="text" class="form-control mb-4" placeholder="Ekipte ara (İsim, Rol, Dept)..." onkeyup="renderTeam(this.value)"><div id="team-list"></div></div>
+        
         <div id="view-profile" class="main-content">
             <div class="text-center">
                 <div class="mb-3 position-relative d-inline-block">
-                    <img id="prof-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110">
+                    <img id="prof-img" src="" class="rounded-circle border border-2 border-secondary p-1" style="width:110px; height:110px;">
                     <label for="file-inp" class="position-absolute bottom-0 end-0 bg-white text-dark rounded-circle d-flex align-items-center justify-content-center shadow" style="width:35px;height:35px;cursor:pointer"><i class="fas fa-camera small"></i></label>
                     <input type="file" id="file-inp" class="d-none" accept="image/*" onchange="uploadPhoto(this)">
                 </div>
-                <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-                    <h4 id="prof-name" class="fw-bold m-0">...</h4>
-                    <i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i>
-                </div>
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
-                
                 <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
-                    <svg class="progress-ring" width="60" height="60">
-                        <circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
-                        <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/>
-                    </svg>
+                    <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
                 </div>
             </div>
              <div class="card-custom mt-3">
                 <h6 class="fw-bold text-muted mb-3">KİŞİSEL BİLGİLER</h6>
                 <div class="mb-3 position-relative"><label class="small text-muted">Üniversite</label><input type="text" class="form-control" id="inp-uni" placeholder="Üniversite Ara..." onkeyup="filterSearch('uni')"><div class="search-list" id="list-uni"></div></div>
                 <div class="mb-3 position-relative"><label class="small text-muted">Bölüm</label><input type="text" class="form-control" id="inp-sec" placeholder="Bölüm Ara..." onkeyup="filterSearch('sec')"><div class="search-list" id="list-sec"></div></div>
-                <div class="row">
-                    <div class="col-6 mb-3"><label class="small text-muted">İl</label><input type="text" class="form-control" id="inp-city" placeholder="İl"></div>
-                    <div class="col-6 mb-3"><label class="small text-muted">İlçe</label><input type="text" class="form-control" id="inp-dist" placeholder="İlçe"></div>
-                </div>
+                <div class="row"><div class="col-6 mb-3"><label class="small text-muted">İl</label><input type="text" class="form-control" id="inp-city" placeholder="İl"></div><div class="col-6 mb-3"><label class="small text-muted">İlçe</label><input type="text" class="form-control" id="inp-dist" placeholder="İlçe"></div></div>
                 <div class="mb-3"><label class="small text-muted">Doğum Tarihi</label><input type="date" class="form-control" id="inp-dob"></div>
                 <div class="mb-3"><label class="small text-muted">Telefon</label><input type="tel" class="form-control" id="inp-phone" placeholder="0555..."></div>
                 <div class="mb-3"><label class="small text-muted">E-Posta</label><input type="email" class="form-control" id="inp-email" placeholder="iletisim@..."></div>
                 <button class="btn btn-sm btn-success w-100" onclick="saveEduInfo()">Bilgileri Kaydet</button>
              </div>
              <div class="card-custom mt-2">
-                <h6 class="fw-bold text-muted mb-3">SOSYAL MEDYA (Kullanıcı Adları)</h6>
+                <h6 class="fw-bold text-muted mb-3">SOSYAL MEDYA</h6>
                 <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-linkedin"></i></span><input id="sm-linkedin" class="form-control" placeholder="LinkedIn"></div>
                 <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-instagram"></i></span><input id="sm-instagram" class="form-control" placeholder="Instagram"></div>
                 <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-twitter"></i></span><input id="sm-x" class="form-control" placeholder="X (Twitter)"></div>
@@ -271,7 +228,6 @@
     </div>
 
     <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
-    
     <div class="modal fade" id="modal-reactions" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Tepkiler</h5><div id="reaction-list" style="max-height:300px;overflow-y:auto"></div><div class="d-flex justify-content-end mt-2"><button class="btn btn-dark btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Görevi Yönet</h5><form id="form-task">
@@ -282,27 +238,18 @@
         <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
         <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
         <select id="t-dept" class="form-select mb-3"></select>
-        
-        <div id="user-multiselect" class="d-none border border-secondary rounded p-2 mb-3" style="max-height:150px; overflow-y:auto;"></div>
-        
-        <button class="btn-primary-soft" id="btn-save-task">Kaydet</button>
+        <select id="t-user" class="form-select mb-4 d-none"></select> <button type="button" class="btn-primary-soft" onclick="saveTask()">Kaydet</button>
     </form></div></div></div>
 
     <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
-        <div class="d-flex justify-content-between align-items-start mb-3">
-            <div style="flex:1; margin-right:10px;">
-                <h5 class="fw-bold mb-1" id="td-title">...</h5>
-                <div id="td-assignees" class="d-flex align-items-center mb-1"></div>
-            </div>
-            <div class="text-end" id="td-meta"></div>
-        </div>
+        <div class="d-flex justify-content-between align-items-start mb-3"><div style="flex:1; margin-right:10px;"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-assignees" class="d-flex align-items-center mb-1"></div></div><div class="text-end" id="td-meta"></div></div>
         <div class="d-flex flex-wrap gap-2 mb-2 align-items-center" id="td-stars-wrapper"></div>
         <div class="bg-dark p-2 rounded mb-3 small text-muted" id="td-desc" style="max-height:100px;overflow-y:auto"></div>
         <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="80" height="80"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div></div>
+        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div></div>
         <div class="mb-3 text-start">
              <div class="small text-muted mb-1"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div>
              <div class="small text-muted mb-1"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div>
@@ -316,16 +263,9 @@
     </div></div></div>
 
     <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6><div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div><button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button></div></div></div>
-    
-    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden">
-        <div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div>
-        <div class="lb-tabs"><div class="lb-tab active" onclick="switchLB('genel', this)">Genel</div><div class="lb-tab" onclick="switchLB('haftalik', this)">Haftalık</div></div>
-        <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div>
-    </div></div></div>
-
+    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div><div class="lb-tabs"><div class="lb-tab active" onclick="switchLB('genel', this)">Genel</div><div class="lb-tab" onclick="switchLB('haftalik', this)">Haftalık</div></div><div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
-    
     <div class="modal fade" id="modal-name-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3"><h6 class="mb-3">İsim Değiştir</h6><input id="inp-new-name" class="form-control mb-3"><button class="btn btn-success w-100" onclick="saveMyName()">Kaydet</button></div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -357,7 +297,6 @@
         window.alert = window.showToast;
         window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = new bootstrap.Modal(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
-        // Helper for Calendar Week (Mon-Sun)
         function getWeekRange() {
             const now = new Date();
             const day = now.getDay(); 
@@ -408,7 +347,8 @@
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
         const canSeeAllTasks = () => isAdmin(); 
-        const canSeeAllChannels = () => isBoard() || uData.roles?.includes('YK');
+        // FIX: YKY SEES ONLY OWN DEPT. YK, PRES, ADMIN SEE ALL.
+        const canSeeAllChannels = () => uData.roles?.some(r => ['YK','Başkan','Admin'].includes(r));
         const isBoard = () => uData.roles?.some(r => ['YK','YKY','Başkan','Admin'].includes(r));
 
         window.loadProfile = () => {
@@ -419,7 +359,7 @@
             uData.roles.forEach(r => rDiv.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             uData.departments.forEach(d => { 
                 const abbr = DEPT_ABBR[d] || d.substring(0,3); 
-                rDiv.innerHTML += `<span class="badge bg-dark border border-secondary text-muted small">${abbr}</span>`; 
+                rDiv.innerHTML += `<span class="badge bg-dark border border-secondary text-muted small ms-1">${abbr}</span>`; 
             });
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
@@ -475,20 +415,7 @@
 
         window.togT=(v)=>{
             document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
-            document.getElementById('t-user').classList.add('d-none');
-            const ms = document.getElementById('user-multiselect');
-            if(v === 'user') {
-                ms.classList.remove('d-none');
-                ms.innerHTML = '';
-                allUsersCache.forEach(u => {
-                    ms.innerHTML += `<div class="form-check p-2 border-bottom border-dark" style="cursor:pointer" onclick="this.querySelector('input').click()">
-                        <input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}" onclick="event.stopPropagation()">
-                        <label class="form-check-label ms-2" for="u_${u.uid}" style="pointer-events:none">${u.name}</label>
-                    </div>`;
-                });
-            } else {
-                ms.classList.add('d-none');
-            }
+            document.getElementById('t-user').classList.toggle('d-none',v!=='user');
         };
 
         function linkify(text) {
@@ -506,12 +433,12 @@
             const dateStr = date.toLocaleString('tr-TR', { day: 'numeric', month: 'short', weekday: 'short', hour: '2-digit', minute: '2-digit' });
             
             const diff = date - new Date();
-            if(diff < 0) return `<span class="badge bg-danger ms-2" style="font-size:10px">${dateStr} (Süre Doldu)</span>`;
+            if(diff < 0) return `<div class="d-flex flex-column align-items-end"><span class="small text-muted">${dateStr}</span><span class="badge bg-danger" style="font-size:10px">Süre Doldu!</span></div>`;
             
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const timeRem = days > 0 ? `${days} gün` : `${hours} saat`;
-            return `<span class="badge bg-warning text-dark ms-2" style="font-size:10px">${dateStr} (${timeRem})</span>`;
+            return `<div class="d-flex flex-column align-items-end"><span class="small text-muted">${dateStr}</span><span class="badge bg-warning text-dark" style="font-size:10px">${timeRem} kaldı</span></div>`;
         }
 
         function listenTasks() {
@@ -521,7 +448,7 @@
                 let tempArr = [];
                 s.forEach(d => {
                     const t = { id: d.id, ...d.data() }; allTasksCache[t.id] = t;
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
+                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
                     if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { tempArr.push(t); }
                 });
                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
@@ -547,40 +474,39 @@
                     let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                     const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                     const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && (t.assignedToUid===curUser.uid || (t.assignedToUids && t.assignedToUids.includes(curUser.uid))));
+                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
                     
                     const dlBadge = formatDeadline(t.deadline);
                     const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
                     let assigneesHtml = '';
-                    if(t.assignedType === 'user' && t.assignedToUids) {
-                        assigneesHtml = '<div class="avatar-stack">';
-                        t.assignedToUids.forEach(uid => {
-                            const u = allUsersCache.find(x => x.uid === uid);
-                            if(u) assigneesHtml += `<img src="${u.photoURL}" title="${u.name}">`;
-                        });
-                        assigneesHtml += '</div>';
+                    if(t.assignedType === 'user' && t.assignedToUid) {
+                        const u = allUsersCache.find(x => x.uid === t.assignedToUid);
+                        const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
+                        const n = u ? u.name : t.assignedTo;
+                        assigneesHtml = `<div class="d-flex align-items-center gap-2 p-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
                     } else {
                         assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span>`;
                     }
 
                     list.innerHTML += `
                     <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
-                        ${canEdit ? `<div style="position:absolute; top:12px; right:12px;" class="d-flex gap-2">
-                            <i class="fas fa-edit text-warning" style="font-size:14px" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
-                            <i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>
-                        </div>` : ''}
+                        <div class="task-right-panel">
+                            ${canEdit ? `<div class="task-icons">
+                                <i class="fas fa-edit text-warning clickable" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
+                                <i class="fas fa-trash text-danger clickable" onclick="event.stopPropagation();delTask('${t.id}')"></i>
+                            </div>` : ''}
+                            ${dlBadge}
+                        </div>
                         
-                        <div style="margin-right: 50px;">
-                            <h6 class="fw-bold mb-1">${t.title}</h6>
+                        <div class="task-card-content" style="margin-right: 90px;">
+                            <h6 class="fw-bold mb-1 text-truncate">${t.title}</h6>
                             <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
                         </div>
 
-                        ${dlBadge ? `<div class="position-absolute" style="top:40px; right:12px; text-align:right">${dlBadge}</div>` : ''}
-
-                        <p class="text-muted small mb-2 text-truncate" style="margin-right:80px">${t.description || ''}</p>
+                        <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${t.description || ''}</p>
                         
-                        <div class="d-flex align-items-center justify-content-between mt-3">
+                        <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
                             ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
                         </div>
@@ -614,12 +540,7 @@
                     togT(t.assignedType);
                     setTimeout(() => {
                         if(t.assignedType === 'department') document.getElementById('t-dept').value = t.assignedTo;
-                        if(t.assignedType === 'user' && t.assignedToUids) {
-                            t.assignedToUids.forEach(uid => {
-                                const cb = document.getElementById(`u_${uid}`);
-                                if(cb) cb.checked = true;
-                            });
-                        }
+                        if(t.assignedType === 'user') document.getElementById('t-user').value = t.assignedToUid;
                     }, 100);
                 }
             } else {
@@ -637,14 +558,12 @@
             const dlBadge = formatDeadline(t.deadline);
             document.getElementById('td-meta').innerHTML = dlBadge;
 
-            // Avatars in Detail
             let assigneesHtml = '';
-            if(t.assignedType === 'user' && t.assignedToUids) {
-                t.assignedToUids.forEach(uid => {
-                    const u = allUsersCache.find(x => x.uid === uid);
-                    if(u) assigneesHtml += `<div class="d-flex align-items-center gap-2 me-3 mb-1"><img src="${u.photoURL}" class="rounded-circle" width="25"><span class="small">${u.name}</span></div>`;
-                });
-                assigneesHtml = `<div class="d-flex flex-wrap">${assigneesHtml}</div>`;
+            if(t.assignedType === 'user' && t.assignedToUid) {
+                 const u = allUsersCache.find(x => x.uid === t.assignedToUid);
+                 const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
+                 const n = u ? u.name : t.assignedTo;
+                 assigneesHtml = `<div class="d-flex align-items-center gap-2 p-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="25"><span class="small">${n}</span></div>`;
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
@@ -673,47 +592,46 @@
             for(let i=0; i<5; i++) stars[i].className = i < newVal ? 'fas fa-star clickable' : 'far fa-star clickable'; 
         };
 
-        document.getElementById('form-task').addEventListener('submit', async e => {
-            e.preventDefault();
-            const editId = document.getElementById('t-id').value;
-            const title = document.getElementById('t-title').value, desc = document.getElementById('t-desc').value, type = document.getElementById('t-type').value, imp = parseInt(document.getElementById('t-stars').value);
-            const deadline = document.getElementById('t-deadline').value;
-            
-            let to = "Herkes", uid = null, uids = [];
-            if(type === 'department') to = document.getElementById('t-dept').value;
-            if(type === 'user') {
-                document.querySelectorAll('#user-multiselect input:checked').forEach(cb => { uids.push(cb.value); });
-                if(uids.length === 0) { showToast("En az bir kişi seçmelisiniz."); return; }
-                to = uids.length + " Kişi";
-                uid = uids[0];
-            }
-            
-            const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, assignedToUids: uids, importance: imp, deadline: deadline };
+        // FIXED SAVE TASK FUNCTION
+        window.saveTask = async () => {
+            try {
+                const editId = document.getElementById('t-id').value;
+                const title = document.getElementById('t-title').value;
+                const desc = document.getElementById('t-desc').value;
+                const type = document.getElementById('t-type').value;
+                const imp = parseInt(document.getElementById('t-stars').value);
+                const deadline = document.getElementById('t-deadline').value;
+                
+                let to = "Herkes", uid = null;
+                if(type === 'department') to = document.getElementById('t-dept').value;
+                if(type === 'user') { 
+                    const el = document.getElementById('t-user'); 
+                    to = el.options[el.selectedIndex].text; 
+                    uid = el.value; 
+                }
+                
+                const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, importance: imp, deadline: deadline };
 
-            if(editId) {
-                await updateDoc(doc(db, "tasks", editId), taskData);
-                showToast("Görev güncellendi!");
-            } else {
-                taskData.createdByUid = curUser.uid; taskData.creatorName = uData.name; taskData.creatorPhoto = uData.photoURL; taskData.createdAt = new Date(); taskData.statusMap = {};
-                if(type === 'user') {
-                    uids.forEach(id => taskData.statusMap[id] = 'pending');
+                if(editId) {
+                    await updateDoc(doc(db, "tasks", editId), taskData);
+                    showToast("Görev güncellendi!");
+                } else {
+                    taskData.createdByUid = curUser.uid; taskData.creatorName = uData.name; taskData.creatorPhoto = uData.photoURL; taskData.createdAt = new Date(); taskData.statusMap = {};
+                    if(type === 'user' && uid) { taskData.statusMap[uid] = 'pending'; }
+                    const ref = await addDoc(collection(db,"tasks"), taskData);
+                    const notifData = {text: `${uData.name} yeni bir görev ekledi: ${title}`, read:false, createdAt:new Date(), type:'task', linkId: ref.id};
+                    if(type === 'all') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
+                    else if (type === 'department') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
+                    else if (type === 'user' && uid) { addDoc(collection(db,"notifications"), {...notifData, to: uid}); }
                 }
-                const ref = await addDoc(collection(db,"tasks"), taskData);
-                
-                // NOTIFICATION LOGIC
-                const senderName = uData.name;
-                const notifData = {text: `${senderName} yeni bir görev ekledi: ${title}`, read:false, createdAt:new Date(), type:'task', linkId: ref.id};
-                
-                if(type === 'all') {
-                    allUsersCache.forEach(u => { if(u.uid !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); });
-                } else if (type === 'department') {
-                    allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); });
-                } else if (type === 'user') {
-                    uids.forEach(id => { if(id !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: id}); });
-                }
+                bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); 
+                document.getElementById('form-task').reset();
+                setStars(0);
+            } catch(err) {
+                showToast("Hata oluştu: " + err.message);
+                console.error(err);
             }
-            bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); e.target.reset(); setStars(0);
-        });
+        };
 
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; new bootstrap.Modal(document.getElementById('modal-status')).show(); };
         window.updateTaskStatus = async (status) => { if(!selectedTaskForStatus) return; await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide(); };
@@ -812,8 +730,22 @@
             list.innerHTML = `<div class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Sohbet','Genel Sohbet'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
             list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
             if(isBoard()) list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yonetim','Yönetim Kurulu'); pushState()"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
-            const deptsToShow = canSeeAllChannels() ? DEPTS : uData.departments;
-            deptsToShow?.forEach(d => { list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-info" onclick="openChat('${d}','${d}'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; });
+            
+            // SPECIAL SORTING FOR BOARD (YK) - OWN DEPARTMENT FIRST
+            let sortedDepts = [...(canSeeAllChannels() ? DEPTS : (uData.departments || []))];
+            
+            if (isBoard() && uData.departments && uData.departments.length > 0) {
+                const myDept = uData.departments[0];
+                sortedDepts = sortedDepts.filter(d => d !== myDept);
+                sortedDepts.unshift(myDept); // Move to top
+            }
+
+            sortedDepts.forEach(d => { 
+                const isMyDept = uData.departments?.includes(d) && isBoard();
+                const style = isMyDept ? 'border: 1px solid #60a5fa !important; background: rgba(59, 130, 246, 0.1);' : 'border: 1px solid #0dcaf0;';
+                
+                list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" style="${style}" onclick="openChat('${d}','${d}'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; 
+            });
         }
 
         window.openChat = (cid, title) => {
@@ -948,20 +880,7 @@
         };
         window.togT=(v)=>{
             document.getElementById('t-dept').classList.toggle('d-none',v!=='department');
-            document.getElementById('t-user').classList.add('d-none');
-            const ms = document.getElementById('user-multiselect');
-            if(v === 'user') {
-                ms.classList.remove('d-none');
-                ms.innerHTML = '';
-                allUsersCache.forEach(u => {
-                    ms.innerHTML += `<div class="form-check p-2 border-bottom border-dark" style="cursor:pointer" onclick="this.querySelector('input').click()">
-                        <input class="form-check-input" type="checkbox" value="${u.uid}" id="u_${u.uid}" onclick="event.stopPropagation()">
-                        <label class="form-check-label ms-2" for="u_${u.uid}" style="pointer-events:none">${u.name}</label>
-                    </div>`;
-                });
-            } else {
-                ms.classList.add('d-none');
-            }
+            document.getElementById('t-user').classList.toggle('d-none',v!=='user');
         };
         document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
         
@@ -998,7 +917,33 @@
             document.getElementById('notif-dot').style.display='none'; 
         };
         
-        async function loadRecentDMs(){ if(unsubDMs)unsubDMs(); unsubDMs=onSnapshot(collection(db,"messages"),s=>{ const l=document.getElementById('dm-list'); const p=new Set(); s.forEach(d=>{ const c=d.data().channel; if(c&&c.includes('_')&&c.includes(curUser.uid)) p.add(c.split('_').find(x=>x!==curUser.uid)); }); l.innerHTML=''; p.forEach(id=>{ const u=allUsersCache.find(x=>x.uid===id); if(u)l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,id].sort().join('_')}','${u.name}');pushState()"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; }); }); }
+        async function loadRecentDMs(){ 
+            if(unsubDMs)unsubDMs(); 
+            unsubDMs=onSnapshot(collection(db,"messages"),s=>{ 
+                const pairs = new Map(); // Use Map to store [uid, timestamp]
+                s.forEach(d=>{ 
+                    const m = d.data();
+                    const c=m.channel; 
+                    if(c&&c.includes('_')&&c.includes(curUser.uid)) {
+                        const other = c.split('_').find(x=>x!==curUser.uid);
+                        const time = m.createdAt?.seconds || 0;
+                        if(!pairs.has(other) || time > pairs.get(other)) {
+                            pairs.set(other, time);
+                        }
+                    }
+                }); 
+                
+                // Convert to array and Sort by timestamp desc
+                const sortedPairs = Array.from(pairs.entries()).sort((a,b) => b[1] - a[1]);
+                
+                const l=document.getElementById('dm-list');
+                l.innerHTML=''; 
+                sortedPairs.forEach(([id, time])=>{ 
+                    const u=allUsersCache.find(x=>x.uid===id); 
+                    if(u)l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1 gap-3" onclick="openChat('${[curUser.uid,id].sort().join('_')}','${u.name}');pushState()"><img src="${u.photoURL}" class="rounded-circle" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; 
+                }); 
+            }); 
+        }
         
         window.logout=()=>signOut(auth);
         document.getElementById('form-register').addEventListener('submit',async e=>{ e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{ uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false, roles: ['Üye'], departments: ['...'] }); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(err){ showToast(err.message) } });
