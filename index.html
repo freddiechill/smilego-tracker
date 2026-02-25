@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SmileGO V11.0 - Ultimate Interaction</title>
+    <title>SmileGO V14.0 - UX Master</title>
     
     <script src="https://cdn.median.co/median.js"></script>
 
@@ -26,29 +26,15 @@
         * { -ms-overflow-style: none; scrollbar-width: none; }
         *::-webkit-scrollbar { display: none; }
 
-        /* TIKLAMA GARANTİSİ */
         button, a, input, select, textarea, .card-custom, .nav-btn, .clickable { cursor: pointer; pointer-events: auto !important; }
 
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
         
-        /* HEADER & NAV */
-        .app-header { 
-            height: 70px; position: fixed; top: 0; left: 0; width: 100%; 
-            background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; 
-            z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
-        }
+        .app-header { height: 70px; position: fixed; top: 0; left: 0; width: 100%; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .header-icon-btn { background: transparent !important; border: none !important; padding: 0 8px !important; color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; }
-        .bottom-nav { 
-            height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; 
-            z-index: 9999; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; 
-        }
-
-        .main-content { 
-            position: fixed; top: 70px; bottom: 85px; width: 100%; 
-            overflow-y: auto; padding: 20px; display: none; z-index: 1; 
-        }
+        .bottom-nav { height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; }
+        .main-content { position: fixed; top: 70px; bottom: 85px; width: 100%; overflow-y: auto; padding: 20px; display: none; z-index: 1; }
         .main-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -60,47 +46,54 @@
         .form-control:focus, .form-select:focus { background: #27272a; color: white; border-color: var(--primary); box-shadow: none; }
         .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
         
-        /* CHAT */
+        /* CHAT SYSTEM */
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
-        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #050505; }
-        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; }
-        .bubble-sent { background: var(--sent-bg); color: #fff; border-bottom-right-radius: 4px; margin-left: auto; }
-        .bubble-received { background: var(--recv-bg); color: #fff; border-bottom-left-radius: 4px; margin-right: auto; }
+        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; }
+        
+        .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
+        .chat-row.right { justify-content: flex-end; }
+        .chat-row.left { justify-content: flex-start; }
+        .chat-avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; flex-shrink: 0; } 
+
+        .msg-bubble { 
+            max-width: 80%; padding: 8px 12px; border-radius: 16px; 
+            font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; 
+            display: flex; flex-direction: column;
+        }
+        .bubble-sent { background: var(--sent-bg); color: #fff; border-top-right-radius: 2px; margin-left: auto; }
+        .bubble-received { background: var(--recv-bg); color: #fff; border-top-left-radius: 2px; margin-right: auto; }
+        
+        .sender-header { margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; line-height: 1.2; }
+        .sender-name { font-weight: 800; font-size: 13px; }
         .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
         
-        /* Chat Badges */
-        .chat-badge-role { display: inline-block; font-size: 9px; padding: 2px 5px; border-radius: 4px; background: #333; border: 1px solid #333; color: #ccc; margin-left: 4px; vertical-align: middle; }
-        .chat-badge-dept { display: inline-block; font-size: 9px; padding: 2px 5px; border-radius: 4px; background: transparent; border: 1px solid #444; color: #aaa; margin-left: 2px; vertical-align: middle; }
+        .chat-meta { font-size: 9px; opacity: 0.6; text-align: right; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+        .edited-label { font-style: italic; }
 
-        /* CUSTOM ALERT (TOAST) */
-        #app-toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px);
-            padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center;
-        }
+        /* Reactions - Snug Fit */
+        .reaction-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: -2px; margin-bottom: 6px; position: relative; z-index: 2; }
+        .reaction-pill { background: #222; border: 1px solid #444; border-radius: 10px; padding: 1px 6px; font-size: 10px; cursor: pointer; display: flex; align-items: center; gap: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        
+        /* Badges */
+        .chat-badge { font-size: 9px; padding: 1px 4px; border-radius: 4px; font-weight: 600; display: inline-block; }
+        .cb-role { background: #3f3f46; color: #ddd; }
+        .cb-dept { border: 1px solid #52525b; color: #a1a1aa; background: transparent; }
+
+        /* TOAST & CONFIRM */
+        #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
         #app-toast.show { transform: translateX(-50%) translateY(0); }
         
         /* CONTEXT MENU */
-        #context-menu {
-            position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column;
-            min-width: 180px; overflow: hidden; z-index: 2000006;
-        }
+        #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
+        .ctx-reactions { display: flex; padding: 10px; gap: 5px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: #252529; }
+        .ctx-emoji { font-size: 20px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 50%; }
+        .ctx-emoji:active { background: rgba(255,255,255,0.2); transform: scale(1.2); }
         .ctx-item { padding: 12px 15px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 10px; transition:0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .ctx-item:active { background: #333; }
-        .ctx-item:last-child { border-bottom: none; }
         .ctx-item.delete { color: #ff6b6b; }
 
-        /* TASKS & TEAM */
-        .star-rating i { color: #fbbf24; font-size: 12px; margin-right: 1px; }
-        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
-        .st-pending { background: rgba(255,255,255,0.1); color: #aaa; }
-        .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .st-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-        
+        /* General UI Fixes */
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 5px; border: 1px solid #27272a; margin-bottom: 10px; }
         .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover; }
@@ -108,8 +101,20 @@
         .search-list { max-height: 200px; overflow-y: auto; background: #202023; border: 1px solid #333; border-radius: 0 0 12px 12px; display: none; position: absolute; width: 100%; z-index: 1000; }
         .search-list div { padding: 10px; cursor: pointer; border-bottom: 1px solid #2a2a2d; font-size: 13px; }
         .search-list div:hover { background: var(--primary); color: black; }
+        
+        /* Removing last border */
+        .dept-group > div:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
+        #notif-list > div:last-child { border-bottom: none !important; }
+
+        /* Progress Ring */
         .progress-ring { width: 60px; height: 60px; }
+        .progress-ring__bg { stroke: rgba(255,255,255,0.1); }
         .progress-ring__circle { transition: 0.35s stroke-dashoffset; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        
+        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .st-pending { background: rgba(255,255,255,0.1); color: #aaa; }
+        .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .st-done { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000007; display: none; align-items: center; justify-content: center; flex-direction: column; }
         #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; }
@@ -120,22 +125,20 @@
 </head>
 <body>
 
-    <div id="app-toast">
-        <i class="fas fa-info-circle text-primary fs-5"></i>
-        <span id="toast-msg" class="fw-bold small">...</span>
+    <div id="app-toast"><i class="fas fa-info-circle text-primary fs-5"></i><span id="toast-msg" class="fw-bold small">...</span></div>
+
+    <div class="modal fade" id="modal-confirm" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-question-circle text-warning fa-3x mb-3"></i><h5 class="fw-bold mb-2">Emin misiniz?</h5><p class="text-muted small mb-4" id="confirm-text">...</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-dark border-secondary w-50" data-bs-dismiss="modal">İptal</button><button class="btn btn-danger w-50" id="confirm-btn-yes">Evet</button></div></div></div></div>
+
+    <div id="context-menu">
+        <div class="ctx-reactions">
+            <span class="ctx-emoji" onclick="addReaction('❤️')">❤️</span><span class="ctx-emoji" onclick="addReaction('👍')">👍</span><span class="ctx-emoji" onclick="addReaction('👎')">👎</span>
+            <span class="ctx-emoji" onclick="addReaction('🙏')">🙏</span><span class="ctx-emoji" onclick="addReaction('✍️')">✍️</span><span class="ctx-emoji" onclick="addReaction('✅')">✅</span>
+        </div>
+        <div id="ctx-options"></div>
     </div>
 
-    <div id="context-menu"></div>
-
-    <div id="loading-overlay">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-        <div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div>
-    </div>
-
-    <div id="img-viewer">
-        <button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="document.getElementById('img-viewer').style.display='none'"><i class="fas fa-times"></i></button>
-        <img id="img-viewer-src" src="">
-    </div>
+    <div id="loading-overlay"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div></div>
+    <div id="img-viewer"><button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="document.getElementById('img-viewer').style.display='none'"><i class="fas fa-times"></i></button><img id="img-viewer-src" src=""></div>
 
     <div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10000;">
         <div id="auth-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, #312e81 0%, #09090b 60%);z-index:-1"></div>
@@ -195,25 +198,18 @@
                 <div id="prof-roles" class="d-flex justify-content-center gap-1 mb-2"></div>
                 <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
-                    <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
+                    <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                        <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/>
+                    </svg>
                 </div>
             </div>
-
              <div class="card-custom mt-3">
                 <h6 class="fw-bold text-muted mb-3">KİŞİSEL BİLGİLER</h6>
-                <div class="mb-3 position-relative">
-                    <label class="small text-muted">Üniversite</label>
-                    <input type="text" class="form-control" id="inp-uni" placeholder="Üniversite Ara..." onkeyup="filterSearch('uni')">
-                    <div class="search-list" id="list-uni"></div>
-                </div>
-                <div class="mb-3 position-relative">
-                    <label class="small text-muted">Bölüm</label>
-                    <input type="text" class="form-control" id="inp-sec" placeholder="Bölüm Ara..." onkeyup="filterSearch('sec')">
-                    <div class="search-list" id="list-sec"></div>
-                </div>
+                <div class="mb-3 position-relative"><label class="small text-muted">Üniversite</label><input type="text" class="form-control" id="inp-uni" placeholder="Üniversite Ara..." onkeyup="filterSearch('uni')"><div class="search-list" id="list-uni"></div></div>
+                <div class="mb-3 position-relative"><label class="small text-muted">Bölüm</label><input type="text" class="form-control" id="inp-sec" placeholder="Bölüm Ara..." onkeyup="filterSearch('sec')"><div class="search-list" id="list-sec"></div></div>
                 <button class="btn btn-sm btn-success w-100" onclick="saveEduInfo()">Bilgileri Kaydet</button>
              </div>
-
              <div class="card-custom mt-2">
                 <h6 class="fw-bold text-muted mb-3">SOSYAL MEDYA (Kullanıcı Adları)</h6>
                 <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-linkedin"></i></span><input id="sm-linkedin" class="form-control" placeholder="LinkedIn"></div>
@@ -224,7 +220,6 @@
                 <div class="input-group mb-2"><span class="input-group-text bg-dark border-secondary"><i class="fab fa-kickstarter"></i></span><input id="sm-kick" class="form-control" placeholder="Kick"></div>
                 <button class="btn btn-sm btn-success w-100 mt-2" onclick="saveSocials()">Sosyal Medyayı Kaydet</button>
              </div>
-             
              <button class="btn btn-outline-danger w-100 mt-4 py-3 rounded-4 fw-bold" onclick="logout()">Çıkış Yap</button>
         </div>
 
@@ -252,52 +247,26 @@
 
     <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
     
+    <div class="modal fade" id="modal-reactions" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Tepkiler</h5><div id="reaction-list" style="max-height:300px;overflow-y:auto"></div><div class="d-flex justify-content-end mt-2"><button class="btn btn-dark btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
+
     <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Yeni Görev</h5><form id="form-task">
-        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required>
-        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
-        <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div>
-        <input type="hidden" id="t-stars" value="0">
-        <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
-        <select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select>
-        <button class="btn-primary-soft">Oluştur</button>
+        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required><textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
+        <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
+        <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select><select id="t-dept" class="form-select mb-3"></select><select id="t-user" class="form-select mb-4 d-none"></select><button class="btn-primary-soft">Oluştur</button>
     </form></div></div></div>
 
-    <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
-        <h5 class="fw-bold mb-1" id="td-title">...</h5>
-        <div id="td-stars" class="mb-3 text-warning small"></div>
-        <p class="text-muted small" id="td-desc">...</p><hr class="border-secondary"><h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div>
-        <div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div>
-    </div></div></div>
+    <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-stars" class="mb-3 text-warning small"></div><p class="text-muted small" id="td-desc">...</p><hr class="border-secondary"><h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-        <div class="d-flex align-items-center gap-3 mb-3 text-start">
-            <img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="80" height="80">
-            <div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div>
-        </div>
-        <div class="mb-3 text-start">
-             <div class="small text-muted"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div>
-             <div class="small text-muted"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div>
-        </div>
-        <div class="card-custom bg-dark p-3 d-flex align-items-center justify-content-between mb-3">
-            <div class="text-start"><div class="text-muted small">Genel Başarı</div><h4 class="fw-bold m-0" id="vp-rate">0%</h4></div>
-            <svg class="progress-ring" width="50" height="50"><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="21" cx="25" cy="25" id="vp-circle" stroke-dasharray="131.95" stroke-dashoffset="131.95"/></svg>
-        </div>
-        <h6 class="small fw-bold text-muted mb-2">SOSYAL MEDYA</h6>
-        <div id="vp-socials" class="d-flex justify-content-center gap-3 fs-3"></div>
+        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="80" height="80"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div></div>
+        <div class="mb-3 text-start"><div class="small text-muted"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div><div class="small text-muted"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div></div>
+        <div class="card-custom bg-dark p-3 d-flex align-items-center justify-content-between mb-3"><div class="text-start"><div class="text-muted small">Genel Başarı</div><h4 class="fw-bold m-0" id="vp-rate">0%</h4></div><svg class="progress-ring" width="50" height="50"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="21" cx="25" cy="25"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="21" cx="25" cy="25" id="vp-circle" stroke-dasharray="131.95" stroke-dashoffset="131.95"/></svg></div>
+        <h6 class="small fw-bold text-muted mb-2">SOSYAL MEDYA</h6><div id="vp-socials" class="d-flex justify-content-center gap-3 fs-3"></div>
     </div></div></div>
 
-    <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
-        <h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6>
-        <div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div>
-        <button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button>
-    </div></div></div>
-
-    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden">
-        <div class="bg-primary p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div>
-        <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div>
-    </div></div></div>
-
+    <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6><div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div><button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button></div></div></div>
+    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-primary p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div><div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
 
@@ -305,7 +274,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion, deleteField } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
@@ -314,23 +283,37 @@
         const DEPTS = ["Organizasyonel Gelişim","Sosyal Medya","Bölge Koordinatörlüğü","Psikolog İlişkileri","Data & Planlama","Kurumsal İletişim", "Yazılım"];
         const DEPT_ABBR = { "Sosyal Medya": "SMD", "Psikolog İlişkileri": "PİD", "Data & Planlama": "DPD", "Bölge Koordinatörlüğü": "BKD", "Kurumsal İletişim": "KİD", "Organizasyonel Gelişim": "OGD", "Yazılım": "YD" };
         const ROLES = ["Başkan", "YK", "YKY", "Üye", "Admin"];
-        const UNIVERSITIES = ["Sakarya Üniversitesi", "Sakarya Uygulamalı Bilimler Üniversitesi", "İstanbul Üniversitesi", "ODTÜ", "İTÜ", "Boğaziçi Üniversitesi", "Marmara Üniversitesi", "Yıldız Teknik Üniversitesi", "Hacettepe Üniversitesi", "Ankara Üniversitesi", "Ege Üniversitesi", "Dokuz Eylül Üniversitesi", "Gazi Üniversitesi", "Anadolu Üniversitesi", "Akdeniz Üniversitesi", "Çukurova Üniversitesi", "Bilkent Üniversitesi", "Koç Üniversitesi", "Sabancı Üniversitesi", "Yeditepe Üniversitesi", "Bahçeşehir Üniversitesi"];
-        const DEPARTMENTS_UNI = ["İşletme", "Bilgisayar Mühendisliği", "Hukuk", "Tıp", "Psikoloji", "Mimarlık", "Endüstri Mühendisliği", "Makine Mühendisliği", "Elektrik-Elektronik Müh.", "İnşaat Mühendisliği", "Siyaset Bilimi", "Uluslararası İlişkiler", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Öğretmenlik", "Grafik Tasarım", "İletişim Tasarımı", "Sosyoloji", "Felsefe"];
+        const UNIVERSITIES = ["Sakarya Üniversitesi", "Sakarya Uygulamalı Bilimler Üniversitesi", "İstanbul Üniversitesi", "ODTÜ", "İTÜ", "Boğaziçi Üniversitesi", "Marmara Üniversitesi", "Yıldız Teknik Üniversitesi", "Hacettepe Üniversitesi", "Ankara Üniversitesi", "Ege Üniversitesi", "Dokuz Eylül Üniversitesi", "Gazi Üniversitesi", "Anadolu Üniversitesi", "Akdeniz Üniversitesi", "Çukurova Üniversitesi", "Bilkent Üniversitesi", "Koç Üniversitesi", "Sabancı Üniversitesi", "Yeditepe Üniversitesi", "Bahçeşehir Üniversitesi", "Kocaeli Üniversitesi", "Düzce Üniversitesi", "Bolu Abant İzzet Baysal Üniversitesi"];
+        const DEPARTMENTS_UNI = ["Görsel İletişim Tasarımı", "İletişim Tasarımı", "Grafik Tasarım", "Çizgi Film ve Animasyon", "Radyo, Televizyon ve Sinema", "Halkla İlişkiler ve Reklamcılık", "Yeni Medya ve İletişim", "Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Endüstri Mühendisliği", "İşletme", "İktisat", "Maliye", "Uluslararası İlişkiler", "Siyaset Bilimi ve Kamu Yönetimi", "Psikoloji", "Sosyoloji", "Felsefe", "Hukuk", "Tıp", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Mimarlık", "İç Mimarlık", "Şehir ve Bölge Planlama", "Özel Eğitim Öğretmenliği", "Okul Öncesi Öğretmenliği", "Sınıf Öğretmenliği", "İngilizce Öğretmenliği", "Matematik", "Fizik", "Kimya", "Biyoloji", "Tarih", "Coğrafya", "Türk Dili ve Edebiyatı"];
 
         let curUser=null, uData={}, activeChatId=null;
         let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null, unsubDMs=null;
         let allUsersCache=[], allTasksCache={};
         let selectedTaskForStatus = null, selectedUserForEdit = null, selectedMsg = null, longPressTimer = null;
 
-        // Custom Toast Function
-        window.showToast = (msg) => {
-            const t = document.getElementById('app-toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        };
-        // Replace Alerts
+        // Custom Toast & Confirm
+        window.showToast = (msg) => { const t = document.getElementById('app-toast'); document.getElementById('toast-msg').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
         window.alert = window.showToast;
+        window.customConfirm = (text, cb) => {
+            document.getElementById('confirm-text').innerText = text;
+            const modal = new bootstrap.Modal(document.getElementById('modal-confirm'));
+            document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); };
+            modal.show();
+        };
+
+        // Mobile Back Button Logic (History API)
+        let chatOpen = false;
+        window.onpopstate = () => {
+            if(chatOpen) { closeChat(); return; }
+            const activeModal = document.querySelector('.modal.show');
+            if(activeModal) { bootstrap.Modal.getInstance(activeModal).hide(); }
+        };
+        const pushState = () => window.history.pushState(null, null, window.location.href);
+
+        function stringToColor(str) {
+            let hash = 0; for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase(); return '#' + "00000".substring(0, 6 - c.length) + c;
+        }
 
         onAuthStateChanged(auth, async u => {
             if(u){
@@ -357,14 +340,10 @@
             loadProfile(); listenTasks(); listenTeam(); loadChannels(); listenNotifs(); loadRecentDMs();
             const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
             DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
-            
-            if(!canManageUsers() && !uData.roles.includes('YK') && !uData.roles.includes('YKY')) {
-                document.getElementById('btn-add-task').style.display = 'none';
-            }
+            if(!canManageUsers() && !uData.roles.includes('YK') && !uData.roles.includes('YKY')) { document.getElementById('btn-add-task').style.display = 'none'; }
         }
 
         function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); curUser=null; uData={}; }
-        
         const isAdmin = () => uData.roles?.includes('Admin');
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
@@ -429,15 +408,17 @@
                     const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
 
                     list.innerHTML += `
-                    <div class="card-custom" onclick="openTaskDetail('${t.id}')">
-                        <div class="d-flex justify-content-between mb-1"><span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span><div>${starsHtml}</div></div>
+                    <div class="card-custom" onclick="openTaskDetail('${t.id}'); pushState()">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div><span class="badge bg-dark border border-secondary text-muted">${t.assignedTo}</span> ${starsHtml}</div>
+                            ${(t.createdByUid === curUser.uid || isAdmin()) ? `<i class="fas fa-trash text-danger" style="font-size:14px" onclick="event.stopPropagation();delTask('${t.id}')"></i>` : ''}
+                        </div>
                         <h6 class="fw-bold mb-1">${t.title}</h6>
                         <p class="text-muted small mb-2 text-truncate">${t.description || ''}</p>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
-                            ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}')">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
+                            ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
                         </div>
-                        ${(t.createdByUid === curUser.uid || isAdmin()) ? `<i class="fas fa-trash text-danger position-absolute top-0 end-0 m-3" onclick="event.stopPropagation();delTask('${t.id}')"></i>` : ''}
                     </div>`;
                 });
                 calcSuccessRate();
@@ -448,7 +429,7 @@
             const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
             const snap = await getDocs(collection(db,"users"));
             snap.forEach(d => { if(d.id !== curUser.uid) userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; });
-            new bootstrap.Modal(document.getElementById('modal-task')).show();
+            new bootstrap.Modal(document.getElementById('modal-task')).show(); pushState();
         };
 
         window.openTaskDetail = (tid) => {
@@ -457,7 +438,6 @@
             document.getElementById('td-desc').innerText = t.description || 'Açıklama yok.';
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
             document.getElementById('td-stars').innerHTML = starsHtml;
-
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
             if(t.statusMap) {
                 Object.entries(t.statusMap).forEach(([uid, status]) => {
@@ -487,7 +467,7 @@
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; new bootstrap.Modal(document.getElementById('modal-status')).show(); };
         window.updateTaskStatus = async (status) => { if(!selectedTaskForStatus) return; await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide(); };
         window.filterTasks = (f, b) => { document.querySelectorAll('#view-tasks .btn-outline-secondary').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); if(unsubTasks) { unsubTasks(); listenTasks(); } };
-        window.delTask=(id)=>{if(confirm("Silinsin mi?")) deleteDoc(doc(db,"tasks",id));}
+        window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
 
         function listenTeam() { unsubTeam = onSnapshot(collection(db,"users"), s => { allUsersCache = []; s.forEach(d => { const u = d.data(); if(!u.isBanned) allUsersCache.push(u); }); renderTeam(); }); }
         
@@ -513,18 +493,13 @@
                     let badges = '';
                     u.roles?.forEach(r => badges += `<span class="role-badge border">${r}</span>`);
                     u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); badges += `<span class="role-badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
-                    
                     const canDelete = (canManageUsers() && u.uid !== curUser.uid);
-                    
                     container.innerHTML += `
-                    <div class="d-flex align-items-center justify-content-between p-2 mb-1 clickable" style="border-bottom:1px solid rgba(255,255,255,0.05)" onclick="openUserProfile('${u.uid}')">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="${u.photoURL}" class="rounded-circle" width="40" height="40">
-                            <div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1">${badges}</div></div>
-                        </div>
+                    <div class="d-flex align-items-center justify-content-between p-2 mb-1 clickable" style="border-bottom:1px solid rgba(255,255,255,0.05)" onclick="openUserProfile('${u.uid}'); pushState()">
+                        <div class="d-flex align-items-center gap-3"><img src="${u.photoURL}" class="rounded-circle" width="40" height="40"><div><div class="fw-bold" style="font-size:14px">${u.name}</div><div class="d-flex mt-1">${badges}</div></div></div>
                         <div class="d-flex align-items-center gap-2">
-                             ${canManageUsers() ? `<button class="btn btn-sm btn-dark text-warning border-secondary" onclick="event.stopPropagation();openUserEdit('${u.uid}')"><i class="fas fa-edit"></i></button>` : ''}
-                             <button class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2 text-white" onclick="event.stopPropagation();openChat('${[curUser.uid,u.uid].sort().join('_')}','${u.name}')"><i class="far fa-paper-plane"></i></button>
+                             ${canManageUsers() ? `<button class="btn btn-sm btn-dark text-warning border-secondary" onclick="event.stopPropagation();openUserEdit('${u.uid}'); pushState()"><i class="fas fa-edit"></i></button>` : ''}
+                             <button class="btn btn-sm btn-outline-secondary rounded-3 py-1 px-2 text-white" onclick="event.stopPropagation();openChat('${[curUser.uid,u.uid].sort().join('_')}','${u.name}'); pushState()"><i class="far fa-paper-plane"></i></button>
                              ${canDelete ? `<button class="btn btn-sm btn-danger py-1 px-2" onclick="event.stopPropagation();deleteUser('${u.uid}')"><i class="fas fa-trash"></i></button>` : ''}
                         </div>
                     </div>`;
@@ -540,16 +515,13 @@
             const bdg = document.getElementById('vp-badges'); bdg.innerHTML = '';
             u.roles?.forEach(r => bdg.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); bdg.innerHTML += `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
-
             document.getElementById('vp-uni').innerText = u.university || 'Belirtilmemiş';
             document.getElementById('vp-dept').innerText = u.uni_dept || 'Belirtilmemiş';
-
             let total = 0, done = 0;
             Object.values(allTasksCache).forEach(t => { if(t.statusMap && t.statusMap[uid]) { total++; if(t.statusMap[uid] === 'done') done++; } });
             const rate = total === 0 ? 0 : Math.round((done/total)*100);
             document.getElementById('vp-rate').innerText = `%${rate}`;
             document.getElementById('vp-circle').style.strokeDashoffset = (131.95 * (100 - rate)) / 100;
-
             const socBox = document.getElementById('vp-socials'); socBox.innerHTML = '';
             if(u.socials) {
                 if(u.socials.linkedin) socBox.innerHTML += `<a href="https://linkedin.com/in/${u.socials.linkedin}" target="_blank" class="text-secondary"><i class="fab fa-linkedin"></i></a>`;
@@ -559,11 +531,10 @@
                 if(u.socials.youtube) socBox.innerHTML += `<a href="https://youtube.com/@${u.socials.youtube}" target="_blank" class="text-secondary"><i class="fab fa-youtube"></i></a>`;
                 if(u.socials.kick) socBox.innerHTML += `<a href="https://kick.com/${u.socials.kick}" target="_blank" class="text-secondary"><i class="fab fa-kickstarter"></i></a>`;
             } else { socBox.innerHTML = '<small class="text-muted">Sosyal medya yok.</small>'; }
-            
             new bootstrap.Modal(document.getElementById('modal-profile-view')).show();
         };
 
-        window.deleteUser = async (uid) => { if(confirm("Kullanıcıyı silmek (engellemek) istediğinize emin misiniz?")) await updateDoc(doc(db,"users",uid), { isBanned: true }); };
+        window.deleteUser = async (uid) => { customConfirm("Kullanıcıyı engellemek istiyor musun?", async () => await updateDoc(doc(db,"users",uid), { isBanned: true })); };
 
         window.openUserEdit = (uid) => {
             if(!canManageUsers()) return; selectedUserForEdit = uid; const u = allUsersCache.find(x => x.uid === uid);
@@ -576,16 +547,15 @@
 
         function loadChannels() {
             const list = document.getElementById('channel-list');
-            list.innerHTML = `<div class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Sohbet','Genel Sohbet')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
-            list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
-            if(isBoard()) list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yonetim','Yönetim Kurulu')"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
-            
+            list.innerHTML = `<div class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Sohbet','Genel Sohbet'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
+            list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
+            if(isBoard()) list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yonetim','Yönetim Kurulu'); pushState()"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
             const deptsToShow = canSeeAllChannels() ? DEPTS : uData.departments;
-            deptsToShow?.forEach(d => { list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-info" onclick="openChat('${d}','${d}')"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; });
+            deptsToShow?.forEach(d => { list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-info" onclick="openChat('${d}','${d}'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; });
         }
 
         window.openChat = (cid, title) => {
-            activeChatId = cid; document.getElementById('chat-overlay-title').innerText = title;
+            activeChatId = cid; chatOpen = true; document.getElementById('chat-overlay-title').innerText = title;
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
             document.getElementById('chat-overlay').classList.add('open');
             if(unsubChat) unsubChat();
@@ -598,37 +568,51 @@
                     const me = m.senderId === curUser.uid;
                     let content = m.text; if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                     
-                    let badgeHtml = '';
+                    let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
                     const sender = allUsersCache.find(u => u.uid === m.senderId);
-                    if(sender && !me) {
-                        sender.roles?.forEach(r => badgeHtml += `<span class="chat-badge-role">${r}</span>`);
-                        sender.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); badgeHtml += `<span class="chat-badge-dept">${abbr}</span>`; });
+                    if(sender) {
+                        senderPhoto = sender.photoURL;
+                        sender.roles?.forEach(r => badgeHtml += `<span class="chat-badge cb-role">${r}</span>`);
+                        sender.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); badgeHtml += `<span class="chat-badge cb-dept">${abbr}</span>`; });
                     }
 
-                    // Safe Quote for event handlers
-                    const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text}).replace(/"/g, '&quot;');
+                    let reactHtml = '';
+                    if(m.reactions) {
+                        const counts = {};
+                        Object.values(m.reactions).forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
+                        Object.entries(counts).forEach(([em, count]) => {
+                            reactHtml += `<div class="reaction-pill" onclick="openReactionDetails('${m.id}'); pushState()">${em} <span style="opacity:0.7">${count}</span></div>`;
+                        });
+                    }
+
+                    const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, reactions: m.reactions}).replace(/"/g, '&quot;');
+                    const nameColor = me ? '#fff' : stringToColor(m.senderName || "User");
 
                     html += `
-                    <div class="d-flex w-100 mb-1 ${me?'justify-content-end':'justify-content-start'}">
-                        <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}" 
+                    <div class="chat-row ${me?'right':'left'}">
+                        ${!me ? `<img src="${senderPhoto}" class="chat-avatar-img">` : ''}
+                        <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}"
                              oncontextmenu="handleMsgCtx(event, ${safeM}); return false;"
                              ontouchstart="startLongPress(event, ${safeM})" 
                              ontouchend="cancelLongPress()" 
                              ontouchmove="cancelLongPress()">
-                            ${!me ? `<div class="mb-1 d-flex align-items-center"><span class="fw-bold text-white small me-1">${m.senderName}</span>${badgeHtml}</div>` : ''}
-                            ${content}
-                            <div style="font-size:9px; opacity:0.6; text-align:right; margin-top:2px">
+                            ${!me ? `<div class="sender-header"><span class="sender-name" style="color:${nameColor}">${m.senderName}</span>${badgeHtml}</div>` : ''}
+                            <div style="margin-top:2px;">${content}</div>
+                            <div class="chat-meta">
+                                ${m.isEdited ? '<span class="edited-label">düzenlendi</span>' : ''}
                                 ${m.createdAt?.seconds ? new Date(m.createdAt.seconds*1000).getHours() + ':' + String(new Date(m.createdAt.seconds*1000).getMinutes()).padStart(2,'0') : ''}
                             </div>
                         </div>
-                    </div>`;
+                    </div>
+                    ${reactHtml ? `<div class="reaction-container ${me?'justify-content-end':'justify-content-start'}" style="margin-left:${!me?'45px':0}; margin-right:${me?'10px':0};">${reactHtml}</div>` : ''}`;
                 });
                 body.innerHTML = html; body.scrollTop = body.scrollHeight;
+                allTasksCache['msgs'] = msgs; 
             });
         };
-        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); if(unsubChat) unsubChat(); activeChatId = null; };
+        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); chatOpen = false; if(unsubChat) unsubChat(); activeChatId = null; };
 
-        // --- CONTEXT MENU & LONG PRESS ---
+        // --- REACTIONS & CONTEXT ---
         const ctx = document.getElementById('context-menu');
         window.startLongPress = (e, msg) => { longPressTimer = setTimeout(() => handleMsgCtx(e.touches[0], msg), 800); };
         window.cancelLongPress = () => { if(longPressTimer) clearTimeout(longPressTimer); };
@@ -636,49 +620,46 @@
         window.handleMsgCtx = (e, msg) => {
             if(window.navigator.vibrate) window.navigator.vibrate(50);
             selectedMsg = msg;
-            
             let html = '';
             const isMine = msg.senderId === curUser.uid;
-            
-            // Options Logic
             if(isMine) html += `<div class="ctx-item" onclick="editMsg()"><i class="fas fa-pen"></i> Düzenle</div>`;
             if(isMine || isAdmin()) html += `<div class="ctx-item delete" onclick="deleteMsg('all')"><i class="fas fa-trash"></i> Herkes için Sil</div>`;
             html += `<div class="ctx-item delete" onclick="deleteMsg('me')"><i class="fas fa-trash-alt"></i> Benden Sil</div>`;
-
-            if(!html) return;
-
+            document.getElementById('ctx-options').innerHTML = html;
             let x = e.clientX, y = e.clientY;
-            if(x + 180 > window.innerWidth) x -= 180;
-            if(y + 150 > window.innerHeight) y -= 150;
-
-            ctx.innerHTML = html;
-            ctx.style.top = y + 'px'; ctx.style.left = x + 'px';
-            ctx.style.display = 'flex';
+            if(x + 200 > window.innerWidth) x -= 200;
+            if(y + 200 > window.innerHeight) y -= 200;
+            ctx.style.top = y + 'px'; ctx.style.left = x + 'px'; ctx.style.display = 'flex';
         };
-        
         document.addEventListener('click', (e) => { if(!ctx.contains(e.target)) ctx.style.display='none'; });
+
+        window.addReaction = async (emoji) => {
+            ctx.style.display='none'; if(!selectedMsg) return;
+            const current = selectedMsg.reactions || {};
+            if(current[curUser.uid] && current[curUser.uid].emoji === emoji) { await updateDoc(doc(db,"messages",selectedMsg.id), { [`reactions.${curUser.uid}`]: deleteField() }); } 
+            else { await updateDoc(doc(db,"messages",selectedMsg.id), { [`reactions.${curUser.uid}`]: { emoji: emoji, name: uData.name, uid: curUser.uid } }); }
+        };
+
+        window.openReactionDetails = (msgId) => {
+            const msgs = allTasksCache['msgs'] || [];
+            const m = msgs.find(x => x.id === msgId); if(!m || !m.reactions) return;
+            const list = document.getElementById('reaction-list'); list.innerHTML = '';
+            Object.values(m.reactions).forEach(r => {
+                const u = allUsersCache.find(user => user.uid === r.uid);
+                const photo = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
+                list.innerHTML += `<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${photo}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`;
+            });
+            new bootstrap.Modal(document.getElementById('modal-reactions')).show();
+        };
 
         window.deleteMsg = async (type) => {
             ctx.style.display='none';
-            if(type === 'all') {
-                if(confirm("Bu mesaj herkesden silinecek?")) await deleteDoc(doc(db,"messages",selectedMsg.id));
-            } else {
-                await updateDoc(doc(db,"messages",selectedMsg.id), { deletedFor: arrayUnion(curUser.uid) });
-                showToast("Mesaj sizden silindi.");
-            }
+            if(type === 'all') { customConfirm("Bu mesaj herkesden silinecek?", async () => await deleteDoc(doc(db,"messages",selectedMsg.id))); } 
+            else { await updateDoc(doc(db,"messages",selectedMsg.id), { deletedFor: arrayUnion(curUser.uid) }); showToast("Mesaj sizden silindi."); }
         };
 
-        window.editMsg = () => {
-            ctx.style.display='none';
-            document.getElementById('edit-msg-input').value = selectedMsg.text;
-            new bootstrap.Modal(document.getElementById('modal-edit-msg')).show();
-        };
-
-        window.submitEditMsg = async () => {
-            const txt = document.getElementById('edit-msg-input').value;
-            await updateDoc(doc(db,"messages",selectedMsg.id), { text: txt + ' (düzenlendi)' });
-            bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide();
-        };
+        window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value = selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
+        window.submitEditMsg = async () => { const txt = document.getElementById('edit-msg-input').value; await updateDoc(doc(db,"messages",selectedMsg.id), { text: txt, isEdited: true }); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
 
         document.getElementById('chat-file-inp').addEventListener('change', async e => {
             const f = e.target.files[0]; if(!f || !activeChatId) return;
@@ -709,19 +690,19 @@
             scores.forEach((s, idx) => {
                 list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary"><div class="d-flex align-items-center gap-3"><div class="fw-bold" style="width:20px;">${idx+1}</div><img src="${s.photoURL}" class="rounded-circle" width="35"><div><div class="fw-bold small">${s.name}</div><div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div></div></div><div class="fw-bold text-success">%${Math.round(s.rate)}</div></div>`;
             });
-            new bootstrap.Modal(document.getElementById('modal-leaderboard')).show();
+            new bootstrap.Modal(document.getElementById('modal-leaderboard')).show(); pushState();
         };
 
         window.goTab = (t,b) => { document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); };
         window.togT=(v)=>{document.getElementById('t-dept').classList.toggle('d-none',v!=='department');document.getElementById('t-user').classList.toggle('d-none',v!=='user')};
         document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; notifyChat(activeChatId);});
         function notifyChat(cid) { if(cid.includes('_')){ const tg=cid.split('_').find(x=>x!==curUser.uid); addDoc(collection(db,"notifications"),{to:tg,text:`${uData.name} mesaj attı`,read:false,createdAt:new Date(), type:'chat', linkId:curUser.uid}); } }
-        function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
+        function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false), orderBy('createdAt', 'desc')), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
         
         window.openNotifs=async()=>{ 
-            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); 
+            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState();
             const l=document.getElementById('notif-list'); l.innerHTML='...'; 
-            const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid))); 
+            const s=await getDocs(query(collection(db,"notifications"),where("to","==",curUser.uid), orderBy('createdAt', 'desc'))); 
             l.innerHTML=''; 
             s.forEach(d=>{ 
                 const n = d.data(); 
@@ -730,9 +711,12 @@
                     const sender = allUsersCache.find(x => x.uid === n.linkId);
                     if(sender) action = `onclick="openChat('${[curUser.uid, n.linkId].sort().join('_')}', '${sender.name}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide()"`;
                 } else if(n.type === 'task' && n.linkId) {
-                    action = `onclick="openTaskDetail('${n.linkId}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide()"`;
+                    action = `onclick="openTaskDetail('${n.linkId}'); bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide(); pushState()"`;
                 }
-                l.innerHTML+=`<div class="p-2 border-bottom border-secondary ${n.read?'opacity-50':''} clickable" ${action}><small>${n.text}</small></div>`; 
+                
+                if(!action && n.text.includes('mesaj')) { action = `onclick="bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide()"`; }
+
+                l.innerHTML+=`<div class="p-3 border-bottom border-secondary ${n.read?'opacity-50':''} clickable" style="cursor:pointer" ${action}><small class="fw-bold">${n.text}</small></div>`; 
                 updateDoc(doc(db,"notifications",d.id),{read:true}); 
             }); 
             document.getElementById('notif-dot').style.display='none'; 
@@ -748,7 +732,7 @@
                 if(pairs.size === 0) dList.innerHTML = '<div class="text-center text-muted small mt-3">Henüz mesaj yok.</div>';
                 pairs.forEach(uid => { 
                     const u = allUsersCache.find(x=>x.uid===uid); 
-                    if(u) dList.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,uid].sort().join('_')}','${u.name}')"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; 
+                    if(u) dList.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1" onclick="openChat('${[curUser.uid,uid].sort().join('_')}','${u.name}'); pushState()"><img src="${u.photoURL}" class="rounded-circle me-3" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; 
                 }); 
             });
         }
