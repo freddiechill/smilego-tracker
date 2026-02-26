@@ -289,7 +289,8 @@
             
             <div id="mention-menu"></div>
 
-            <input type="file" id="chat-file-inp" hidden>
+            <!-- GÜNCELLENDİ: 'multiple' eklendi -->
+            <input type="file" id="chat-file-inp" multiple hidden>
             <button type="button" class="btn btn-dark text-muted rounded-circle" style="width:45px;height:45px; flex-shrink:0" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
             <textarea id="chat-input" class="form-control" placeholder="Mesaj" style="border-radius:20px; resize:none; overflow-y:auto; max-height: 120px; padding-top: 12px; height: 45px;" rows="1"></textarea>
             <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px; flex-shrink:0"><i class="fas fa-paper-plane"></i></button>
@@ -372,7 +373,9 @@
         import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion, deleteField } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
 
         const geminiApiKey = ""; 
         async function fetchGemini(prompt) {
@@ -493,7 +496,6 @@
             calcSuccessRate();
         };
 
-        // YENİ MANTIK: GÖREVİ VEREN KİŞİ İSTATİSTİKLERE DAHİL EDİLMEZ (Kendisine özel atamadığı sürece)
         window.calcSuccessRate = () => {
             let total = 0, done = 0;
             Object.values(allTasksCache).forEach(t => { 
@@ -671,7 +673,6 @@
                 const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                 const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
                 
-                // MANTIK: Görevi veren kendisi değilse yapmalıdır.
                 const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
                                        (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
                                        (t.assignedType==='user' && t.assignedToUid===curUser.uid);
@@ -788,7 +789,6 @@
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
             document.getElementById('td-stars-wrapper').innerHTML = starsHtml; 
             
-            // YENİ GÖREV LİSTESİ MANTIĞI: Görevi veren kendisi dışındakileri listele
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
             let expectedUsers = [];
             
@@ -1038,7 +1038,23 @@
                         if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
                     });
 
-                    if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                    // YENİ: Dosya Tipi Render Etme
+                    if(m.type === 'image') {
+                        content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                    } else if (m.type === 'file') {
+                        const kb = (m.fileSize / 1024).toFixed(1);
+                        content = `
+                            <div class="d-flex align-items-center gap-2 p-2 bg-dark rounded border border-secondary clickable mt-2" onclick="window.open('${m.url}', '_blank')" style="min-width: 200px;">
+                                <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-file-alt fs-5"></i>
+                                </div>
+                                <div style="overflow: hidden;">
+                                    <div class="fw-bold text-truncate" style="font-size: 13px;">${m.fileName || 'Dosya'}</div>
+                                    <div class="text-muted" style="font-size: 10px;">${kb} KB • İndir / Aç</div>
+                                </div>
+                            </div>
+                        `;
+                    }
                     
                     let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
                     const sender = allUsersCache.find(u => u.uid === m.senderId);
@@ -1058,7 +1074,7 @@
                     if(m.replyTo) {
                         const rMsg = msgs.find(x => x.id === m.replyTo);
                         if(rMsg) {
-                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.text || '').substring(0,30)+'...';
+                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.type === 'file' ? '📁 Dosya' : (rMsg.text || '').substring(0,30)+'...');
                             replyHtml = `<div class="replied-to-block" onclick="scrollToMsg('${m.replyTo}')"><div class="fw-bold" style="font-size:10px; color:var(--primary)"><i class="fas fa-reply me-1"></i>${rMsg.senderName} yanıtlandı</div>${parseMD(rText).replace(/<[^>]*>?/gm, '')}</div>`;
                         }
                     }
@@ -1094,7 +1110,7 @@
 
                 const pBar = document.getElementById('pinned-msg-bar');
                 if(pinnedMsg) {
-                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || 'Fotoğraf')).substring(0, 40) + '...';
+                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || (pinnedMsg.type === 'file' ? '📁 Dosya' : '📸 Fotoğraf'))).substring(0, 40) + '...';
                     pBar.style.display = 'flex';
                     pBar.onclick = () => scrollToMsg(pinnedMsg.id);
                 } else {
@@ -1136,7 +1152,6 @@
             
             html += `<div class="ctx-item text-primary" onclick="replyToMsg()"><i class="fas fa-reply"></i> Yanıtla</div>`;
             
-            // YENİ: Kopyala Butonu Eklendi
             if(msg.text) {
                 html += `<div class="ctx-item text-light" onclick="copyMsg()"><i class="fas fa-copy"></i> Kopyala</div>`;
             }
@@ -1164,7 +1179,15 @@
         window.replyToMsg = () => {
             ctx.style.display='none'; currentReplyToId = selectedMsg.id;
             document.getElementById('reply-preview-bar').style.display = 'flex';
-            document.getElementById('reply-preview-text').innerText = selectedMsg.text || '📸 Fotoğraf';
+            
+            const fullMsg = currentChatMsgs?.find(x => x.id === selectedMsg.id);
+            let pText = '📸 Fotoğraf';
+            if(fullMsg) {
+                if(fullMsg.type === 'file') pText = '📁 Dosya';
+                else if(fullMsg.text) pText = fullMsg.text;
+            }
+            
+            document.getElementById('reply-preview-text').innerText = pText;
             document.getElementById('chat-input').focus();
         };
         window.cancelReply = () => { currentReplyToId = null; document.getElementById('reply-preview-bar').style.display = 'none'; };
@@ -1174,7 +1197,6 @@
             await updateDoc(doc(db,"messages",selectedMsg.id), { isPinned: !selectedMsg.isPinned });
         };
 
-        // YENİ: Kopyalama Fonksiyonu (Tarayıcı Güvenli Yöntem)
         window.copyMsg = () => {
             ctx.style.display='none';
             if(!selectedMsg || !selectedMsg.text) return;
@@ -1222,10 +1244,60 @@
         window.deleteMsg = async (t) => { ctx.style.display='none'; if(t==='all'){ customConfirm("Herkesden sil?",async()=>await deleteDoc(doc(db,"messages",selectedMsg.id))); } else { await updateDoc(doc(db,"messages",selectedMsg.id),{deletedFor:arrayUnion(curUser.uid)}); showToast("Silindi."); } };
         window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
         window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
-        document.getElementById('chat-file-inp').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.readAsDataURL(f); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=async()=>{ const c=document.createElement('canvas'); const x=c.getContext('2d'); let w=i.width,h=i.height,m=800; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; x.drawImage(i,0,0,w,h); 
-            await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
-            setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
-            cancelReply(); } } 
+        
+        // GÜNCELLENDİ: Çoklu dosya seçimi ve ardışık güvenli yükleme motoru
+        document.getElementById('chat-file-inp').addEventListener('change', async e => { 
+            const files = e.target.files; 
+            if(!files || files.length === 0) return; 
+
+            let nonImageCount = 0;
+            let imageCount = 0;
+
+            showToast(`${files.length} dosya işleniyor...`);
+
+            // Dosyaları sırayla işlemek, tarayıcının çökmesini ve hafıza şişmesini önler
+            for(let i = 0; i < files.length; i++) {
+                const f = files[i];
+                
+                if(f.type.startsWith('image/')) {
+                    imageCount++;
+                    // Her bir görsel için işlemi bekle (Promise)
+                    await new Promise((resolve) => {
+                        const r = new FileReader(); 
+                        r.readAsDataURL(f); 
+                        r.onload = (ev) => { 
+                            const img = new Image(); img.src = ev.target.result; 
+                            img.onload = async () => { 
+                                const c = document.createElement('canvas'); const x = c.getContext('2d'); 
+                                let w = img.width, h = img.height, m = 800; 
+                                if(w > h){if(w > m){h *= m/w; w = m;}} else {if(h > m){w *= m/h; h = m;}} 
+                                c.width = w; c.height = h; x.drawImage(img, 0, 0, w, h); 
+                                
+                                try {
+                                    await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
+                                    setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
+                                } catch(err) {
+                                    console.error("Görsel yüklenemedi:", err);
+                                }
+                                resolve(); // İşlem bitti, sıradakine geç
+                            };
+                            img.onerror = () => resolve(); // Bozuksa atla
+                        };
+                    });
+                } else {
+                    nonImageCount++;
+                }
+            }
+
+            document.getElementById('chat-file-inp').value = '';
+            cancelReply();
+
+            // İşlem sonu bilgilendirmesi
+            if (nonImageCount > 0) {
+                customConfirm(`Seçtiğiniz ${files.length} dosyanın ${nonImageCount} tanesi fotoğraf değildi. Sadece fotoğraflar gönderildi. Belge paylaşımları için lütfen Drive vb. linkleri kullanın.`, () => {});
+            } else if (imageCount > 0) {
+                showToast(`${imageCount} fotoğraf başarıyla gönderildi!`);
+            }
         });
         
         const vImg = document.getElementById('img-viewer'); const vImgSrc = document.getElementById('img-viewer-src');
@@ -1459,7 +1531,6 @@
         
         window.aiGenerateTaskDesc = async () => { const t = document.getElementById('t-title').value.trim(); if(!t) return showToast("Başlık girin!"); const d = document.getElementById('t-desc'); d.placeholder = "✨ AI düşünüyor..."; d.disabled = true; try { d.value = await fetchGemini(`Lütfen şu görev başlığı için profesyonel, maddeler halinde ve net bir açıklama yaz: "${t}".`); } catch(e) {} finally { d.placeholder = "Açıklama (*kalın*, _eğik_, vb. kullanılabilir)"; d.disabled = false; } };
         
-        // YENİ: Sadece bugünün mesajlarını özetler
         window.aiSummarizeChat = async () => { 
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
@@ -1470,7 +1541,7 @@
             
             showToast("✨ AI bugünkü mesajları okuyor..."); 
             try { 
-                const txt = todaysMsgs.slice(-40).map(x => `${x.senderName}: ${x.text || '[Medya]'}`).join('\n'); 
+                const txt = todaysMsgs.slice(-40).map(x => `${x.senderName}: ${x.text || '[Medya/Dosya]'}`).join('\n'); 
                 const res = await fetchGemini(`Aşağıdaki bugüne ait sohbeti kısaca özetle:\n\n${txt}`); 
                 const b = document.getElementById('chat-overlay-body'); 
                 b.innerHTML += `
