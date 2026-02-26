@@ -96,6 +96,9 @@
 
         .unread-dot { width: 10px; height: 10px; background-color: var(--primary); border-radius: 50%; box-shadow: 0 0 8px var(--primary); }
 
+        .date-separator { position: sticky; top: 10px; z-index: 5; text-align: center; margin: 15px 0 5px 0; pointer-events: none; display: flex; justify-content: center; }
+        .date-separator-badge { background: rgba(30, 30, 35, 0.85); backdrop-filter: blur(10px); border: 1px solid #3f3f46; color: #e2e8f0; font-size: 11px; padding: 4px 14px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: auto; }
+
         #mention-menu { position: absolute; bottom: 100%; left: 70px; width: calc(100% - 130px); background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(10px); border: 1px solid #3f3f46; border-radius: 12px 12px 0 0; max-height: 200px; overflow-y: auto; display: none; z-index: 10001; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
         .mention-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .mention-item:hover { background: rgba(129, 140, 248, 0.2); }
@@ -292,7 +295,6 @@
             
             <div id="mention-menu"></div>
 
-            <!-- GÜNCELLENDİ: 'multiple' eklendi -->
             <input type="file" id="chat-file-inp" multiple hidden>
             <button type="button" class="btn btn-dark text-muted rounded-circle" style="width:45px;height:45px; flex-shrink:0" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
             <textarea id="chat-input" class="form-control" placeholder="Mesaj" style="border-radius:20px; resize:none; overflow-y:auto; max-height: 120px; padding-top: 12px; height: 45px;" rows="1"></textarea>
@@ -452,10 +454,24 @@
                         if(!Array.isArray(uData.departments)) uData.departments = [uData.department || '...'];
                         if(!uData.readReceipts) uData.readReceipts = {}; 
                         if(u.email === ADMIN_EMAIL && !uData.roles.includes('Admin')) uData.roles.push('Admin');
+                        
+                        const lBtn = document.querySelector('#form-login button');
+                        if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
+                        
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-screen').style.display = 'block';
                         initApp();
+                    } else {
+                        signOut(auth);
+                        showToast("Kritik Hata: Hesabınız Authentication'da var ancak Veritabanında (Firestore) yok. Lütfen yeniden kayıt olun.");
+                        const lBtn = document.querySelector('#form-login button');
+                        if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                     }
+                }, err => {
+                    signOut(auth);
+                    showToast("Sunucu Bağlantı/Yetki Hatası: " + err.message);
+                    const lBtn = document.querySelector('#form-login button');
+                    if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                 });
                 if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
             } else {
@@ -675,19 +691,25 @@
                 let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                 const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                 const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-                
-                const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
-                                       (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
-                                       (t.assignedType==='user' && t.assignedToUid===curUser.uid);
-                
-                const canChangeStatus = isAssignedToMe;
-                const dlBadge = formatDeadline(t.deadline);
-                const canEdit = (t.createdByUid === curUser.uid || isAdmin());
+            
+            const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+            
+            const canChangeStatus = isAssignedToMe;
+            const dlBadge = formatDeadline(t.deadline);
+            const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
-                let assigneesHtml = '';
-                if(t.assignedType === 'user' && t.assignedToUid) {
-                    const u = allUsersCache.find(x => x.uid === t.assignedToUid);
-                    const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
+            let createdAtStr = '';
+            if (t.createdAt && t.createdAt.seconds) {
+                const cDate = new Date(t.createdAt.seconds * 1000);
+                createdAtStr = cDate.toLocaleString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            }
+
+            let assigneesHtml = '';
+            if(t.assignedType === 'user' && t.assignedToUid) {
+                const u = allUsersCache.find(x => x.uid === t.assignedToUid);
+                const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                     const n = u ? u.name : t.assignedTo;
                     assigneesHtml = `<div class="d-flex align-items-center gap-2 px-3 py-1 border border-secondary rounded"><img src="${p}" class="rounded-circle" width="20"><span class="small">${n}</span></div>`;
                 } else {
@@ -697,24 +719,25 @@
 
                 let pureText = (t.description || '').replace(/<[^>]+>/g, '').replace(/[\*\_~-]/g, '');
 
-                list.innerHTML += `
-                <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
-                    <div class="task-right-panel">
-                        ${canEdit ? `<div class="task-icons">
-                            <i class="fas fa-edit text-warning clickable" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
-                            <i class="fas fa-trash text-danger clickable" onclick="event.stopPropagation();delTask('${t.id}')"></i>
-                        </div>` : ''}
-                        ${dlBadge}
-                    </div>
-                    
-                    <div class="task-card-content" style="margin-right: 90px;">
-                        <h6 class="fw-bold mb-1 text-truncate">${t.title}</h6>
-                        <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
-                    </div>
+            list.innerHTML += `
+            <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
+                <div class="task-right-panel">
+                    ${canEdit ? `<div class="task-icons">
+                        <i class="fas fa-edit text-warning clickable" onclick="event.stopPropagation();openTaskModal('${t.id}')"></i>
+                        <i class="fas fa-trash text-danger clickable" onclick="event.stopPropagation();delTask('${t.id}')"></i>
+                    </div>` : ''}
+                    ${dlBadge}
+                </div>
+                
+                <div class="task-card-content" style="margin-right: 90px;">
+                    <div class="text-muted" style="font-size: 9px; margin-bottom: 2px; opacity: 0.6;"><i class="fas fa-calendar-plus me-1"></i>${createdAtStr}</div>
+                    <h6 class="fw-bold mb-1 text-truncate">${t.title}</h6>
+                    <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
+                </div>
 
-                    <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${pureText}</p>
-                    
-                    <div class="d-flex align-items-center justify-content-between">
+                <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${pureText}</p>
+                
+                <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
                         ${canChangeStatus ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
                     </div>
@@ -1010,6 +1033,21 @@
             renderChannelBadges(); 
         }
 
+        function getChatDateLabel(seconds) {
+            if (!seconds) return '';
+            const d = new Date(seconds * 1000);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+            const msgDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+            if (msgDate.getTime() === today.getTime()) return "Bugün";
+            if (msgDate.getTime() === yesterday.getTime()) return "Dün";
+            
+            const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
         window.openChat = (cid, title) => {
             activeChatId = cid; chatOpen = true; document.getElementById('chat-overlay-title').innerText = title;
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
@@ -1026,37 +1064,36 @@
                 
                 let html = '';
                 let pinnedMsg = null;
+                let lastDateLabel = null; 
 
                 msgs.forEach(m => {
                     const me = m.senderId === curUser.uid;
                     let content = m.text || '';
                     if(m.isPinned) pinnedMsg = m; 
                     
+                    let msgTime = m.createdAt?.seconds || (Date.now() / 1000);
+                    const dateLabel = getChatDateLabel(msgTime);
+                    if (dateLabel !== lastDateLabel) {
+                        html += `<div class="date-separator"><span class="date-separator-badge">${dateLabel}</span></div>`;
+                        lastDateLabel = dateLabel;
+                    }
+
                     content = linkify(parseMD(content)); 
                     
-                    const sortedUsers = [...allUsersCache].sort((a,b) => b.name.length - a.name.length);
-                    sortedUsers.forEach(u => { const tag = `@${u.name}`; if (content.includes(tag)) content = content.split(tag).join(`<span class="text-warning fw-bold">${tag}</span>`); });
+                    // GÜNCELLENDİ: Etiketleme Mantığı Uzundan Kısaya (YKY Sorunu Çözümü)
+                    let specialTags = ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`));
+                    specialTags.sort((a,b) => b.length - a.length); // YKY'nin YK'dan önce işlenmesi için sıralama
                     
-                    ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`)).forEach(tag => {
+                    specialTags.forEach(tag => {
                         if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
                     });
 
-                    // YENİ: Dosya Tipi Render Etme
+                    // Kullanıcı isimleri zaten uzundan kısaya sıralanıyordu
+                    const sortedUsers = [...allUsersCache].sort((a,b) => b.name.length - a.name.length);
+                    sortedUsers.forEach(u => { const tag = `@${u.name}`; if (content.includes(tag)) content = content.split(tag).join(`<span class="text-warning fw-bold">${tag}</span>`); });
+
                     if(m.type === 'image') {
                         content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
-                    } else if (m.type === 'file') {
-                        const kb = (m.fileSize / 1024).toFixed(1);
-                        content = `
-                            <div class="d-flex align-items-center gap-2 p-2 bg-dark rounded border border-secondary clickable mt-2" onclick="window.open('${m.url}', '_blank')" style="min-width: 200px;">
-                                <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
-                                    <i class="fas fa-file-alt fs-5"></i>
-                                </div>
-                                <div style="overflow: hidden;">
-                                    <div class="fw-bold text-truncate" style="font-size: 13px;">${m.fileName || 'Dosya'}</div>
-                                    <div class="text-muted" style="font-size: 10px;">${kb} KB • İndir / Aç</div>
-                                </div>
-                            </div>
-                        `;
                     }
                     
                     let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
@@ -1077,7 +1114,7 @@
                     if(m.replyTo) {
                         const rMsg = msgs.find(x => x.id === m.replyTo);
                         if(rMsg) {
-                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.type === 'file' ? '📁 Dosya' : (rMsg.text || '').substring(0,30)+'...');
+                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.text || '').substring(0,30)+'...';
                             replyHtml = `<div class="replied-to-block" onclick="scrollToMsg('${m.replyTo}')"><div class="fw-bold" style="font-size:10px; color:var(--primary)"><i class="fas fa-reply me-1"></i>${rMsg.senderName} yanıtlandı</div>${parseMD(rText).replace(/<[^>]*>?/gm, '')}</div>`;
                         }
                     }
@@ -1113,7 +1150,7 @@
 
                 const pBar = document.getElementById('pinned-msg-bar');
                 if(pinnedMsg) {
-                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || (pinnedMsg.type === 'file' ? '📁 Dosya' : '📸 Fotoğraf'))).substring(0, 40) + '...';
+                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || 'Fotoğraf')).substring(0, 40) + '...';
                     pBar.style.display = 'flex';
                     pBar.onclick = () => scrollToMsg(pinnedMsg.id);
                 } else {
@@ -1186,8 +1223,7 @@
             const fullMsg = currentChatMsgs?.find(x => x.id === selectedMsg.id);
             let pText = '📸 Fotoğraf';
             if(fullMsg) {
-                if(fullMsg.type === 'file') pText = '📁 Dosya';
-                else if(fullMsg.text) pText = fullMsg.text;
+                if(fullMsg.text) pText = fullMsg.text;
             }
             
             document.getElementById('reply-preview-text').innerText = pText;
@@ -1248,7 +1284,6 @@
         window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
         window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
         
-        // GÜNCELLENDİ: Çoklu dosya seçimi ve ardışık güvenli yükleme motoru
         document.getElementById('chat-file-inp').addEventListener('change', async e => { 
             const files = e.target.files; 
             if(!files || files.length === 0) return; 
@@ -1258,13 +1293,11 @@
 
             showToast(`${files.length} dosya işleniyor...`);
 
-            // Dosyaları sırayla işlemek, tarayıcının çökmesini ve hafıza şişmesini önler
             for(let i = 0; i < files.length; i++) {
                 const f = files[i];
                 
                 if(f.type.startsWith('image/')) {
                     imageCount++;
-                    // Her bir görsel için işlemi bekle (Promise)
                     await new Promise((resolve) => {
                         const r = new FileReader(); 
                         r.readAsDataURL(f); 
@@ -1282,9 +1315,9 @@
                                 } catch(err) {
                                     console.error("Görsel yüklenemedi:", err);
                                 }
-                                resolve(); // İşlem bitti, sıradakine geç
+                                resolve(); 
                             };
-                            img.onerror = () => resolve(); // Bozuksa atla
+                            img.onerror = () => resolve(); 
                         };
                     });
                 } else {
@@ -1295,7 +1328,6 @@
             document.getElementById('chat-file-inp').value = '';
             cancelReply();
 
-            // İşlem sonu bilgilendirmesi
             if (nonImageCount > 0) {
                 customConfirm(`Seçtiğiniz ${files.length} dosyanın ${nonImageCount} tanesi fotoğraf değildi. Sadece fotoğraflar gönderildi. Belge paylaşımları için lütfen Drive vb. linkleri kullanın.`, () => {});
             } else if (imageCount > 0) {
@@ -1452,11 +1484,19 @@
             if (txtLower.includes('@herkes')) {
                 allUsersCache.forEach(u => { if(u.uid !== curUser.uid && !isHiddenUser(u)) taggedUids.add(u.uid); });
             } else {
+                
+                // GÜNCELLENDİ: Regex Word Boundary ile kesin eşleşme kontrolü (YKY'den YK'ya bildirim gitmesini engellemek için)
+                const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const checkTag = (tag) => {
+                    const regex = new RegExp(`@${escapeRegExp(tag.toLowerCase())}(?![a-zğüşıöç])`, 'i');
+                    return regex.test(txtLower);
+                };
+
                 allUsersCache.forEach(u => {
                     if (u.uid === curUser.uid || isHiddenUser(u)) return;
-                    if (t.includes(`@${u.name}`)) taggedUids.add(u.uid);
-                    u.roles?.forEach(r => { if(txtLower.includes(`@${r.toLowerCase()}`)) taggedUids.add(u.uid); });
-                    u.departments?.forEach(d => { if(txtLower.includes(`@${d.toLowerCase()}`)) taggedUids.add(u.uid); });
+                    if (checkTag(u.name)) taggedUids.add(u.uid);
+                    u.roles?.forEach(r => { if(checkTag(r)) taggedUids.add(u.uid); });
+                    u.departments?.forEach(d => { if(checkTag(d)) taggedUids.add(u.uid); });
                 });
             }
 
