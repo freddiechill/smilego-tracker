@@ -30,6 +30,7 @@
 
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
+        #modal-confirm { z-index: 1000020 !important; } 
         
         .app-header { height: 70px; position: fixed; top: 0; left: 0; width: 100%; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .header-icon-btn { background: transparent !important; border: none !important; padding: 0 8px !important; color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; }
@@ -43,21 +44,45 @@
         .form-control, .form-select { background: #27272a; border: 1px solid #3f3f46; color: white; padding: 12px; border-radius: 12px; font-size: 14px; }
         .btn-primary-soft { background: var(--primary); color: #000; font-weight: 700; border-radius: 14px; border: none; padding: 14px; width: 100%; }
 
-        /* CHAT */
+        .btn-ai { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24; border-radius: 12px; font-weight: 600; padding: 8px 16px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.1); }
+        .btn-ai:hover { background: rgba(251, 191, 36, 0.2); transform: translateY(-1px); }
+        .btn-ai:active { transform: translateY(1px); }
+        ::-webkit-resizer { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><path d="M10 0 L10 10 L0 10 Z" fill="%23818cf8"/></svg>'); background-repeat: no-repeat; background-position: bottom right; }
+
+        .dropdown-toggle::after { display: none; } 
+
+        .dropdown-menu { background: rgba(24, 24, 27, 0.8) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 8px !important; box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important; }
+        .dropdown-item { color: #e2e8f0 !important; border-radius: 10px !important; padding: 10px 15px !important; transition: all 0.2s !important; margin-bottom: 2px; }
+        .dropdown-item:last-child { margin-bottom: 0; }
+        .dropdown-item:hover, .dropdown-item:focus { background: rgba(129, 140, 248, 0.15) !important; color: #fff !important; }
+        .dropdown-item.active { background: rgba(129, 140, 248, 0.25) !important; color: var(--primary) !important; font-weight: 700; }
+
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
-        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; }
-        .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
+        
+        .pinned-msg-bar { background: rgba(30, 30, 35, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid #3f3f46; padding: 10px 20px; font-size: 13px; display: none; align-items: center; justify-content: space-between; cursor: pointer; z-index: 10; border-left: 3px solid var(--primary); }
+        .reply-preview-bar { background: #1c1c1e; border-top: 1px solid #3f3f46; border-left: 3px solid var(--primary); padding: 10px 15px; font-size: 13px; display: none; align-items: center; justify-content: space-between; }
+        .replied-to-block { background: rgba(0,0,0,0.2); border-left: 3px solid var(--primary); padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 12px; opacity: 0.8; cursor: pointer; display: flex; flex-direction: column; }
+        
+        .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; scroll-behavior: smooth; }
+        .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; transition: background 0.3s; border-radius: 8px; }
         .chat-row.right { justify-content: flex-end; }
         .chat-row.left { justify-content: flex-start; }
+        .chat-row.highlight { background: rgba(129, 140, 248, 0.3) !important; transition: background 0.5s; }
         .chat-avatar-img { width: 35px; height: 35px; border-radius: 50% !important; object-fit: cover !important; flex-shrink: 0; } 
         .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 16px; font-size: 14.5px; position: relative; word-wrap: break-word; user-select: none; display: flex; flex-direction: column; }
         .bubble-sent { background: var(--sent-bg); color: #fff; border-top-right-radius: 2px; margin-left: auto; }
         .bubble-received { background: var(--recv-bg); color: #fff; border-top-left-radius: 2px; margin-right: auto; }
         .msg-bubble a { color: #93c5fd; text-decoration: underline; word-break: break-all; }
+        
+        .msg-bubble ul, .msg-bubble ol, #notepad-preview ul, #notepad-preview ol { margin-bottom: 0; padding-left: 20px; }
+        .msg-bubble b, #notepad-preview b { font-weight: 800; }
+        .msg-bubble i, #notepad-preview i { font-style: italic; }
+        .msg-bubble s, #notepad-preview s { text-decoration: line-through; opacity: 0.8; }
+
         .sender-header { margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; line-height: 1.2; }
         .sender-name { font-weight: 800; font-size: 13px; }
-        .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; }
+        .chat-img { max-width: 100%; border-radius: 12px; margin-top: 5px; display: block; cursor: zoom-in; }
         .chat-meta { font-size: 9px; opacity: 0.6; text-align: right; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
         .edited-label { font-style: italic; }
         .reaction-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: -2px; margin-bottom: 6px; position: relative; z-index: 2; }
@@ -66,26 +91,25 @@
         .cb-role { background: #3f3f46; color: #ddd; }
         .cb-dept { border: 1px solid #52525b; color: #a1a1aa; background: transparent; }
 
-        /* Task & Stars */
+        .unread-dot { width: 10px; height: 10px; background-color: var(--primary); border-radius: 50%; box-shadow: 0 0 8px var(--primary); }
+
+        #mention-menu { position: absolute; bottom: 100%; left: 70px; width: calc(100% - 130px); background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(10px); border: 1px solid #3f3f46; border-radius: 12px 12px 0 0; max-height: 200px; overflow-y: auto; display: none; z-index: 10001; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+        .mention-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .mention-item:hover { background: rgba(129, 140, 248, 0.2); }
+        .mention-item img { width: 25px; height: 25px; border-radius: 50%; object-fit: cover; }
+        .mention-title { font-size: 14px; font-weight: 600; color: #fff; }
+        .mention-sub { font-size: 10px; color: #a1a1aa; }
+
         #star-select { display: flex; gap: 2px; align-items: center; }
         #star-select i { font-size: 24px; cursor: pointer; width: 24px; text-align: center; }
         
-        .task-right-panel { 
-            position: absolute; top: 12px; right: 12px; 
-            display: flex; flex-direction: column; align-items: flex-end; gap: 4px; 
-            width: 110px; pointer-events: none;
-            text-align: right;
-        }
+        .task-right-panel { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 110px; pointer-events: none; text-align: right; }
         .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; justify-content: flex-end; }
         .task-icons i { cursor: pointer; }
         .task-card-content { margin-right: 115px; }
-
-        /* Filters */
         .filter-scroll-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        .filter-scroll-container::-webkit-scrollbar { display: none; }
         .filter-btn { flex: 0 0 auto; min-width: auto; padding: 6px 16px; border-radius: 50px; font-size: 12px; }
 
-        /* General UI */
         .dept-header { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid var(--primary); }
         .dept-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 5px; border: 1px solid #27272a; margin-bottom: 10px; }
         .rounded-circle { border-radius: 50% !important; aspect-ratio: 1 / 1; object-fit: cover !important; }
@@ -119,10 +143,16 @@
         .ctx-item.delete { color: #ff6b6b; }
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000007; display: none; align-items: center; justify-content: center; flex-direction: column; }
-        #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; }
-        #img-viewer img { max-width: 100%; max-height: 100%; }
+
+        #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
+        #img-viewer-src { max-width: 100%; max-height: 100%; transition: transform 0.1s; transform-origin: center center; }
+        
         .nav-btn { background: none; border: none; color: #52525b; flex: 1; height: 100%; font-size: 24px; transition: 0.2s; }
         .nav-btn.active { color: var(--primary); transform: translateY(-3px); }
+
+        textarea#chat-input::-webkit-scrollbar { width: 4px; }
+        textarea#chat-input::-webkit-scrollbar-track { background: transparent; }
+        textarea#chat-input::-webkit-scrollbar-thumb { background: #52525b; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -131,7 +161,11 @@
     <div class="modal fade" id="modal-confirm" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-question-circle text-warning fa-3x mb-3"></i><h5 class="fw-bold mb-2">Emin misiniz?</h5><p class="text-muted small mb-4" id="confirm-text">...</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-dark border-secondary w-50" data-bs-dismiss="modal">İptal</button><button class="btn btn-danger w-50" id="confirm-btn-yes">Evet</button></div></div></div></div>
     <div id="context-menu"><div class="ctx-reactions"><span class="ctx-emoji" onclick="addReaction('❤️')">❤️</span><span class="ctx-emoji" onclick="addReaction('👍')">👍</span><span class="ctx-emoji" onclick="addReaction('👎')">👎</span><span class="ctx-emoji" onclick="addReaction('🙏')">🙏</span><span class="ctx-emoji" onclick="addReaction('✍️')">✍️</span><span class="ctx-emoji" onclick="addReaction('✅')">✅</span></div><div id="ctx-options"></div></div>
     <div id="loading-overlay"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div></div>
-    <div id="img-viewer"><button style="position:absolute;top:40px;right:20px;background:none;border:none;color:white;font-size:30px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button><img id="img-viewer-src" src=""></div>
+    
+    <div id="img-viewer">
+        <button style="position:absolute;top:40px;right:20px;background:rgba(0,0,0,0.5);border-radius:50%;width:40px;height:40px;border:none;color:white;font-size:20px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
+        <img id="img-viewer-src" src="" alt="Zoomable Image">
+    </div>
 
     <div id="auth-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10000;">
         <div id="auth-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right, #312e81 0%, #09090b 60%);z-index:-1"></div>
@@ -149,6 +183,7 @@
         <header class="app-header">
             <h5 class="m-0 fw-bold" id="page-title">Görev Panosu</h5>
             <div class="d-flex gap-2 align-items-center">
+                <button class="header-icon-btn" onclick="openNotepad()"><i class="fas fa-sticky-note text-info"></i></button>
                 <button class="header-icon-btn" onclick="openLeaderboard()"><i class="fas fa-trophy text-warning"></i></button>
                 <div class="position-relative"><button class="header-icon-btn" onclick="openNotifs()"><i class="fas fa-bell"></i></button><div id="notif-dot" class="notif-dot" style="position:absolute;top:5px;right:5px;width:8px;height:8px;background:red;border-radius:50%;display:none;border:1px solid #000"></div></div>
             </div>
@@ -156,12 +191,24 @@
 
         <div id="view-tasks" class="main-content active">
             <button id="btn-add-task" class="btn-primary-soft mb-4 shadow-sm" onclick="openTaskModal()"><i class="fas fa-plus me-2"></i> Yeni Görev Ekle</button>
-            <div class="filter-scroll-container mb-3">
-                <button class="btn btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
-                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
-                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('pending', this)">Başlamadı</button>
-                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('progress', this)">Yapılıyor</button>
-                <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('done', this)">Bitti</button>
+            <div class="d-flex align-items-center mb-3">
+                <div class="dropdown me-2">
+                    <button class="btn btn-dark border-secondary rounded-circle dropdown-toggle text-warning flex-shrink-0" type="button" data-bs-toggle="dropdown" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-sort-amount-down"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary" style="font-size: 14px;">
+                        <li><a class="dropdown-item active" href="#" onclick="changeTaskSort('newest', this); event.preventDefault();">Yeniden Eskiye</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeTaskSort('oldest', this); event.preventDefault();">Eskiden Yeniye</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeTaskSort('importance', this); event.preventDefault();">Öneme Göre</a></li>
+                    </ul>
+                </div>
+                <div class="filter-scroll-container flex-grow-1" style="padding-bottom: 0;">
+                    <button class="btn btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
+                    <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
+                    <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('pending', this)">Başlamadı</button>
+                    <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('progress', this)">Yapılıyor</button>
+                    <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('done', this)">Bitti</button>
+                </div>
             </div>
             <div id="task-list" class="d-flex flex-column gap-2"></div>
         </div>
@@ -215,17 +262,63 @@
     </div>
 
     <div id="chat-overlay">
-        <div style="flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; padding: 0 20px;">
-            <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
-            <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
+        <div style="flex: 0 0 70px; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10;">
+            <div class="d-flex align-items-center">
+                <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
+                <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
+            </div>
+            <button class="btn-ai btn-sm px-3" onclick="aiSummarizeChat()" title="Sohbeti Özetle">✨ Özetle</button>
         </div>
+        
+        <div id="pinned-msg-bar" class="pinned-msg-bar">
+            <div><i class="fas fa-thumbtack text-primary me-2"></i> <span id="pinned-msg-text" class="fw-bold" style="opacity: 0.9;"></span></div>
+            <i class="fas fa-times text-muted" onclick="event.stopPropagation(); document.getElementById('pinned-msg-bar').style.display='none';"></i>
+        </div>
+
         <div class="chat-body-scroll" id="chat-overlay-body"></div>
-        <form id="chat-form" style="flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; display: flex; gap: 10px;">
+        
+        <div id="reply-preview-bar" class="reply-preview-bar">
+            <div style="overflow: hidden;">
+                <div class="fw-bold text-primary mb-1" style="font-size: 11px;"><i class="fas fa-reply me-1"></i> Yanıtlanıyor</div>
+                <div id="reply-preview-text" class="text-truncate text-muted"></div>
+            </div>
+            <i class="fas fa-times fs-5 text-muted clickable" onclick="cancelReply()"></i>
+        </div>
+
+        <form id="chat-form" style="flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; display: flex; gap: 10px; align-items: flex-end; position: relative;">
+            
+            <div id="mention-menu"></div>
+
             <input type="file" id="chat-file-inp" hidden>
-            <button type="button" class="btn btn-dark text-muted rounded-circle" style="width:45px;height:45px" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
-            <input id="chat-input" class="form-control" placeholder="Mesaj yaz..." style="border-radius:20px" autocomplete="off">
-            <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px"><i class="fas fa-paper-plane"></i></button>
+            <button type="button" class="btn btn-dark text-muted rounded-circle" style="width:45px;height:45px; flex-shrink:0" onclick="document.getElementById('chat-file-inp').click()"><i class="fas fa-paperclip"></i></button>
+            <textarea id="chat-input" class="form-control" placeholder="Mesaj" style="border-radius:20px; resize:none; overflow-y:auto; max-height: 120px; padding-top: 12px; height: 45px;" rows="1"></textarea>
+            <button type="submit" class="btn btn-primary rounded-circle" style="width:45px;height:45px; flex-shrink:0"><i class="fas fa-paper-plane"></i></button>
         </form>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="modal-notepad" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card-custom border-0 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-info"><i class="fas fa-sticky-note me-2"></i>Kişisel Notlarım</h5>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearNotepad()"><i class="fas fa-trash me-1"></i>Temizle</button>
+                </div>
+                <ul class="nav nav-pills nav-fill mb-2 bg-dark rounded p-1" style="border: 1px solid #333; font-size:12px;">
+                    <li class="nav-item"><a class="nav-link active rounded py-1" data-bs-toggle="pill" href="#note-edit">Düzenle</a></li>
+                    <li class="nav-item"><a class="nav-link rounded py-1" data-bs-toggle="pill" href="#note-view" onclick="previewNotepad()">Görünüm</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="note-edit">
+                        <textarea id="notepad-text" class="form-control" placeholder="Kendine özel notlar... (*kalın*, _eğik_, - liste)" style="resize:vertical; min-height:150px;"></textarea>
+                    </div>
+                    <div class="tab-pane fade" id="note-view">
+                        <div id="notepad-preview" class="p-2 small bg-dark rounded border border-secondary" style="min-height:150px; max-height: 400px; overflow-y:auto; resize:vertical; word-break: break-word;"></div>
+                    </div>
+                </div>
+                <button class="btn-primary-soft mt-3" onclick="saveNotepad()">Kaydet</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="modal-edit-msg" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Mesajı Düzenle</h5><input id="edit-msg-input" class="form-control mb-3"><button class="btn-primary-soft" onclick="submitEditMsg()">Kaydet</button></div></div></div>
@@ -233,8 +326,11 @@
 
     <div class="modal fade" id="modal-task" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Görevi Yönet</h5><form id="form-task">
         <input type="hidden" id="t-id">
-        <input id="t-title" class="form-control mb-3" placeholder="Başlık" required>
-        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama" rows="3"></textarea>
+        <div class="d-flex gap-2 mb-3">
+            <input id="t-title" class="form-control" placeholder="Başlık" required>
+            <button type="button" class="btn-ai px-3" style="white-space:nowrap" onclick="aiGenerateTaskDesc()" title="AI ile Açıklama Oluştur">✨ AI</button>
+        </div>
+        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama (*kalın*, _eğik_, vb. kullanılabilir)" style="resize:vertical; min-height:80px;"></textarea>
         <div class="mb-3"><label class="small text-muted">Son Tarih (Opsiyonel)</label><input type="datetime-local" id="t-deadline" class="form-control"></div>
         <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
         <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
@@ -245,7 +341,7 @@
     <div class="modal fade" id="modal-task-detail" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3">
         <div class="d-flex justify-content-between align-items-start mb-3"><div style="flex:1; margin-right:10px;"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-assignees" class="d-flex align-items-center mb-1"></div></div><div class="text-end" id="td-meta"></div></div>
         <div class="d-flex flex-wrap gap-2 mb-2 align-items-center" id="td-stars-wrapper"></div>
-        <div class="bg-dark p-2 rounded mb-3 small text-muted" id="td-desc" style="max-height:100px;overflow-y:auto"></div>
+        <div class="p-2 mb-3 small" id="td-desc" style="min-height:60px; max-height:300px; overflow-y:auto; resize:vertical; background: rgba(0,0,0,0.3); border-radius:12px;"></div>
         <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
@@ -273,10 +369,29 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, orderBy, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion, deleteField } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, query, where, onSnapshot, updateDoc, deleteDoc, getDocs, getDoc, arrayUnion, deleteField } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDHbuPLeir2dn9BFI7Rt2AxUp_6E0VFy_8", authDomain: "smilego-tracker.firebaseapp.com", projectId: "smilego-tracker", storageBucket: "smilego-tracker.firebasestorage.app", messagingSenderId: "49933018016", appId: "1:49933018016:web:f69bf14464bfd4399a3ac5" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+
+        const geminiApiKey = ""; 
+        async function fetchGemini(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            let retries = 5; let delay = 1000;
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    const data = await res.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+        }
 
         const ADMIN_EMAIL = "yenerarda7@gmail.com";
         const DEPTS = ["Organizasyonel Gelişim","Sosyal Medya","Bölge Koordinatörlüğü","Psikolog İlişkileri","Data & Planlama","Kurumsal İletişim", "Yazılım"];
@@ -286,10 +401,15 @@
         const DEPARTMENTS_UNI = ["Görsel İletişim Tasarımı", "İletişim Tasarımı", "Grafik Tasarım", "Çizgi Film ve Animasyon", "Radyo, Televizyon ve Sinema", "Halkla İlişkiler ve Reklamcılık", "Yeni Medya ve İletişim", "Bilgisayar Mühendisliği", "Yazılım Mühendisliği", "Endüstri Mühendisliği", "İşletme", "İktisat", "Maliye", "Uluslararası İlişkiler", "Siyaset Bilimi ve Kamu Yönetimi", "Psikoloji", "Sosyoloji", "Felsefe", "Hukuk", "Tıp", "Diş Hekimliği", "Eczacılık", "Hemşirelik", "Mimarlık", "İç Mimarlık", "Şehir ve Bölge Planlama", "Özel Eğitim Öğretmenliği", "Okul Öncesi Öğretmenliği", "Sınıf Öğretmenliği", "İngilizce Öğretmenliği", "Matematik", "Fizik", "Kimya", "Biyoloji", "Tarih", "Coğrafya", "Türk Dili ve Edebiyatı", "Endüstriyel Tasarım", "Moda Tasarımı", "Resim", "Heykel", "Seramik"];
 
         let curUser=null, uData={}, activeChatId=null;
-        let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null, unsubDMs=null;
-        let allUsersCache=[], allTasksCache={};
-        let selectedTaskForStatus = null, selectedUserForEdit = null, selectedMsg = null, longPressTimer = null;
+        let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null, unsubDMs=null, unsubChannelMeta=null;
+        let allUsersCache=[], allTasksCache={}, channelMetaCache={};
+        let selectedTaskForStatus = null, selectedUserForEdit = null, selectedMsg = null, longPressTimer = null, currentReplyToId = null;
         let lbMode = 'genel';
+        let currentTaskSort = 'newest'; 
+        let currentChatMsgs = []; 
+        let pendingScrollMsgId = null; 
+        
+        const isHiddenUser = (user) => user.roles && user.roles.includes('Admin');
 
         const NAME_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e', '#e879f9', '#2dd4bf'];
         function getUserColor(uid) { let hash = 0; for (let i = 0; i < uid.length; i++) { hash = uid.charCodeAt(i) + ((hash << 5) - hash); } return NAME_COLORS[Math.abs(hash) % NAME_COLORS.length]; }
@@ -324,6 +444,7 @@
                         if(uData.isBanned) { signOut(auth); showToast("Hesap erişimi engellendi."); return; }
                         if(!Array.isArray(uData.roles)) uData.roles = [uData.role || 'Üye'];
                         if(!Array.isArray(uData.departments)) uData.departments = [uData.department || '...'];
+                        if(!uData.readReceipts) uData.readReceipts = {}; 
                         if(u.email === ADMIN_EMAIL && !uData.roles.includes('Admin')) uData.roles.push('Admin');
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-screen').style.display = 'block';
@@ -337,13 +458,13 @@
         });
 
         async function initApp() {
-            loadProfile(); listenTasks(); listenTeam(); loadChannels(); listenNotifs(); loadRecentDMs();
+            loadProfile(); listenTasks(); listenTeam(); listenChannelMeta(); loadChannels(); listenNotifs(); loadRecentDMs();
             const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
             DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
             if(!canManageUsers() && !uData.roles.includes('YK') && !uData.roles.includes('YKY')) { document.getElementById('btn-add-task').style.display = 'none'; }
         }
 
-        function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); curUser=null; uData={}; }
+        function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); if(unsubChannelMeta) unsubChannelMeta(); curUser=null; uData={}; currentChatMsgs=[]; }
         const isAdmin = () => uData.roles?.includes('Admin');
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
@@ -372,14 +493,72 @@
             calcSuccessRate();
         };
 
+        // YENİ MANTIK: GÖREVİ VEREN KİŞİ İSTATİSTİKLERE DAHİL EDİLMEZ (Kendisine özel atamadığı sürece)
         window.calcSuccessRate = () => {
             let total = 0, done = 0;
-            Object.values(allTasksCache).forEach(t => { if(t.statusMap && t.statusMap[curUser.uid]) { total++; if(t.statusMap[curUser.uid] === 'done') done++; } });
+            Object.values(allTasksCache).forEach(t => { 
+                const isAssigned = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                if(isAssigned) {
+                    total++;
+                    if(t.statusMap && t.statusMap[curUser.uid] === 'done') done++;
+                }
+            });
             const rate = total === 0 ? 0 : Math.round((done/total)*100);
             document.getElementById('prof-rate').innerText = `%${rate}`;
             const circle = document.getElementById('prof-circle');
             circle.style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
         };
+
+        function parseMD(txt) {
+            if(!txt) return '';
+            let html = txt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            html = html.replace(/_(.*?)_/g, '<i>$1</i>');
+            html = html.replace(/\*(.*?)\*/g, '<i>$1</i>');
+            html = html.replace(/~(.*?)~/g, '<s>$1</s>');
+            let lines = html.split('\n');
+            let out = '', inList = false;
+            for(let i=0; i<lines.length; i++) {
+                let line = lines[i];
+                if(line.trim().startsWith('- ')) {
+                    if(!inList) { out += '<ul>'; inList = true; }
+                    out += `<li>${line.trim().substring(2)}</li>`;
+                } else if(/^\d+\.\s/.test(line.trim())) {
+                    if(!inList) { out += '<ol>'; inList = true; }
+                    out += `<li>${line.replace(/^\d+\.\s/, '')}</li>`;
+                } else {
+                    if(inList) { out += '</ul>'; inList = false; } 
+                    out += line + (i < lines.length - 1 ? '<br>' : '');
+                }
+            }
+            if(inList) out += '</ul>';
+            return out.replace(/<\/ul><br>/g, '</ul>').replace(/<\/ol><br>/g, '</ol>');
+        }
+
+        window.openNotepad = () => {
+            document.getElementById('notepad-text').value = uData.personalNotes || '';
+            new bootstrap.Modal(document.getElementById('modal-notepad')).show();
+        };
+        window.saveNotepad = async () => {
+            const text = document.getElementById('notepad-text').value;
+            await updateDoc(doc(db, "users", curUser.uid), { personalNotes: text });
+            uData.personalNotes = text;
+            showToast("Notlar kaydedildi!");
+            bootstrap.Modal.getInstance(document.getElementById('modal-notepad')).hide();
+        };
+        
+        window.clearNotepad = () => {
+            customConfirm("Tüm notları silmek istediğine emin misin?", async () => { 
+                document.getElementById('notepad-text').value = ''; 
+                await updateDoc(doc(db, "users", curUser.uid), { personalNotes: '' });
+                uData.personalNotes = '';
+                previewNotepad();
+                showToast("Notlar temizlendi!");
+            });
+        };
+        window.previewNotepad = () => { document.getElementById('notepad-preview').innerHTML = parseMD(document.getElementById('notepad-text').value || 'Not yok.'); };
 
         window.saveEduInfo = async () => { 
             await updateDoc(doc(db,"users",curUser.uid), { 
@@ -423,7 +602,7 @@
             return text.replace(urlRegex, function(url) {
                 let href = url;
                 if (!href.match(/^https?:\/\//)) { href = 'https://' + href; }
-                return `<a href="${href}" target="_blank">${url}</a>`;
+                return `<a href="${href}" target="_blank" style="color:#93c5fd">${url}</a>`;
             });
         }
 
@@ -441,24 +620,39 @@
             return `<div class="d-flex flex-column align-items-end"><span class="small text-muted">${dateStr}</span><span class="badge bg-warning text-dark" style="font-size:10px">${timeRem} kaldı</span></div>`;
         }
 
-        // --- YENİ RENDER FONKSİYONU ---
-        // Bu fonksiyon görevleri ekrana basar. Hem listenTasks hem de listenTeam tarafından çağrılır.
+        window.changeTaskSort = (type, btn) => {
+            currentTaskSort = type;
+            const menu = btn.closest('.dropdown-menu');
+            menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+            btn.classList.add('active');
+            renderTasksToPage();
+        };
+
         window.renderTasksToPage = () => {
              const list = document.getElementById('task-list'); 
              list.innerHTML = ''; 
-             
-             // allTasksCache bir obje olduğu için diziye çeviriyoruz
              let tempArr = Object.values(allTasksCache);
              
-             // Sıralama: En yeni en üstte
-             tempArr.sort((a,b) => b.createdAt - a.createdAt);
+             if (currentTaskSort === 'newest') {
+                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
+             } else if (currentTaskSort === 'oldest') {
+                 tempArr.sort((a,b) => a.createdAt - b.createdAt);
+             } else if (currentTaskSort === 'importance') {
+                 tempArr.sort((a,b) => {
+                     const impA = a.importance || 0;
+                     const impB = b.importance || 0;
+                     if (impB !== impA) return impB - impA;
+                     return b.createdAt - a.createdAt;
+                 });
+             }
              
-             // Filtreleri kontrol et
              const filterBtn = document.querySelector('.btn-outline-secondary.active');
              const filter = filterBtn ? filterBtn.innerText : 'Tümü';
              const { start, end } = getWeekRange();
 
              tempArr.forEach(t => {
+                if(!t || !t.title || t.title === 'undefined') return;
+
                 let myStatus = 'pending';
                 if(t.statusMap) {
                     if(t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
@@ -476,14 +670,18 @@
                 let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                 const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                 const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-                const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
                 
+                // MANTIK: Görevi veren kendisi değilse yapmalıdır.
+                const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
+                                       (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
+                                       (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                
+                const canChangeStatus = isAssignedToMe;
                 const dlBadge = formatDeadline(t.deadline);
                 const canEdit = (t.createdByUid === curUser.uid || isAdmin());
 
                 let assigneesHtml = '';
                 if(t.assignedType === 'user' && t.assignedToUid) {
-                    // İşte burası artık güncel allUsersCache'den okuyacak!
                     const u = allUsersCache.find(x => x.uid === t.assignedToUid);
                     const p = u ? u.photoURL : 'https://ui-avatars.com/api/?name=U';
                     const n = u ? u.name : t.assignedTo;
@@ -492,6 +690,8 @@
                     const abbr = DEPT_ABBR[t.assignedTo] || t.assignedTo;
                     assigneesHtml = `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`;
                 }
+
+                let pureText = (t.description || '').replace(/<[^>]+>/g, '').replace(/[\*\_~-]/g, '');
 
                 list.innerHTML += `
                 <div class="card-custom position-relative" onclick="openTaskDetail('${t.id}'); pushState()">
@@ -508,11 +708,11 @@
                         <div class="d-flex align-items-center gap-2 mb-2">${assigneesHtml} <div class="d-flex" style="gap:2px">${starsHtml}</div></div>
                     </div>
 
-                    <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${t.description || ''}</p>
+                    <p class="text-muted small mb-3 text-truncate" style="margin-right:90px">${pureText}</p>
                     
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-2"><img src="${t.creatorPhoto || 'https://ui-avatars.com/api/?name=User'}" class="rounded-circle" width="20"><small class="text-muted" style="font-size:11px">${t.creatorName}</small></div>
-                        ${isAssignedToMe ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
+                        ${canChangeStatus ? `<button class="btn btn-sm status-badge ${stClass}" onclick="event.stopPropagation();openStatusModal('${t.id}'); pushState()">${stText}</button>` : `<span class="status-badge ${stClass}">${stText}</span>`}
                     </div>
                 </div>`;
             });
@@ -525,12 +725,14 @@
                 allTasksCache = {}; 
                 s.forEach(d => {
                     const t = { id: d.id, ...d.data() }; 
-                    const isAssignedToMe = (t.assignedType==='all') || (t.assignedType==='department' && uData.departments.includes(t.assignedTo)) || (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+                    const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
+                                           (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
+                                           (t.assignedType==='user' && t.assignedToUid===curUser.uid);
                     if(t.createdByUid === curUser.uid || isAssignedToMe || canSeeAllTasks()) { 
                         allTasksCache[t.id] = t; 
                     }
                 });
-                renderTasksToPage(); // Veri geldiğinde render et
+                renderTasksToPage(); 
             });
         }
 
@@ -540,10 +742,9 @@
             setStars(0);
             
             const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
-            const snap = await getDocs(collection(db,"users"));
-            snap.forEach(d => { 
-                if(d.id !== curUser.uid && !d.data().isBanned)
-                    userSelect.innerHTML += `<option value="${d.id}" data-role="${d.data().roles}">${d.data().name}</option>`; 
+            allUsersCache.forEach(u => { 
+                if(u.uid !== curUser.uid && !isHiddenUser(u))
+                    userSelect.innerHTML += `<option value="${u.uid}" data-role="${u.roles}">${u.name}</option>`; 
             });
 
             if(editId) {
@@ -572,9 +773,7 @@
         window.openTaskDetail = (tid) => {
             const t = allTasksCache[tid]; if(!t) return;
             document.getElementById('td-title').innerText = t.title;
-            
-            const dlBadge = formatDeadline(t.deadline);
-            document.getElementById('td-meta').innerHTML = dlBadge;
+            document.getElementById('td-meta').innerHTML = formatDeadline(t.deadline);
 
             let assigneesHtml = '';
             if(t.assignedType === 'user' && t.assignedToUid) {
@@ -585,20 +784,34 @@
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
-            document.getElementById('td-desc').innerText = t.description || 'Açıklama yok.';
+            document.getElementById('td-desc').innerHTML = parseMD(t.description || 'Açıklama yok.');
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
-            document.getElementById('td-stars-wrapper').innerHTML = starsHtml; // Fixed ID usage
+            document.getElementById('td-stars-wrapper').innerHTML = starsHtml; 
             
+            // YENİ GÖREV LİSTESİ MANTIĞI: Görevi veren kendisi dışındakileri listele
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
-            if(t.statusMap) {
-                Object.entries(t.statusMap).forEach(([uid, status]) => {
-                    const user = allUsersCache.find(u => u.uid === uid);
-                    const name = user ? user.name : "Kullanıcı";
+            let expectedUsers = [];
+            
+            if (t.assignedType === 'all') {
+                expectedUsers = allUsersCache.filter(u => !isHiddenUser(u) && u.uid !== t.createdByUid);
+            } else if (t.assignedType === 'department') {
+                expectedUsers = allUsersCache.filter(u => u.departments?.includes(t.assignedTo) && !isHiddenUser(u) && u.uid !== t.createdByUid);
+            } else if (t.assignedType === 'user' && t.assignedToUid) {
+                const u = allUsersCache.find(x => x.uid === t.assignedToUid);
+                if(u) expectedUsers.push(u);
+            }
+
+            if (expectedUsers.length > 0) {
+                expectedUsers.forEach(u => {
+                    const status = (t.statusMap && t.statusMap[u.uid]) ? t.statusMap[u.uid] : 'pending';
                     const stText = status === 'pending' ? 'Başlamadı' : (status === 'progress' ? 'Yapılıyor' : 'Bitti');
                     const stColor = status === 'pending' ? 'text-secondary' : (status === 'progress' ? 'text-primary' : 'text-success');
-                    list.innerHTML += `<div class="d-flex justify-content-between small border-bottom border-dark py-2"><span>${name}</span><span class="fw-bold ${stColor}">${stText}</span></div>`;
+                    list.innerHTML += `<div class="d-flex justify-content-between small border-bottom border-dark py-2"><span>${u.name}</span><span class="fw-bold ${stColor}">${stText}</span></div>`;
                 });
-            } else { list.innerHTML = '<span class="text-muted small">Henüz işlem yapılmamış.</span>'; }
+            } else {
+                list.innerHTML = '<span class="text-muted small">Atanmış kimse yok.</span>';
+            }
+
             new bootstrap.Modal(document.getElementById('modal-task-detail')).show();
         };
 
@@ -637,28 +850,22 @@
                     if(type === 'user' && uid) { taskData.statusMap[uid] = 'pending'; }
                     const ref = await addDoc(collection(db,"tasks"), taskData);
                     const notifData = {text: `${uData.name} yeni bir görev ekledi: ${title}`, read:false, createdAt:new Date(), type:'task', linkId: ref.id};
-                    if(type === 'all') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
-                    else if (type === 'department') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
-                    else if (type === 'user' && uid) { addDoc(collection(db,"notifications"), {...notifData, to: uid}); }
+                    if(type === 'all') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid && !isHiddenUser(u)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
+                    else if (type === 'department') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to) && !isHiddenUser(u)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
+                    else if (type === 'user' && uid && uid !== curUser.uid) { addDoc(collection(db,"notifications"), {...notifData, to: uid}); }
                 }
                 bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); 
                 document.getElementById('form-task').reset();
                 setStars(0);
-            } catch(err) {
-                showToast("Hata oluştu: " + err.message);
-                console.error(err);
-            }
+            } catch(err) { showToast("Hata oluştu: " + err.message); }
         };
 
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; new bootstrap.Modal(document.getElementById('modal-status')).show(); };
         window.updateTaskStatus = async (status) => { if(!selectedTaskForStatus) return; await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide(); };
         
-        // --- FILTER TASKS ---
         window.filterTasks = (f, b) => { 
-            document.querySelectorAll('#view-tasks .btn-outline-secondary').forEach(btn => btn.classList.remove('active')); 
-            b.classList.add('active'); 
-            // Burada renderTasksToPage çağırmak yeterli, tekrar listener açmaya gerek yok.
-            renderTasksToPage();
+            document.querySelectorAll('#view-tasks .filter-btn').forEach(btn => btn.classList.remove('active')); 
+            b.classList.add('active'); renderTasksToPage();
         };
         
         window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
@@ -666,13 +873,8 @@
         function listenTeam() { 
             unsubTeam = onSnapshot(collection(db,"users"), s => { 
                 allUsersCache = []; 
-                s.forEach(d => { 
-                    const u = d.data(); 
-                    if(!u.isBanned) allUsersCache.push(u); 
-                }); 
-                renderTeam(); 
-                // ÖNEMLİ EKLEME: Ekip bilgisi (fotoğraf vs.) güncellenince görev kartlarını da güncelle
-                renderTasksToPage();
+                s.forEach(d => { const u = d.data(); if(!u.isBanned) allUsersCache.push(u); }); 
+                renderTeam(); renderTasksToPage();
             }); 
         }
         
@@ -681,8 +883,8 @@
             const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
             
             allUsersCache.forEach(u => {
-                if(u.roles && u.roles.includes('Admin')) return;
-
+                if(isHiddenUser(u)) return;
+                
                 const searchStr = (u.name + ' ' + (u.roles||[]).join(' ') + ' ' + (u.departments||[]).map(d=>DEPT_ABBR[d]||d).join(' ')).toLowerCase();
                 if(f && !searchStr.includes(f)) return;
                 let placed = false;
@@ -726,17 +928,21 @@
             
             document.getElementById('vp-uni').innerText = u.university || 'Belirtilmemiş';
             document.getElementById('vp-dept').innerText = u.uni_dept || 'Belirtilmemiş';
-            
-            const dobRaw = u.dob || '';
-            const dobFormatted = dobRaw ? dobRaw.split('-').reverse().join('.') : 'Belirtilmemiş';
-            document.getElementById('vp-dob').innerText = dobFormatted;
-            
+            document.getElementById('vp-dob').innerText = (u.dob || '') ? (u.dob||'').split('-').reverse().join('.') : 'Belirtilmemiş';
             document.getElementById('vp-address').innerText = (u.city && u.district) ? `${u.city} / ${u.district}` : 'Adres Girilmemiş';
             document.getElementById('vp-phone').innerText = u.phone || 'Belirtilmemiş';
             document.getElementById('vp-email').innerText = u.contactEmail || u.email || 'Belirtilmemiş';
 
             let total = 0, done = 0;
-            Object.values(allTasksCache).forEach(t => { if(t.statusMap && t.statusMap[uid]) { total++; if(t.statusMap[uid] === 'done') done++; } });
+            Object.values(allTasksCache).forEach(t => { 
+                const isAssigned = (t.assignedType==='all' && t.createdByUid !== uid) || 
+                                   (t.assignedType==='department' && u.departments.includes(t.assignedTo) && t.createdByUid !== uid) || 
+                                   (t.assignedType==='user' && t.assignedToUid===uid);
+                if(isAssigned) {
+                    total++;
+                    if(t.statusMap && t.statusMap[uid] === 'done') done++;
+                }
+            });
             const rate = total === 0 ? 0 : Math.round((done/total)*100);
             document.getElementById('vp-rate').innerText = `%${rate}`;
             document.getElementById('vp-circle').style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
@@ -745,15 +951,11 @@
                 if(u.socials.linkedin) socBox.innerHTML += `<a href="https://linkedin.com/in/${u.socials.linkedin}" target="_blank" class="text-secondary"><i class="fab fa-linkedin"></i></a>`;
                 if(u.socials.instagram) socBox.innerHTML += `<a href="https://instagram.com/${u.socials.instagram}" target="_blank" class="text-secondary"><i class="fab fa-instagram"></i></a>`;
                 if(u.socials.x) socBox.innerHTML += `<a href="https://x.com/${u.socials.x}" target="_blank" class="text-secondary"><i class="fab fa-twitter"></i></a>`;
-                if(u.socials.tiktok) socBox.innerHTML += `<a href="https://tiktok.com/@${u.socials.tiktok}" target="_blank" class="text-secondary"><i class="fab fa-tiktok"></i></a>`;
-                if(u.socials.youtube) socBox.innerHTML += `<a href="https://youtube.com/@${u.socials.youtube}" target="_blank" class="text-secondary"><i class="fab fa-youtube"></i></a>`;
-                if(u.socials.kick) socBox.innerHTML += `<a href="https://kick.com/${u.socials.kick}" target="_blank" class="text-secondary"><i class="fab fa-kickstarter"></i></a>`;
             } else { socBox.innerHTML = '<small class="text-muted">Sosyal medya yok.</small>'; }
             new bootstrap.Modal(document.getElementById('modal-profile-view')).show();
         };
 
         window.deleteUser = async (uid) => { customConfirm("Kullanıcıyı engellemek istiyor musun?", async () => await updateDoc(doc(db,"users",uid), { isBanned: true })); };
-
         window.openUserEdit = (uid) => {
             if(!canManageUsers()) return; selectedUserForEdit = uid; const u = allUsersCache.find(x => x.uid === uid);
             document.getElementById('ue-name').innerText = u.name;
@@ -763,65 +965,109 @@
         };
         window.saveUserEdit = async () => { const roles = Array.from(document.querySelectorAll('#ue-roles input:checked')).map(c=>c.value); const depts = Array.from(document.querySelectorAll('#ue-depts input:checked')).map(c=>c.value); await updateDoc(doc(db,"users",selectedUserForEdit), { roles, departments: depts }); bootstrap.Modal.getInstance(document.getElementById('modal-user-edit')).hide(); };
 
+        function listenChannelMeta() {
+            if(unsubChannelMeta) unsubChannelMeta();
+            unsubChannelMeta = onSnapshot(collection(db, "channelMeta"), s => {
+                s.forEach(d => channelMetaCache[d.id] = d.data());
+                renderChannelBadges();
+            });
+        }
+
+        function renderChannelBadges() {
+            if(!uData.readReceipts) return;
+            document.querySelectorAll('.chat-badge-dot').forEach(el => el.remove());
+            const items = document.querySelectorAll('[data-cid]');
+            items.forEach(el => {
+                const cid = el.getAttribute('data-cid');
+                const lastMsgTime = channelMetaCache[cid]?.lastTime || 0;
+                const myReadTime = uData.readReceipts[cid] || 0;
+                if(lastMsgTime > myReadTime) {
+                    el.innerHTML += `<div class="unread-dot chat-badge-dot" style="margin-left:auto;"></div>`;
+                }
+            });
+        }
+
         function loadChannels() {
             const list = document.getElementById('channel-list');
-            list.innerHTML = `<div class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Sohbet','Genel Sohbet'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
-            list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
-            if(isBoard()) list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yonetim','Yönetim Kurulu'); pushState()"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
+            list.innerHTML = `<div data-cid="Genel Sohbet" class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Genel Sohbet','Genel Sohbet'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
+            list.innerHTML += `<div data-cid="Business" class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
+            if(isBoard()) list.innerHTML += `<div data-cid="Yönetim Kurulu" class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yönetim Kurulu','Yönetim Kurulu'); pushState()"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
             
-            // SPECIAL SORTING FOR BOARD (YK) - OWN DEPARTMENT FIRST
             let sortedDepts = [...(canSeeAllChannels() ? DEPTS : (uData.departments || []))];
-            
             if (isBoard() && uData.departments && uData.departments.length > 0) {
                 const myDept = uData.departments[0];
-                sortedDepts = sortedDepts.filter(d => d !== myDept);
-                sortedDepts.unshift(myDept); // Move to top
+                sortedDepts = sortedDepts.filter(d => d !== myDept); sortedDepts.unshift(myDept);
             }
 
             sortedDepts.forEach(d => { 
                 const isMyDept = uData.departments?.includes(d) && isBoard();
                 const style = isMyDept ? 'border: 1px solid #60a5fa !important; background: rgba(59, 130, 246, 0.1);' : 'border: 1px solid #0dcaf0;';
-                
-                list.innerHTML += `<div class="card-custom p-3 d-flex align-items-center mb-0 mt-2" style="${style}" onclick="openChat('${d}','${d}'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; 
+                list.innerHTML += `<div data-cid="${d}" class="card-custom p-3 d-flex align-items-center mb-0 mt-2" style="${style}" onclick="openChat('${d}','${d}'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-users text-info"></i></div><div class="fw-bold">${d}</div></div>`; 
             });
+            renderChannelBadges(); 
         }
 
         window.openChat = (cid, title) => {
             activeChatId = cid; chatOpen = true; document.getElementById('chat-overlay-title').innerText = title;
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
             document.getElementById('chat-overlay').classList.add('open');
+            
+            updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${cid}`]: Date.now() });
+            uData.readReceipts[cid] = Date.now();
+            renderChannelBadges();
+
             if(unsubChat) unsubChat();
             unsubChat = onSnapshot(query(collection(db,"messages"), where("channel","==",cid)), s => {
                 let msgs = []; s.forEach(d => { const m = d.data(); if(!m.deletedFor || !m.deletedFor.includes(curUser.uid)) msgs.push({id:d.id, ...m}); });
                 msgs.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
                 
                 let html = '';
+                let pinnedMsg = null;
+
                 msgs.forEach(m => {
                     const me = m.senderId === curUser.uid;
-                    let content = linkify(m.text || ''); if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                    let content = m.text || '';
+                    if(m.isPinned) pinnedMsg = m; 
+                    
+                    content = linkify(parseMD(content)); 
+                    
+                    const sortedUsers = [...allUsersCache].sort((a,b) => b.name.length - a.name.length);
+                    sortedUsers.forEach(u => { const tag = `@${u.name}`; if (content.includes(tag)) content = content.split(tag).join(`<span class="text-warning fw-bold">${tag}</span>`); });
+                    
+                    ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`)).forEach(tag => {
+                        if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
+                    });
+
+                    if(m.type === 'image') content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                     
                     let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
                     const sender = allUsersCache.find(u => u.uid === m.senderId);
                     if(sender) {
                         senderPhoto = sender.photoURL;
                         sender.roles?.forEach(r => badgeHtml += `<span class="chat-badge cb-role">${r}</span>`);
-                        sender.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); badgeHtml += `<span class="chat-badge cb-dept">${abbr}</span>`; });
+                        sender.departments?.forEach(d => { badgeHtml += `<span class="chat-badge cb-dept">${DEPT_ABBR[d] || d.substring(0,3)}</span>`; });
                     }
 
                     let reactHtml = '';
                     if(m.reactions) {
-                        const counts = {};
-                        Object.values(m.reactions).forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
-                        Object.entries(counts).forEach(([em, count]) => {
-                            reactHtml += `<div class="reaction-pill" onclick="openReactionDetails('${m.id}'); pushState()">${em} <span style="opacity:0.7">${count}</span></div>`;
-                        });
+                        const counts = {}; Object.values(m.reactions).forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
+                        Object.entries(counts).forEach(([em, count]) => { reactHtml += `<div class="reaction-pill" onclick="openReactionDetails('${m.id}'); event.stopPropagation();">${em} <span style="opacity:0.7">${count}</span></div>`; });
                     }
 
-                    const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, reactions: m.reactions}).replace(/"/g, '&quot;');
+                    let replyHtml = '';
+                    if(m.replyTo) {
+                        const rMsg = msgs.find(x => x.id === m.replyTo);
+                        if(rMsg) {
+                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.text || '').substring(0,30)+'...';
+                            replyHtml = `<div class="replied-to-block" onclick="scrollToMsg('${m.replyTo}')"><div class="fw-bold" style="font-size:10px; color:var(--primary)"><i class="fas fa-reply me-1"></i>${rMsg.senderName} yanıtlandı</div>${parseMD(rText).replace(/<[^>]*>?/gm, '')}</div>`;
+                        }
+                    }
+
+                    const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, isPinned: m.isPinned}).replace(/"/g, '&quot;');
                     const nameColor = me ? '#fff' : getUserColor(m.senderId);
 
                     html += `
-                    <div class="chat-row ${me?'right':'left'}">
+                    <div class="chat-row ${me?'right':'left'}" id="msg-${m.id}">
                         ${!me ? `<img src="${senderPhoto}" class="chat-avatar-img">` : ''}
                         <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}"
                              oncontextmenu="handleMsgCtx(event, ${safeM}); return false;"
@@ -829,8 +1075,10 @@
                              ontouchend="cancelLongPress()" 
                              ontouchmove="cancelLongPress()">
                             ${!me ? `<div class="sender-header"><span class="sender-name" style="color:${nameColor}">${m.senderName}</span>${badgeHtml}</div>` : ''}
+                            ${replyHtml}
                             <div style="margin-top:2px;">${content}</div>
                             <div class="chat-meta">
+                                ${m.isPinned ? '<i class="fas fa-thumbtack text-warning me-1"></i>' : ''}
                                 ${m.isEdited ? '<span class="edited-label">düzenlendi</span>' : ''}
                                 ${m.createdAt?.seconds ? new Date(m.createdAt.seconds*1000).getHours() + ':' + String(new Date(m.createdAt.seconds*1000).getMinutes()).padStart(2,'0') : ''}
                             </div>
@@ -838,13 +1086,46 @@
                     </div>
                     ${reactHtml ? `<div class="reaction-container ${me?'justify-content-end':'justify-content-start'}" style="margin-left:${!me?'45px':0}; margin-right:${me?'10px':0};">${reactHtml}</div>` : ''}`;
                 });
-                body.innerHTML = html; body.scrollTop = body.scrollHeight;
-                allTasksCache['msgs'] = msgs; 
+                
+                body.innerHTML = html; 
+                setTimeout(() => body.scrollTop = body.scrollHeight, 100);
+                
+                currentChatMsgs = msgs; 
+
+                const pBar = document.getElementById('pinned-msg-bar');
+                if(pinnedMsg) {
+                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || 'Fotoğraf')).substring(0, 40) + '...';
+                    pBar.style.display = 'flex';
+                    pBar.onclick = () => scrollToMsg(pinnedMsg.id);
+                } else {
+                    pBar.style.display = 'none';
+                }
+
+                if (pendingScrollMsgId) {
+                    setTimeout(() => {
+                        scrollToMsg(pendingScrollMsgId);
+                        pendingScrollMsgId = null;
+                    }, 400);
+                }
             });
         };
-        window.closeChat = () => { document.getElementById('chat-overlay').classList.remove('open'); chatOpen = false; if(unsubChat) unsubChat(); activeChatId = null; };
+        
+        window.scrollToMsg = (id, attempts = 10) => {
+            const el = document.getElementById('msg-' + id);
+            if(el) { 
+                el.scrollIntoView({behavior: "smooth", block: "center"}); 
+                el.classList.add('highlight'); 
+                setTimeout(()=>el.classList.remove('highlight'), 2000); 
+            } else if(attempts > 0) {
+                setTimeout(() => window.scrollToMsg(id, attempts - 1), 200);
+            }
+        };
 
-        // --- REACTIONS & CONTEXT ---
+        window.closeChat = () => { 
+            document.getElementById('chat-overlay').classList.remove('open'); chatOpen = false; if(unsubChat) unsubChat(); activeChatId = null; 
+            cancelReply();
+        };
+
         const ctx = document.getElementById('context-menu');
         window.startLongPress = (e, msg) => { longPressTimer = setTimeout(() => handleMsgCtx(e.touches[0], msg), 800); };
         window.cancelLongPress = () => { if(longPressTimer) clearTimeout(longPressTimer); };
@@ -852,108 +1133,291 @@
         window.handleMsgCtx = (e, msg) => {
             if(window.navigator.vibrate) window.navigator.vibrate(50);
             selectedMsg = msg; let html = ''; const isMine = msg.senderId === curUser.uid;
+            
+            html += `<div class="ctx-item text-primary" onclick="replyToMsg()"><i class="fas fa-reply"></i> Yanıtla</div>`;
+            
+            // YENİ: Kopyala Butonu Eklendi
+            if(msg.text) {
+                html += `<div class="ctx-item text-light" onclick="copyMsg()"><i class="fas fa-copy"></i> Kopyala</div>`;
+            }
+
+            html += `<div class="ctx-item text-warning" onclick="togglePinMsg()"><i class="fas fa-thumbtack"></i> ${msg.isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbete Sabitle'}</div>`; 
+            
+            const fullMsg = currentChatMsgs?.find(x => x.id === msg.id);
+            if (fullMsg && fullMsg.reactions && Object.keys(fullMsg.reactions).length > 0) {
+                html += `<div class="ctx-item text-info" onclick="openReactionDetails('${msg.id}')"><i class="fas fa-smile"></i> Tepki Verenler</div>`;
+            }
+
             if(isMine) html += `<div class="ctx-item" onclick="editMsg()"><i class="fas fa-pen"></i> Düzenle</div>`;
             if(isMine || isAdmin()) html += `<div class="ctx-item delete" onclick="deleteMsg('all')"><i class="fas fa-trash"></i> Herkes için Sil</div>`;
             html += `<div class="ctx-item delete" onclick="deleteMsg('me')"><i class="fas fa-trash-alt"></i> Benden Sil</div>`;
             document.getElementById('ctx-options').innerHTML = html;
             
             ctx.style.display='flex';
-            const menuWidth = ctx.offsetWidth;
-            const menuHeight = ctx.offsetHeight;
-            const winW = window.innerWidth;
-            const winH = window.innerHeight;
-
-            let x = e.clientX;
-            let y = e.clientY;
-
-            if (x + menuWidth > winW) {
-                x = winW - menuWidth - 10;
-            }
-            if (y + menuHeight > winH) {
-                y = e.clientY - menuHeight;
-            }
-
-            ctx.style.top = y + 'px'; 
-            ctx.style.left = x + 'px';
+            let x = e.clientX, y = e.clientY;
+            if (x + ctx.offsetWidth > window.innerWidth) x = window.innerWidth - ctx.offsetWidth - 10;
+            if (y + ctx.offsetHeight > window.innerHeight) y = e.clientY - ctx.offsetHeight;
+            ctx.style.top = y + 'px'; ctx.style.left = x + 'px';
         };
         document.addEventListener('click', (e)=>{if(!ctx.contains(e.target))ctx.style.display='none';});
-        window.addReaction = async (emoji) => { ctx.style.display='none'; if(!selectedMsg)return; const c=selectedMsg.reactions||{}; if(c[curUser.uid]&&c[curUser.uid].emoji===emoji)await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:deleteField()}); else await updateDoc(doc(db,"messages",selectedMsg.id),{[`reactions.${curUser.uid}`]:{emoji,name:uData.name,uid:curUser.uid}}); };
-        window.openReactionDetails = (mid) => { const m = allTasksCache['msgs']?.find(x=>x.id===mid); if(!m?.reactions)return; const l=document.getElementById('reaction-list'); l.innerHTML=''; Object.values(m.reactions).forEach(r=>{ const u=allUsersCache.find(x=>x.uid===r.uid); l.innerHTML+=`<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${u?.photoURL}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`; }); new bootstrap.Modal(document.getElementById('modal-reactions')).show(); };
+        
+        window.replyToMsg = () => {
+            ctx.style.display='none'; currentReplyToId = selectedMsg.id;
+            document.getElementById('reply-preview-bar').style.display = 'flex';
+            document.getElementById('reply-preview-text').innerText = selectedMsg.text || '📸 Fotoğraf';
+            document.getElementById('chat-input').focus();
+        };
+        window.cancelReply = () => { currentReplyToId = null; document.getElementById('reply-preview-bar').style.display = 'none'; };
+        
+        window.togglePinMsg = async () => {
+            ctx.style.display='none';
+            await updateDoc(doc(db,"messages",selectedMsg.id), { isPinned: !selectedMsg.isPinned });
+        };
+
+        // YENİ: Kopyalama Fonksiyonu (Tarayıcı Güvenli Yöntem)
+        window.copyMsg = () => {
+            ctx.style.display='none';
+            if(!selectedMsg || !selectedMsg.text) return;
+            const ta = document.createElement('textarea');
+            ta.value = selectedMsg.text;
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast("Mesaj panoya kopyalandı!");
+            } catch(e) {
+                showToast("Kopyalama başarısız oldu.");
+            }
+            document.body.removeChild(ta);
+        };
+
+        window.addReaction = async (emoji, msgId = null) => { 
+            ctx.style.display='none'; 
+            const targetId = msgId || selectedMsg?.id;
+            if(!targetId) return; 
+
+            const targetMsg = currentChatMsgs?.find(x => x.id === targetId);
+            if(!targetMsg) return;
+
+            const c = targetMsg.reactions || {}; 
+            if(c[curUser.uid] && c[curUser.uid].emoji === emoji) {
+                await updateDoc(doc(db,"messages",targetId),{[`reactions.${curUser.uid}`]:deleteField()}); 
+            } else {
+                await updateDoc(doc(db,"messages",targetId),{[`reactions.${curUser.uid}`]:{emoji,name:uData.name,uid:curUser.uid}}); 
+            }
+        };
+
+        window.openReactionDetails = (mid) => { 
+            ctx.style.display='none';
+            const m = currentChatMsgs?.find(x=>x.id===mid); 
+            if(!m?.reactions) return; 
+            const l=document.getElementById('reaction-list'); l.innerHTML=''; 
+            Object.values(m.reactions).forEach(r=>{ 
+                const u=allUsersCache.find(x=>x.uid===r.uid); 
+                l.innerHTML+=`<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${u?.photoURL}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`; 
+            }); 
+            new bootstrap.Modal(document.getElementById('modal-reactions')).show(); 
+        };
+
         window.deleteMsg = async (t) => { ctx.style.display='none'; if(t==='all'){ customConfirm("Herkesden sil?",async()=>await deleteDoc(doc(db,"messages",selectedMsg.id))); } else { await updateDoc(doc(db,"messages",selectedMsg.id),{deletedFor:arrayUnion(curUser.uid)}); showToast("Silindi."); } };
         window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
         window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
-        document.getElementById('chat-file-inp').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.readAsDataURL(f); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=async()=>{ const c=document.createElement('canvas'); const x=c.getContext('2d'); let w=i.width,h=i.height,m=800; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; x.drawImage(i,0,0,w,h); await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); } } });
+        document.getElementById('chat-file-inp').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.readAsDataURL(f); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=async()=>{ const c=document.createElement('canvas'); const x=c.getContext('2d'); let w=i.width,h=i.height,m=800; if(w>h){if(w>m){h*=m/w;w=m;}}else{if(h>m){w*=m/h;h=m;}} c.width=w; c.height=h; x.drawImage(i,0,0,w,h); 
+            await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
+            setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
+            cancelReply(); } } 
+        });
         
-        window.switchLB = (mode, el) => {
-            lbMode = mode;
-            document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            openLeaderboard(true);
-        };
+        const vImg = document.getElementById('img-viewer'); const vImgSrc = document.getElementById('img-viewer-src');
+        let sc=1, pX=0, pY=0, sX=0, sY=0, lDist=0, isP=false;
+        vImg.addEventListener('touchstart', e => {
+            if(e.touches.length===2) { isP=false; lDist=Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY); } 
+            else if(e.touches.length===1 && sc>1) { isP=true; sX=e.touches[0].pageX-pX; sY=e.touches[0].pageY-pY; }
+        });
+        vImg.addEventListener('touchmove', e => {
+            if(e.touches.length===2) {
+                let dist=Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY);
+                sc = Math.min(Math.max(1, sc + (dist-lDist)*0.015), 4); lDist=dist; setTrans(); e.preventDefault();
+            } else if(isP && e.touches.length===1 && sc>1) { pX=e.touches[0].pageX-sX; pY=e.touches[0].pageY-sY; setTrans(); e.preventDefault(); }
+        });
+        vImg.addEventListener('touchend', () => isP=false);
+        function setTrans() { vImgSrc.style.transform = `translate(${pX}px, ${pY}px) scale(${sc})`; }
+        
+        window.closeImgViewer=()=>{ vImg.style.display='none'; sc=1;pX=0;pY=0; setTrans(); };
+        window.openImgViewer=(src)=>{ vImgSrc.src=src; vImg.style.display='flex'; sc=1;pX=0;pY=0; setTrans(); };
 
+
+        window.switchLB = (mode, el) => { lbMode = mode; document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); openLeaderboard(true); };
         window.openLeaderboard = (refresh = false) => {
-            const list = document.getElementById('lb-list'); list.innerHTML = '';
-            const scores = [];
-            const { start, end } = getWeekRange();
-
+            const list = document.getElementById('lb-list'); list.innerHTML = ''; const scores = []; const { start, end } = getWeekRange();
             allUsersCache.forEach(u => {
-                if(!isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
+                if(isHiddenUser(u)) return;
 
+                if(!isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
                 let total = 0, done = 0;
                 Object.values(allTasksCache).forEach(t => {
-                    if(lbMode === 'haftalik') {
-                        const tDate = t.createdAt.toDate();
-                        if(tDate < start || tDate > end) return;
-                    }
-
-                    if(t.statusMap && t.statusMap[u.uid]) { 
-                        total++; 
-                        if(t.statusMap[u.uid] === 'done') done++; 
+                    if(lbMode === 'haftalik') { const tDate = t.createdAt.toDate(); if(tDate < start || tDate > end) return; }
+                    
+                    const isAssigned = (t.assignedType==='all' && t.createdByUid !== u.uid) || 
+                                       (t.assignedType==='department' && u.departments.includes(t.assignedTo) && t.createdByUid !== u.uid) || 
+                                       (t.assignedType==='user' && t.assignedToUid===u.uid);
+                    if(isAssigned) {
+                        total++;
+                        if(t.statusMap && t.statusMap[u.uid] === 'done') done++;
                     } 
                 });
-                
-                if(total > 0 || isAdmin()) {
-                    scores.push({ ...u, rate: total===0?0:(done/total)*100, done, total });
-                }
+                if(total > 0 || isAdmin()) scores.push({ ...u, rate: total===0?0:(done/total)*100, done, total });
             });
             scores.sort((a,b) => b.rate - a.rate);
-            
             if(scores.length === 0) list.innerHTML = '<div class="text-center text-muted mt-3">Veri yok.</div>';
-
-            scores.forEach((s, idx) => {
-                list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary"><div class="d-flex align-items-center gap-3"><div class="fw-bold" style="width:20px;">${idx+1}</div><img src="${s.photoURL}" class="rounded-circle" width="35"><div><div class="fw-bold small">${s.name}</div><div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div></div></div><div class="fw-bold text-success">%${Math.round(s.rate)}</div></div>`;
-            });
-            
+            scores.forEach((s, idx) => { list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary"><div class="d-flex align-items-center gap-3"><div class="fw-bold" style="width:20px;">${idx+1}</div><img src="${s.photoURL}" class="rounded-circle" width="35"><div><div class="fw-bold small">${s.name}</div><div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div></div></div><div class="fw-bold text-success">%${Math.round(s.rate)}</div></div>`; });
             if(!refresh) new bootstrap.Modal(document.getElementById('modal-leaderboard')).show(); pushState();
         };
 
-        window.goTab = (t,b) => { 
-            const titles = {'tasks':'Görev Panosu','messages':'Sohbetler','team':'Ekip Listesi','profile':'Profilim'};
-            document.getElementById('page-title').innerText = titles[t];
-            document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); 
-            document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); 
+        window.goTab = (t,b) => { document.getElementById('page-title').innerText = {'tasks':'Görev Panosu','messages':'Sohbetler','team':'Ekip Listesi','profile':'Profilim'}[t]; document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); };
+        
+        const chatInputEl = document.getElementById('chat-input');
+        const mentionMenu = document.getElementById('mention-menu');
+        
+        chatInputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        let currentMentionSearch = null;
+
+        chatInputEl.addEventListener('input', function() {
+            this.style.height = '45px';
+            this.style.height = (this.scrollHeight < 120 ? this.scrollHeight : 120) + 'px';
+
+            const val = this.value;
+            const cursorPos = this.selectionStart;
+            const textBefore = val.substring(0, cursorPos);
+            
+            const match = textBefore.match(/@([a-zA-ZğüşıöçĞÜŞİÖÇ\s]*)$/);
+            
+            if (match) {
+                currentMentionSearch = match[1].toLowerCase();
+                renderMentionMenu(currentMentionSearch);
+            } else {
+                currentMentionSearch = null;
+                mentionMenu.style.display = 'none';
+            }
+        });
+
+        function renderMentionMenu(search) {
+            mentionMenu.innerHTML = '';
+            let count = 0;
+
+            const addOption = (title, subtitle, iconHtml, insertText) => {
+                count++;
+                mentionMenu.innerHTML += `
+                <div class="mention-item" onclick="insertMention('${insertText}')">
+                    ${iconHtml}
+                    <div>
+                        <div class="mention-title">${title}</div>
+                        ${subtitle ? `<div class="mention-sub">${subtitle}</div>` : ''}
+                    </div>
+                </div>`;
+            };
+
+            if ("herkes".includes(search)) addOption("Herkes", "Tüm odayı etiketle", '<div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:25px;height:25px;font-size:10px"><i class="fas fa-bullhorn"></i></div>', 'Herkes');
+
+            ROLES.forEach(r => {
+                if(r.toLowerCase().includes(search)) addOption(r, "Bu role sahip herkes", '<div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center" style="width:25px;height:25px;font-size:10px"><i class="fas fa-id-badge"></i></div>', r);
+            });
+
+            DEPTS.forEach(d => {
+                if(d.toLowerCase().includes(search)) addOption(d, "Bu departmandaki herkes", '<div class="rounded-circle bg-info text-dark d-flex align-items-center justify-content-center" style="width:25px;height:25px;font-size:10px"><i class="fas fa-users"></i></div>', d);
+            });
+
+            const sortedUsers = [...allUsersCache].sort((a,b) => a.name.localeCompare(b.name));
+            sortedUsers.forEach(u => {
+                if (isHiddenUser(u)) return; 
+                if (u.name.toLowerCase().includes(search)) {
+                    let deptStr = u.departments && u.departments.length > 0 ? DEPT_ABBR[u.departments[0]] || u.departments[0] : '';
+                    let roleStr = u.roles && u.roles.length > 0 ? u.roles[0] : '';
+                    addOption(u.name, `${roleStr} • ${deptStr}`, `<img src="${u.photoURL}">`, u.name);
+                }
+            });
+
+            mentionMenu.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        window.insertMention = (text) => {
+            const val = chatInputEl.value;
+            const cursorPos = chatInputEl.selectionStart;
+            const textBefore = val.substring(0, cursorPos);
+            const textAfter = val.substring(cursorPos);
+            
+            const lastAtIndex = textBefore.lastIndexOf('@');
+            if (lastAtIndex !== -1) {
+                const newTextBefore = textBefore.substring(0, lastAtIndex) + '@' + text + ' ';
+                chatInputEl.value = newTextBefore + textAfter;
+                chatInputEl.focus();
+                chatInputEl.selectionEnd = newTextBefore.length;
+            }
+            mentionMenu.style.display = 'none';
         };
-        document.getElementById('chat-form').addEventListener('submit',async e=>{e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date()}); document.getElementById('chat-input').value=''; });
+
+        document.getElementById('chat-form').addEventListener('submit',async e=>{
+            e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; 
+            
+            const msgRef = await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
+            
+            setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
+            updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${activeChatId}`]: Date.now() });
+
+            const channelName = document.getElementById('chat-overlay-title').innerText;
+            const txtLower = t.toLowerCase();
+            let taggedUids = new Set();
+
+            if (txtLower.includes('@herkes')) {
+                allUsersCache.forEach(u => { if(u.uid !== curUser.uid && !isHiddenUser(u)) taggedUids.add(u.uid); });
+            } else {
+                allUsersCache.forEach(u => {
+                    if (u.uid === curUser.uid || isHiddenUser(u)) return;
+                    if (t.includes(`@${u.name}`)) taggedUids.add(u.uid);
+                    u.roles?.forEach(r => { if(txtLower.includes(`@${r.toLowerCase()}`)) taggedUids.add(u.uid); });
+                    u.departments?.forEach(d => { if(txtLower.includes(`@${d.toLowerCase()}`)) taggedUids.add(u.uid); });
+                });
+            }
+
+            taggedUids.forEach(uid => {
+                addDoc(collection(db, "notifications"), {
+                    to: uid,
+                    text: `${uData.name} senden "${channelName}" grubunda bahsetti!`,
+                    read: false,
+                    createdAt: new Date(),
+                    type: 'chat_tag',
+                    linkId: activeChatId,
+                    linkTitle: channelName,
+                    targetMsgId: msgRef.id 
+                });
+            });
+            
+            cancelReply();
+            document.getElementById('chat-input').value=''; 
+            chatInputEl.style.height = '45px'; 
+        });
         
         function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
         
-        window.handleNotifClick = async (type, linkId) => {
+        window.handleNotifClick = async (type, linkId, linkTitle, targetMsgId) => {
             bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();
-            
-            if(type === 'task' && linkId) {
-                if(!allTasksCache[linkId]) {
-                    try {
-                        const snap = await getDoc(doc(db,"tasks",linkId));
-                        if(snap.exists()) {
-                            allTasksCache[linkId] = {id: snap.id, ...snap.data()};
-                            openTaskDetail(linkId);
-                        } else { showToast("Görev bulunamadı."); }
-                    } catch(e) { console.error(e); }
-                } else { openTaskDetail(linkId); }
-                pushState();
-            } else if(type === 'chat' && linkId) {
-                const u = allUsersCache.find(x => x.uid === linkId);
-                if(u) { openChat([curUser.uid, linkId].sort().join('_'), u.name); pushState(); }
+            if(type === 'task' && linkId) { 
+                if(!allTasksCache[linkId]) { try { const snap = await getDoc(doc(db,"tasks",linkId)); if(snap.exists()) { allTasksCache[linkId] = {id: snap.id, ...snap.data()}; openTaskDetail(linkId); } } catch(e) {} } else { openTaskDetail(linkId); } pushState(); 
+            } 
+            else if(type === 'chat' || type === 'chat_tag') { 
+                if(type === 'chat') { 
+                    const u = allUsersCache.find(x => x.uid === linkId); if(u) { openChat([curUser.uid, linkId].sort().join('_'), u.name); pushState(); } 
+                } else { 
+                    if (targetMsgId && targetMsgId !== 'undefined') pendingScrollMsgId = targetMsgId;
+                    openChat(linkId, linkTitle || 'Sohbet'); 
+                    pushState(); 
+                } 
             }
         };
 
@@ -962,7 +1426,9 @@
             const q = query(collection(db,"notifications"), where("to","==",curUser.uid)); const s=await getDocs(q); const n=[]; s.forEach(d=>n.push({id:d.id,...d.data()})); n.sort((a,b)=>b.createdAt-a.createdAt); 
             l.innerHTML=''; if(n.length===0)l.innerHTML='<div class="text-center p-3 text-muted">Yok.</div>'; 
             n.forEach(d=>{ 
-                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" onclick="handleNotifClick('${d.type}', '${d.linkId}')"><small class="fw-bold">${d.text}</small></div>`; 
+                const safeTitle = (d.linkTitle || '').replace(/'/g, "\\'");
+                const targetMsg = d.targetMsgId || '';
+                l.innerHTML+=`<div class="p-3 border-bottom border-secondary clickable" onclick="handleNotifClick('${d.type}', '${d.linkId}', '${safeTitle}', '${targetMsg}')"><small class="fw-bold">${d.text}</small></div>`; 
                 updateDoc(doc(db,"notifications",d.id),{read:true}); 
             }); 
             document.getElementById('notif-dot').style.display='none'; 
@@ -972,35 +1438,52 @@
             if(unsubDMs)unsubDMs(); 
             unsubDMs=onSnapshot(collection(db,"messages"),s=>{ 
                 const pairs = new Map(); 
-                s.forEach(d=>{ 
-                    const m = d.data();
-                    const c=m.channel; 
-                    if(c&&c.includes('_')&&c.includes(curUser.uid)) {
-                        const other = c.split('_').find(x=>x!==curUser.uid);
-                        const time = m.createdAt?.seconds || 0;
-                        if(!pairs.has(other) || time > pairs.get(other)) {
-                            pairs.set(other, time);
-                        }
-                    }
-                }); 
-                
-                const sortedPairs = Array.from(pairs.entries()).sort((a,b) => b[1] - a[1]);
-                
-                const l=document.getElementById('dm-list');
-                l.innerHTML=''; 
-                sortedPairs.forEach(([id, time])=>{ 
+                s.forEach(d=>{ const m = d.data(); const c=m.channel; if(c&&c.includes('_')&&c.includes(curUser.uid)) { const other = c.split('_').find(x=>x!==curUser.uid); const time = m.createdAt?.seconds || 0; if(!pairs.has(other) || time > pairs.get(other)) pairs.set(other, time); }}); 
+                const l=document.getElementById('dm-list'); l.innerHTML=''; 
+                Array.from(pairs.entries()).sort((a,b) => b[1] - a[1]).forEach(([id, time])=>{ 
                     const u=allUsersCache.find(x=>x.uid===id); 
-                    if(u)l.innerHTML+=`<div class="card-custom p-3 d-flex align-items-center mb-0 mt-1 gap-3" onclick="openChat('${[curUser.uid,id].sort().join('_')}','${u.name}');pushState()"><img src="${u.photoURL}" class="rounded-circle" width="40"><div><div class="fw-bold">${u.name}</div></div></div>`; 
+                    if(u && !isHiddenUser(u)) { 
+                        const cid = [curUser.uid,id].sort().join('_'); 
+                        const hasNew = (channelMetaCache[cid]?.lastTime || 0) > (uData.readReceipts[cid] || 0); 
+                        l.innerHTML+=`<div data-cid="${cid}" class="card-custom p-3 d-flex align-items-center mb-0 mt-1 gap-3" onclick="openChat('${cid}','${u.name}');pushState()"><img src="${u.photoURL}" class="rounded-circle" width="40"><div><div class="fw-bold">${u.name}</div></div>${hasNew?`<div class="unread-dot chat-badge-dot" style="margin-left:auto;"></div>`:''}</div>`; 
+                    }
                 }); 
             }); 
         }
         
-        window.logout=()=>signOut(auth);
+        window.logout = async () => { await signOut(auth); window.location.reload(); };
+
         document.getElementById('form-register').addEventListener('submit',async e=>{ e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{ uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false, roles: ['Üye'], departments: ['...'] }); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(err){ showToast(err.message) } });
         document.getElementById('form-login').addEventListener('submit',async e=>{ e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ showToast("Hata: " + err.message); } });
         window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
-        window.closeImgViewer=()=>{document.getElementById('img-viewer').style.display='none';};
-        window.openImgViewer=(src)=>{document.getElementById('img-viewer-src').src=src;document.getElementById('img-viewer').style.display='flex';};
+        
+        window.aiGenerateTaskDesc = async () => { const t = document.getElementById('t-title').value.trim(); if(!t) return showToast("Başlık girin!"); const d = document.getElementById('t-desc'); d.placeholder = "✨ AI düşünüyor..."; d.disabled = true; try { d.value = await fetchGemini(`Lütfen şu görev başlığı için profesyonel, maddeler halinde ve net bir açıklama yaz: "${t}".`); } catch(e) {} finally { d.placeholder = "Açıklama (*kalın*, _eğik_, vb. kullanılabilir)"; d.disabled = false; } };
+        
+        // YENİ: Sadece bugünün mesajlarını özetler
+        window.aiSummarizeChat = async () => { 
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
+            
+            const todaysMsgs = currentChatMsgs.filter(x => x.createdAt?.seconds >= startOfToday);
+
+            if(!todaysMsgs || todaysMsgs.length === 0) return showToast("Bugün özetlenecek mesaj yok."); 
+            
+            showToast("✨ AI bugünkü mesajları okuyor..."); 
+            try { 
+                const txt = todaysMsgs.slice(-40).map(x => `${x.senderName}: ${x.text || '[Medya]'}`).join('\n'); 
+                const res = await fetchGemini(`Aşağıdaki bugüne ait sohbeti kısaca özetle:\n\n${txt}`); 
+                const b = document.getElementById('chat-overlay-body'); 
+                b.innerHTML += `
+                <div class="text-center my-3 position-relative">
+                    <span class="badge bg-dark border border-warning text-warning text-wrap text-start p-3 pe-4 shadow position-relative" style="max-width:90%; font-size:13px; line-height: 1.5;">
+                        <i class="fas fa-times position-absolute top-0 end-0 m-2 fs-6 clickable" style="opacity:0.7" onclick="this.parentElement.parentElement.remove()" title="Kapat"></i>
+                        <div class="fw-bold mb-2 fs-6">✨ Günün Özeti</div>
+                        ${parseMD(res)}
+                    </span>
+                </div>`; 
+                b.scrollTop = b.scrollHeight; 
+            } catch(e) { showToast("AI ile bağlantı kurulamadı."); } 
+        };
     </script>
 </body>
 </html>
