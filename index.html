@@ -406,7 +406,8 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
-        const geminiApiKey = ""; 
+        // API Key koda eklendi. DİKKAT: Üretim (Production) ortamında bu key'e Google Cloud Console üzerinden Domain/URL kısıtlaması eklemeyi unutma!
+        const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
         async function fetchGemini(prompt) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
@@ -683,12 +684,14 @@
             document.getElementById('t-user').classList.toggle('d-none',v!=='user');
         };
 
+        // DÜZELTME: Link yakalayıcı çok daha akıllı hale getirildi. 
+        // Artık "http" yazmasan bile "instagram.com/smilego.tr" gibi domain formatlarını tanır.
         function linkify(text) {
-            const urlRegex = /(https?:\/\/[^\s<]+)|(www\.[^\s<]+)/g;
-            return text.replace(urlRegex, function(url) {
-                let href = url;
+            const urlRegex = /(^|\s|<br>|&nbsp;)((?:https?:\/\/|www\.)[^\s<]+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s<]*)?)/gi;
+            return text.replace(urlRegex, function(match, p1, p2) {
+                let href = p2;
                 if (!href.match(/^https?:\/\//i)) { href = 'https://' + href; }
-                return `<a href="${href}" target="_blank" style="color:#93c5fd">${url}</a>`;
+                return `${p1}<a href="${href}" target="_blank" style="color:#93c5fd">${p2}</a>`;
             });
         }
 
@@ -1848,7 +1851,7 @@
                     </span>
                 </div>`; 
                 b.scrollTop = b.scrollHeight; 
-            } catch(e) { showToast("AI ile bağlantı kurulamadı."); } 
+            } catch(e) { showToast("AI Hatası: API Anahtarında veya bağlantıda bir sorun oluştu."); } 
         };
     </script>
 </body>
