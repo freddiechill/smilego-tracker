@@ -513,7 +513,20 @@
                         if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                     }
                 });
+                
+                // Web tarayıcılar için standart OneSignal girişi
                 if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
+                
+                // YENİ: Median.co Mobil Uygulaması için özel Native Bildirim girişi
+                // Web'de hata vermemesi için sessiz bir iframe ile Median köprüsünü (JS Bridge) tetikliyoruz.
+                setTimeout(() => {
+                    const iframe = document.createElement("iframe");
+                    iframe.style.display = "none";
+                    iframe.src = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
+                    document.body.appendChild(iframe);
+                    setTimeout(() => iframe.remove(), 1000);
+                }, 1500); // Uygulamanın tam yüklenmesi için 1.5 saniye bekler
+
             } else {
                 cleanup(); document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none';
             }
