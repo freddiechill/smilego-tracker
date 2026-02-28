@@ -409,13 +409,20 @@
         // API Key koda eklendi. DİKKAT: Üretim (Production) ortamında bu key'e Google Cloud Console üzerinden Domain/URL kısıtlaması eklemeyi unutma!
         const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
         async function fetchGemini(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            // DÜZELTME 1: Önizleme sürümü yerine, yeni API anahtarlarında sorunsuz çalışan genel 'gemini-2.5-flash' modeline geçildi.
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
-            let retries = 5; let delay = 1000;
+            let retries = 3; let delay = 1000;
             for (let i = 0; i < retries; i++) {
                 try {
                     const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    
+                    // DÜZELTME 2: Gelen HTTP hatalarını yutmak yerine gerçek sebebini yakalayıp fırlatıyoruz.
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        throw new Error(errData.error?.message || `Bilinmeyen HTTP Hatası: ${res.status}`);
+                    }
+                    
                     const data = await res.json();
                     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
                 } catch (err) {
@@ -1851,7 +1858,11 @@
                     </span>
                 </div>`; 
                 b.scrollTop = b.scrollHeight; 
-            } catch(e) { showToast("AI Hatası: API Anahtarında veya bağlantıda bir sorun oluştu."); } 
+            } catch(e) { 
+                // DÜZELTME 3: Hatanın üzerini örtme, sorunun kaynağını konsola ve ekrana bas.
+                console.error("AI Bağlantı Hatası:", e);
+                showToast("AI Hatası: " + e.message.substring(0, 50) + "..."); 
+            } 
         };
     </script>
 </body>
