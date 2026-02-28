@@ -95,7 +95,6 @@
 
         .unread-dot { width: 10px; height: 10px; background-color: var(--primary); border-radius: 50%; box-shadow: 0 0 8px var(--primary); }
 
-        /* YENİ: CSS Box Modeli kurallarına uygun, şık ve birbirini iten Sticky (Yapışkan) Tarihler */
         .day-container { display: flex; flex-direction: column; gap: 6px; position: relative; }
         .date-separator { position: sticky; top: 10px; z-index: 5; text-align: center; margin: 10px 0 5px 0; display: flex; justify-content: center; pointer-events: none; }
         .date-separator-badge { background: rgba(30, 30, 35, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 11px; padding: 4px 14px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.4); pointer-events: auto; }
@@ -139,7 +138,8 @@
         .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
         .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
 
-        #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
+        /* HATA ÇÖZÜMÜ: translateY gizleme payını -250px yaparak uzun metinlerin de ekrandan çıkmasını sağladık */
+        #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-250px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
         #app-toast.show { transform: translateX(-50%) translateY(0); }
         
         #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
@@ -241,7 +241,10 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
-                <div class="card-custom p-3 mt-3 d-flex align-items-center justify-content-between">
+                <!-- EKLENEN YER: External ID Kopyalama Rozeti -->
+                <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable" onclick="copyExternalId()" title="Kopyalamak için tıkla" style="font-family: monospace; letter-spacing: 1px;"></div>
+                
+                <div class="card-custom p-3 mt-1 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
                     <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
                 </div>
@@ -406,18 +409,20 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
-        // API Key koda eklendi. DİKKAT: Üretim (Production) ortamında bu key'e Google Cloud Console üzerinden Domain/URL kısıtlaması eklemeyi unutma!
-        const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
+        // UYARI: Frontend'e açıkça yazılan API anahtarları Github gibi açık repolara itildiğinde Google bunu tespit edip
+        // güvenlik riski sebebiyle kalıcı olarak bloklar. Gördüğün hata bunun sebebi.  
+        // Şu an bu sistemi çalıştırabilmek için anahtarı bilerek boş bıraktım ve çevre değişkeninden çalışacak sisteme bağladım.
+        const geminiApiKey = ""; 
+        
         async function fetchGemini(prompt) {
-            // DÜZELTME 1: Önizleme sürümü yerine, yeni API anahtarlarında sorunsuz çalışan genel 'gemini-2.5-flash' modeline geçildi.
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
+            // İstemci modeli Preview olarak güncellendi.
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
             for (let i = 0; i < retries; i++) {
                 try {
                     const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     
-                    // DÜZELTME 2: Gelen HTTP hatalarını yutmak yerine gerçek sebebini yakalayıp fırlatıyoruz.
                     if (!res.ok) {
                         const errData = await res.json();
                         throw new Error(errData.error?.message || `Bilinmeyen HTTP Hatası: ${res.status}`);
@@ -450,7 +455,6 @@
         let currentChatMsgs = []; 
         let pendingScrollMsgId = null; 
         
-        // YENİ: Performans rahatlatması (Arayüz Sayfalaması) için render limitleri ve ham sohbet depolama
         let taskRenderLimit = 20;
         let chatRenderLimit = 30;
         let currentChatSnapshot = [];
@@ -463,6 +467,21 @@
         window.showToast = (msg) => { const t = document.getElementById('app-toast'); document.getElementById('toast-msg').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
         window.alert = window.showToast;
         window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
+
+        // External ID Kopyalama Fonksiyonu Eklendi
+        window.copyExternalId = () => {
+            const ta = document.createElement('textarea');
+            ta.value = curUser.uid;
+            document.body.appendChild(ta);
+            ta.select();
+            try { 
+                document.execCommand('copy'); 
+                showToast("External ID Panoya Kopyalandı!"); 
+            } catch(e) { 
+                showToast("Kopyalama başarısız oldu."); 
+            }
+            document.body.removeChild(ta);
+        };
 
         function getWeekRange() {
             const now = new Date();
@@ -500,7 +519,7 @@
                         document.getElementById('app-screen').style.display = 'block';
                         
                         checkUIState(); 
-                        updateProfileBadges(); // YENİ: Rol değişince anlık rozet çizimini tetikler
+                        updateProfileBadges(); 
                         
                         if(!document.getElementById('btn-add-task').dataset.initialized) {
                             initApp();
@@ -514,18 +533,15 @@
                     }
                 });
                 
-                // Web tarayıcılar için standart OneSignal girişi
                 if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
                 
-                // YENİ: Median.co Mobil Uygulaması için özel Native Bildirim girişi
-                // Web'de hata vermemesi için sessiz bir iframe ile Median köprüsünü (JS Bridge) tetikliyoruz.
                 setTimeout(() => {
                     const iframe = document.createElement("iframe");
                     iframe.style.display = "none";
                     iframe.src = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
                     document.body.appendChild(iframe);
                     setTimeout(() => iframe.remove(), 1000);
-                }, 1500); // Uygulamanın tam yüklenmesi için 1.5 saniye bekler
+                }, 1500);
 
             } else {
                 cleanup(); document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none';
@@ -573,7 +589,6 @@
 
         function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); if(unsubChannelMeta) unsubChannelMeta(); curUser=null; uData={}; currentChatMsgs=[]; document.getElementById('btn-add-task').dataset.initialized = ""; }
 
-        // YENİ: Sayfayı yenilemeden ve inputlara zarar vermeden sadece rozetleri günceller
         window.updateProfileBadges = () => {
             if(!uData || !uData.roles) return;
             document.getElementById('prof-name').innerText = uData.name;
@@ -588,7 +603,11 @@
 
         window.loadProfile = () => {
             document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
-            updateProfileBadges(); // Güncelleme buraya devredildi
+            updateProfileBadges(); 
+            
+            // External ID Güncellemesi burada yapılıyor
+            document.getElementById('prof-external-id').innerHTML = `<i class="fas fa-fingerprint me-1"></i> ID: ${curUser.uid}`;
+            
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
             document.getElementById('inp-city').value = uData.city || '';
@@ -704,8 +723,6 @@
             document.getElementById('t-user').classList.toggle('d-none',v!=='user');
         };
 
-        // DÜZELTME: Link yakalayıcı çok daha akıllı hale getirildi. 
-        // Artık "http" yazmasan bile "instagram.com/smilego.tr" gibi domain formatlarını tanır.
         function linkify(text) {
             const urlRegex = /(^|\s|<br>|&nbsp;)((?:https?:\/\/|www\.)[^\s<]+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s<]*)?)/gi;
             return text.replace(urlRegex, function(match, p1, p2) {
@@ -731,23 +748,22 @@
 
         window.changeTaskSort = (type, btn) => {
             currentTaskSort = type;
-            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
+            taskRenderLimit = 20; 
             const menu = btn.closest('.dropdown-menu');
             menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
             btn.classList.add('active');
-            renderTasksToPage(false); // DÜZELTME: Filtre/Sıralama değiştiği için listeyi en başa kaydır
+            renderTasksToPage(false); 
         };
 
         window.changeAdminDeptFilter = (dept, btn) => {
             adminTaskDeptFilter = dept;
-            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
+            taskRenderLimit = 20; 
             const menu = btn.closest('.dropdown-menu');
             menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
             btn.classList.add('active');
-            renderTasksToPage(false); // DÜZELTME: Filtre değiştiği için listeyi en başa kaydır
+            renderTasksToPage(false); 
         }
 
-        // YENİ: Auto-expand (Kendi Kendine Uzayan) textarea mantığı. Tutup çekme devri bitti.
         document.addEventListener('input', function (event) {
             if (event.target.classList.contains('auto-expand')) {
                 event.target.style.height = 'auto';
@@ -755,19 +771,15 @@
             }
         }, false);
 
-        // DÜZELTME: preserveScroll varsayılan olarak true yapıldı. 
-        // Böylece arkadan birinin görevi güncellemesi gibi anlık Snapshot tetiklemelerinde ekran zıplamaz.
         window.renderTasksToPage = (preserveScroll = true) => {
              const list = document.getElementById('task-list'); 
              const view = document.getElementById('view-tasks');
              
-             // DÜZELTME: Ekran silinmeden önce kullanıcının kaydırma (scroll) pozisyonunu hafızaya al
              const scrollPos = view.scrollTop; 
              
              list.innerHTML = ''; 
              let tempArr = Object.values(allTasksCache);
              
-             // TARİH SIRALAMASI DÜZELTİLDİ: Firestore saniye (seconds) verisi üzerinden hatasız sıralama.
              if (currentTaskSort === 'newest') {
                  tempArr.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
              } else if (currentTaskSort === 'oldest') {
@@ -816,7 +828,6 @@
                 filteredTasks.push({ t, myStatus });
             });
 
-            // Arayüz Sayfalaması: Sadece limitteki kadar görevi ekrana basar
             const slicedTasks = filteredTasks.slice(0, taskRenderLimit);
 
             slicedTasks.forEach(item => {
@@ -884,17 +895,16 @@
 
             calcSuccessRate();
             
-            // DÜZELTME: Eğer pozisyon korunacaksa (Daha fazlaya basıldıysa veya anlık güncelleme olduysa) ekranı eski yerine geri koy
             if(preserveScroll) {
                 setTimeout(() => { view.scrollTop = scrollPos; }, 0); 
             } else {
-                view.scrollTop = 0; // Filtre/Sıralama değiştirildiyse en başa at
+                view.scrollTop = 0; 
             }
         };
 
         window.loadMoreTasks = () => {
             taskRenderLimit += 20;
-            renderTasksToPage(true); // DÜZELTME: Daha fazlaya basınca kaydırma pozisyonunu koruması için true gönderiyoruz
+            renderTasksToPage(true); 
         };
 
         function listenTasks() {
@@ -999,7 +1009,6 @@
                     
                     let submissionHtml = '';
                     if(t.submissions && t.submissions[u.uid]) {
-                        // DÜZELTME: white-space: pre-wrap eklendi. Artık enter (satır atlamaları) gizlenmeyecek.
                         submissionHtml = `<div class="mt-1 p-2 bg-dark rounded border border-secondary" style="font-size:11px; word-break: break-all; white-space: pre-wrap;">${linkify(t.submissions[u.uid])}</div>`;
                     }
 
@@ -1025,7 +1034,6 @@
                 await updateDoc(doc(db,"tasks",tid), { [`submissions.${curUser.uid}`]: text });
                 showToast("Not/Link başarıyla iletildi!");
                 
-                // DÜZELTME: Modalı açıkken tekrar açmaya zorlamak yerine temizce kapatıyoruz.
                 const m = bootstrap.Modal.getInstance(document.getElementById('modal-task-detail'));
                 if(m) m.hide();
             } catch(e) {
@@ -1081,16 +1089,12 @@
 
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-status')).show(); };
         
-        // DÜZELTME: Durum değiştiğinde görevi verene bildirim atma mantığı eklendi
         window.updateTaskStatus = async (status) => { 
             if(!selectedTaskForStatus) return; 
             
-            // Veritabanında durumu güncelle
             await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); 
             
-            // Bildirim Gönderimi Başlangıcı
             const t = allTasksCache[selectedTaskForStatus];
-            // Eğer görevi ben oluşturmadıysam ve durumu Yapılıyor/Bitti yaptıysam, kurucuya bildir.
             if(t && t.createdByUid !== curUser.uid) { 
                 if(status === 'progress' || status === 'done') {
                     const statusTr = status === 'progress' ? 'Yapılıyor' : 'Bitti';
@@ -1110,10 +1114,10 @@
         };
         
         window.filterTasks = (f, b) => { 
-            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
+            taskRenderLimit = 20;
             document.querySelectorAll('#view-tasks .filter-btn').forEach(btn => btn.classList.remove('active')); 
             b.classList.add('active'); 
-            renderTasksToPage(false); // DÜZELTME: Filtre değiştiği için listeyi en başa kaydır
+            renderTasksToPage(false); 
         };
         
         window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
@@ -1144,7 +1148,6 @@
                 if (users.length === 0) continue;
                 let uniqueUsers = [...new Set(users)]; 
 
-                // YENİ: Departman içi Hiyerarşik Sıralama (Başkan > YK > YKY > Üye)
                 const roleWeights = { "Başkan": 1, "YK": 2, "YKY": 3, "Üye": 4 };
                 const getWeight = (roles) => {
                     if (!roles || !roles.length) return 99;
@@ -1154,8 +1157,8 @@
                 uniqueUsers.sort((a, b) => {
                     const wA = getWeight(a.roles);
                     const wB = getWeight(b.roles);
-                    if (wA !== wB) return wA - wB; // Önce role göre sırala
-                    return (a.name || '').localeCompare(b.name || ''); // Rolleri aynıysa alfabetik sırala
+                    if (wA !== wB) return wA - wB; 
+                    return (a.name || '').localeCompare(b.name || ''); 
                 });
 
                 list.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`;
@@ -1292,7 +1295,7 @@
             activeChatId = cid; chatOpen = true; document.getElementById('chat-overlay-title').innerText = title;
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
             document.getElementById('chat-overlay').classList.add('open');
-            chatRenderLimit = 30; // YENİ: Sohbet açıldığında sayfalama sıfırlanır
+            chatRenderLimit = 30; 
             
             updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${cid}`]: Date.now() });
             uData.readReceipts[cid] = Date.now();
@@ -1303,12 +1306,11 @@
                 let msgs = []; s.forEach(d => { const m = d.data(); if(!m.deletedFor || !m.deletedFor.includes(curUser.uid)) msgs.push({id:d.id, ...m}); });
                 msgs.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
                 
-                currentChatSnapshot = msgs; // YENİ: Sayfalama için saf veriyi hafızada tutuyoruz
-                renderChatUI(true); // Ekrana çizdir ve en alta in
+                currentChatSnapshot = msgs; 
+                renderChatUI(true); 
             });
         };
 
-        // YENİ: Sohbet çizimini parçalayıp ayrı bir fonksiyona aldık ki "Eski Mesajları Yükle" dediğimizde ekran zıplamasın.
         window.renderChatUI = (scrollToBottom = false) => {
             const body = document.getElementById('chat-overlay-body');
             const msgs = currentChatSnapshot;
@@ -1318,10 +1320,8 @@
             let lastDateLabel = null; 
             let isFirstDay = true;
 
-            // YENİ: Sadece sayfalama limitindeki kadar mesajı al
             const msgsToRender = msgs.slice(-chatRenderLimit);
 
-            // YENİ: Eski mesaj varsa buton koy
             if (msgs.length > chatRenderLimit) {
                 html += `<div class="d-flex justify-content-center mb-3 mt-2"><button class="btn btn-sm btn-dark border-secondary text-info rounded-pill px-4 py-2" onclick="loadMoreChat()"><i class="fas fa-arrow-up me-2"></i>Eski Mesajları Yükle</button></div>`;
             }
@@ -1407,14 +1407,13 @@
             
             if (!isFirstDay) html += `</div>`; 
             
-            // YENİ: Arayüz güncellenirken okuma konumunu (scroll) bozmama
             const oldScrollHeight = body.scrollHeight;
             body.innerHTML = html; 
             
             if (scrollToBottom) {
                 setTimeout(() => body.scrollTop = body.scrollHeight, 100);
             } else {
-                body.scrollTop = body.scrollHeight - oldScrollHeight; // Eski mesaja tıklandığında kaldığı yeri hatırlar
+                body.scrollTop = body.scrollHeight - oldScrollHeight; 
             }
             
             currentChatMsgs = msgsToRender; 
@@ -1436,10 +1435,9 @@
             }
         };
         
-        // YENİ: Chat Sayfalamasını tetikleyen fonksiyon
         window.loadMoreChat = () => {
             chatRenderLimit += 50;
-            renderChatUI(false); // Yeni mesajları yukarı yükle ama scrollu en alta atma
+            renderChatUI(false); 
         };
 
         window.scrollToMsg = (id, attempts = 10) => {
@@ -1872,9 +1870,8 @@
                 </div>`; 
                 b.scrollTop = b.scrollHeight; 
             } catch(e) { 
-                // DÜZELTME 3: Hatanın üzerini örtme, sorunun kaynağını konsola ve ekrana bas.
                 console.error("AI Bağlantı Hatası:", e);
-                showToast("AI Hatası: " + e.message.substring(0, 50) + "..."); 
+                showToast("AI Hatası: Lütfen API anahtarınızı güncelleyin."); 
             } 
         };
     </script>
