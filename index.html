@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmileGO Tracker</title>
     
-    <!-- YENİ: Site Sembolü (Favicon) Eklendi -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/trackerlogo.png">
 
     <script src="https://cdn.median.co/median.js"></script>
@@ -96,8 +95,10 @@
 
         .unread-dot { width: 10px; height: 10px; background-color: var(--primary); border-radius: 50%; box-shadow: 0 0 8px var(--primary); }
 
-        .date-separator { position: sticky; top: 10px; z-index: 5; text-align: center; margin: 15px 0 5px 0; pointer-events: none; display: flex; justify-content: center; }
-        .date-separator-badge { background: rgba(30, 30, 35, 0.85); backdrop-filter: blur(10px); border: 1px solid #3f3f46; color: #e2e8f0; font-size: 11px; padding: 4px 14px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: auto; }
+        /* YENİ: CSS Box Modeli kurallarına uygun, şık ve birbirini iten Sticky (Yapışkan) Tarihler */
+        .day-container { display: flex; flex-direction: column; gap: 6px; position: relative; }
+        .date-separator { position: sticky; top: 10px; z-index: 5; text-align: center; margin: 10px 0 5px 0; display: flex; justify-content: center; pointer-events: none; }
+        .date-separator-badge { background: rgba(30, 30, 35, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 11px; padding: 4px 14px; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.4); pointer-events: auto; }
 
         #mention-menu { position: absolute; bottom: 100%; left: 70px; width: calc(100% - 130px); background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(10px); border: 1px solid #3f3f46; border-radius: 12px 12px 0 0; max-height: 200px; overflow-y: auto; display: none; z-index: 10001; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
         .mention-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; transition: 0.2s; }
@@ -208,6 +209,15 @@
                         <li><a class="dropdown-item" href="#" onclick="changeTaskSort('importance', this); event.preventDefault();">Öneme Göre</a></li>
                     </ul>
                 </div>
+                
+                <div class="dropdown me-2" id="admin-dept-filter-wrapper" style="display: none;">
+                    <button class="btn btn-dark border-secondary rounded-circle dropdown-toggle text-info flex-shrink-0" type="button" data-bs-toggle="dropdown" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Departmana Göre Filtrele">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary" style="font-size: 14px;" id="admin-dept-filter-menu">
+                    </ul>
+                </div>
+
                 <div class="filter-scroll-container flex-grow-1" style="padding-bottom: 0;">
                     <button class="btn btn-outline-secondary rounded-pill filter-btn active" onclick="filterTasks('all', this)">Tümü</button>
                     <button class="btn btn-outline-secondary rounded-pill filter-btn" onclick="filterTasks('week', this)">Bu Hafta</button>
@@ -316,7 +326,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="note-edit">
-                        <textarea id="notepad-text" class="form-control" placeholder="Kendine özel notlar... (*kalın*, _eğik_, - liste)" style="resize:vertical; min-height:150px;"></textarea>
+                        <textarea id="notepad-text" class="form-control auto-expand" placeholder="Kendine özel notlar... (*kalın*, _eğik_, - liste)" style="resize:none; min-height:150px; max-height:400px; overflow-y:auto;"></textarea>
                     </div>
                     <div class="tab-pane fade" id="note-view">
                         <div id="notepad-preview" class="p-2 small bg-dark rounded border border-secondary" style="min-height:150px; max-height: 400px; overflow-y:auto; resize:vertical; word-break: break-word;"></div>
@@ -334,9 +344,8 @@
         <input type="hidden" id="t-id">
         <div class="d-flex gap-2 mb-3">
             <input id="t-title" class="form-control" placeholder="Başlık" required>
-            <button type="button" class="btn-ai px-3" style="white-space:nowrap" onclick="aiGenerateTaskDesc()" title="AI ile Açıklama Oluştur">✨ AI</button>
         </div>
-        <textarea id="t-desc" class="form-control mb-3" placeholder="Açıklama (*kalın*, _eğik_, vb. kullanılabilir)" style="resize:vertical; min-height:80px;"></textarea>
+        <textarea id="t-desc" class="form-control mb-3 auto-expand" placeholder="Açıklama (*kalın*, _eğik_, vb. kullanılabilir)" style="resize:none; min-height:80px; max-height:250px; overflow-y:auto;"></textarea>
         <div class="mb-3"><label class="small text-muted">Son Tarih (Opsiyonel)</label><input type="datetime-local" id="t-deadline" class="form-control"></div>
         <div class="mb-3 fs-4 text-warning" id="star-select"><i class="far fa-star clickable" onclick="setStars(1)"></i><i class="far fa-star clickable" onclick="setStars(2)"></i><i class="far fa-star clickable" onclick="setStars(3)"></i><i class="far fa-star clickable" onclick="setStars(4)"></i><i class="far fa-star clickable" onclick="setStars(5)"></i></div><input type="hidden" id="t-stars" value="0">
         <select id="t-type" class="form-select mb-3" onchange="togT(this.value)"><option value="department">Departman</option><option value="user">Kişi</option><option value="all">Herkes</option></select>
@@ -348,7 +357,14 @@
         <div class="d-flex justify-content-between align-items-start mb-3"><div style="flex:1; margin-right:10px;"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-assignees" class="d-flex align-items-center mb-1"></div></div><div class="text-end" id="td-meta"></div></div>
         <div class="d-flex flex-wrap gap-2 mb-2 align-items-center" id="td-stars-wrapper"></div>
         <div class="p-2 mb-3 small" id="td-desc" style="min-height:60px; max-height:300px; overflow-y:auto; resize:vertical; background: rgba(0,0,0,0.3); border-radius:12px;"></div>
-        <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
+        
+        <div id="td-submission-area" class="mb-3" style="display: none;">
+            <label class="small text-muted fw-bold mb-1">Görevi Teslim Et / Not Ekle</label>
+            <textarea id="t-submission-input" class="form-control mb-2 auto-expand" placeholder="Görevle ilgili link, döküman veya notunuzu buraya girebilirsiniz..." style="font-size: 13px; min-height: 60px; max-height:150px; resize:none; overflow-y:auto;"></textarea>
+            <button class="btn btn-sm btn-outline-info w-100" onclick="saveTaskSubmission()">İlet / Güncelle</button>
+        </div>
+
+        <h6 class="small fw-bold text-muted mb-2">DURUM LİSTESİ</h6><div id="td-status-list" class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;"></div><div class="d-flex justify-content-end mt-3"><button class="btn btn-dark border-secondary btn-sm" data-bs-dismiss="modal">Kapat</button></div></div></div></div>
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
@@ -362,11 +378,19 @@
              <div class="small text-muted"><i class="fas fa-envelope me-1"></i> <span id="vp-email" class="text-white">...</span></div>
         </div>
         <div class="card-custom bg-dark p-3 d-flex align-items-center justify-content-between mb-3"><div class="text-start"><div class="text-muted small">Genel Başarı</div><h4 class="fw-bold m-0" id="vp-rate">0%</h4></div><svg width="50" height="50" viewBox="0 0 60 60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="vp-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg></div>
-        <h6 class="small fw-bold text-muted mb-2">SOSYAL MEDYA</h6><div id="vp-socials" class="d-flex justify-content-center gap-3 fs-3"></div>
+        <h6 class="small fw-bold text-muted mb-2">SOSYAL MEDYA</h6><div id="vp-socials" class="d-flex justify-content-center flex-wrap gap-3 fs-3"></div>
     </div></div></div>
 
     <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6><div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div><button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button></div></div></div>
-    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div><div class="lb-tabs"><div class="lb-tab active" onclick="switchLB('genel', this)">Genel</div><div class="lb-tab" onclick="switchLB('haftalik', this)">Haftalık</div></div><div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
+    
+    <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div>
+    <div class="lb-tabs">
+        <div class="lb-tab active" onclick="switchLB('departman', this)">Departman</div>
+        <div class="lb-tab" onclick="switchLB('haftalik', this)">Haftalık</div>
+        <div class="lb-tab" onclick="switchLB('herkes', this)">Herkes</div>
+    </div>
+    <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
+    
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
     <div class="modal fade" id="modal-name-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3"><h6 class="mb-3">İsim Değiştir</h6><input id="inp-new-name" class="form-control mb-3"><button class="btn btn-success w-100" onclick="saveMyName()">Kaydet</button></div></div></div>
@@ -412,10 +436,16 @@
         let unsubUser=null, unsubTasks=null, unsubTeam=null, unsubChat=null, unsubNotif=null, unsubDMs=null, unsubChannelMeta=null;
         let allUsersCache=[], allTasksCache={}, channelMetaCache={};
         let selectedTaskForStatus = null, selectedUserForEdit = null, selectedMsg = null, longPressTimer = null, currentReplyToId = null;
-        let lbMode = 'genel';
+        let lbMode = 'departman';
         let currentTaskSort = 'newest'; 
+        let adminTaskDeptFilter = 'all'; 
         let currentChatMsgs = []; 
         let pendingScrollMsgId = null; 
+        
+        // YENİ: Performans rahatlatması (Arayüz Sayfalaması) için render limitleri ve ham sohbet depolama
+        let taskRenderLimit = 20;
+        let chatRenderLimit = 30;
+        let currentChatSnapshot = [];
         
         const isHiddenUser = (user) => user.roles && user.roles.includes('Admin');
 
@@ -424,7 +454,7 @@
 
         window.showToast = (msg) => { const t = document.getElementById('app-toast'); document.getElementById('toast-msg').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
         window.alert = window.showToast;
-        window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = new bootstrap.Modal(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
+        window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
         function getWeekRange() {
             const now = new Date();
@@ -460,18 +490,20 @@
                         
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-screen').style.display = 'block';
-                        initApp();
+                        
+                        checkUIState(); 
+                        updateProfileBadges(); // YENİ: Rol değişince anlık rozet çizimini tetikler
+                        
+                        if(!document.getElementById('btn-add-task').dataset.initialized) {
+                            initApp();
+                            document.getElementById('btn-add-task').dataset.initialized = "true";
+                        }
                     } else {
                         signOut(auth);
-                        showToast("Kritik Hata: Hesabınız Authentication'da var ancak Veritabanında (Firestore) yok. Lütfen yeniden kayıt olun.");
+                        showToast("Kritik Hata: Veritabanı kaydı yok. Lütfen yeniden kayıt olun.");
                         const lBtn = document.querySelector('#form-login button');
                         if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                     }
-                }, err => {
-                    signOut(auth);
-                    showToast("Sunucu Bağlantı/Yetki Hatası: " + err.message);
-                    const lBtn = document.querySelector('#form-login button');
-                    if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                 });
                 if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
             } else {
@@ -479,23 +511,50 @@
             }
         });
 
-        async function initApp() {
-            loadProfile(); listenTasks(); listenTeam(); listenChannelMeta(); loadChannels(); listenNotifs(); loadRecentDMs();
-            const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
-            DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
-            if(!canManageUsers() && !uData.roles.includes('YK') && !uData.roles.includes('YKY')) { document.getElementById('btn-add-task').style.display = 'none'; }
-        }
-
-        function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); if(unsubChannelMeta) unsubChannelMeta(); curUser=null; uData={}; currentChatMsgs=[]; }
         const isAdmin = () => uData.roles?.includes('Admin');
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
-        const canSeeAllTasks = () => isAdmin(); 
+        
+        const canSeeAllTasks = () => {
+            return uData.roles?.some(r => ['Başkan', 'YK', 'Admin'].includes(r)) || 
+                   uData.departments?.includes('Organizasyonel Gelişim');
+        };
         const canSeeAllChannels = () => uData.roles?.some(r => ['YK','Başkan','Admin'].includes(r));
         const isBoard = () => uData.roles?.some(r => ['YK','YKY','Başkan','Admin'].includes(r));
 
-        window.loadProfile = () => {
-            document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
+        function checkUIState() {
+            if(!canManageUsers() && !uData.roles.includes('YK') && !uData.roles.includes('YKY')) { 
+                document.getElementById('btn-add-task').style.display = 'none'; 
+            } else {
+                document.getElementById('btn-add-task').style.display = 'block'; 
+            }
+
+            const filterWrapper = document.getElementById('admin-dept-filter-wrapper');
+            if(canSeeAllTasks()) {
+                filterWrapper.style.display = 'block';
+            } else {
+                filterWrapper.style.display = 'none';
+            }
+        }
+
+        async function initApp() {
+            loadProfile(); listenTasks(); listenTeam(); listenChannelMeta(); loadChannels(); listenNotifs(); loadRecentDMs();
+            
+            const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
+            DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
+
+            const filterMenu = document.getElementById('admin-dept-filter-menu');
+            filterMenu.innerHTML = `<li><a class="dropdown-item active" href="#" onclick="changeAdminDeptFilter('all', this); event.preventDefault();">Tüm Departmanlar</a></li>`;
+            DEPTS.forEach(d => {
+                filterMenu.innerHTML += `<li><a class="dropdown-item" href="#" onclick="changeAdminDeptFilter('${d}', this); event.preventDefault();">${d}</a></li>`;
+            });
+        }
+
+        function cleanup() { if(unsubUser) unsubUser(); if(unsubTasks) unsubTasks(); if(unsubTeam) unsubTeam(); if(unsubChat) unsubChat(); if(unsubNotif) unsubNotif(); if(unsubDMs) unsubDMs(); if(unsubChannelMeta) unsubChannelMeta(); curUser=null; uData={}; currentChatMsgs=[]; document.getElementById('btn-add-task').dataset.initialized = ""; }
+
+        // YENİ: Sayfayı yenilemeden ve inputlara zarar vermeden sadece rozetleri günceller
+        window.updateProfileBadges = () => {
+            if(!uData || !uData.roles) return;
             document.getElementById('prof-name').innerText = uData.name;
             const rDiv = document.getElementById('prof-roles'); rDiv.innerHTML='';
             rDiv.className = "d-flex justify-content-center flex-wrap gap-2 mb-2"; 
@@ -504,6 +563,11 @@
                 const abbr = DEPT_ABBR[d] || d.substring(0,3); 
                 rDiv.innerHTML += `<span class="badge bg-dark border border-secondary text-muted small ms-1">${abbr}</span>`; 
             });
+        };
+
+        window.loadProfile = () => {
+            document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
+            updateProfileBadges(); // Güncelleme buraya devredildi
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
             document.getElementById('inp-city').value = uData.city || '';
@@ -560,7 +624,7 @@
 
         window.openNotepad = () => {
             document.getElementById('notepad-text').value = uData.personalNotes || '';
-            new bootstrap.Modal(document.getElementById('modal-notepad')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-notepad')).show();
         };
         window.saveNotepad = async () => {
             const text = document.getElementById('notepad-text').value;
@@ -579,7 +643,7 @@
                 showToast("Notlar temizlendi!");
             });
         };
-        window.previewNotepad = () => { document.getElementById('notepad-preview').innerHTML = parseMD(document.getElementById('notepad-text').value || 'Not yok.'); };
+        window.previewNotepad = () => { document.getElementById('notepad-preview').innerHTML = linkify(parseMD(document.getElementById('notepad-text').value || 'Not yok.')); };
 
         window.saveEduInfo = async () => { 
             await updateDoc(doc(db,"users",curUser.uid), { 
@@ -595,13 +659,14 @@
         };
         window.saveSocials = async () => { const soc = {}; ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { const v = document.getElementById(`sm-${k}`).value.trim(); if(v) soc[k] = v; }); await updateDoc(doc(db,"users",curUser.uid), { socials: soc }); showToast("Kaydedildi!"); };
         
-        window.editMyName = () => { document.getElementById('inp-new-name').value = uData.name; new bootstrap.Modal(document.getElementById('modal-name-edit')).show(); }
+        window.editMyName = () => { document.getElementById('inp-new-name').value = uData.name; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-name-edit')).show(); }
         window.saveMyName = async () => {
              const newName = document.getElementById('inp-new-name').value;
              if(newName) {
                  await updateDoc(doc(db,"users",curUser.uid), { name: newName });
                  showToast("İsim güncellendi.");
-                 bootstrap.Modal.getInstance(document.getElementById('modal-name-edit')).hide();
+                 const m = bootstrap.Modal.getInstance(document.getElementById('modal-name-edit'));
+                 if(m) m.hide();
              }
         }
 
@@ -619,10 +684,10 @@
         };
 
         function linkify(text) {
-            const urlRegex = /((https?:\/\/)|(www\.))?[\w-]+\.[\w.\/]+(\?[\w=&]*)?/g;
+            const urlRegex = /(https?:\/\/[^\s<]+)|(www\.[^\s<]+)/g;
             return text.replace(urlRegex, function(url) {
                 let href = url;
-                if (!href.match(/^https?:\/\//)) { href = 'https://' + href; }
+                if (!href.match(/^https?:\/\//i)) { href = 'https://' + href; }
                 return `<a href="${href}" target="_blank" style="color:#93c5fd">${url}</a>`;
             });
         }
@@ -643,33 +708,61 @@
 
         window.changeTaskSort = (type, btn) => {
             currentTaskSort = type;
+            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
             const menu = btn.closest('.dropdown-menu');
             menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
             btn.classList.add('active');
-            renderTasksToPage();
+            renderTasksToPage(false); // DÜZELTME: Filtre/Sıralama değiştiği için listeyi en başa kaydır
         };
 
-        window.renderTasksToPage = () => {
+        window.changeAdminDeptFilter = (dept, btn) => {
+            adminTaskDeptFilter = dept;
+            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
+            const menu = btn.closest('.dropdown-menu');
+            menu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+            btn.classList.add('active');
+            renderTasksToPage(false); // DÜZELTME: Filtre değiştiği için listeyi en başa kaydır
+        }
+
+        // YENİ: Auto-expand (Kendi Kendine Uzayan) textarea mantığı. Tutup çekme devri bitti.
+        document.addEventListener('input', function (event) {
+            if (event.target.classList.contains('auto-expand')) {
+                event.target.style.height = 'auto';
+                event.target.style.height = (event.target.scrollHeight) + 'px';
+            }
+        }, false);
+
+        // DÜZELTME: preserveScroll varsayılan olarak true yapıldı. 
+        // Böylece arkadan birinin görevi güncellemesi gibi anlık Snapshot tetiklemelerinde ekran zıplamaz.
+        window.renderTasksToPage = (preserveScroll = true) => {
              const list = document.getElementById('task-list'); 
+             const view = document.getElementById('view-tasks');
+             
+             // DÜZELTME: Ekran silinmeden önce kullanıcının kaydırma (scroll) pozisyonunu hafızaya al
+             const scrollPos = view.scrollTop; 
+             
              list.innerHTML = ''; 
              let tempArr = Object.values(allTasksCache);
              
+             // TARİH SIRALAMASI DÜZELTİLDİ: Firestore saniye (seconds) verisi üzerinden hatasız sıralama.
              if (currentTaskSort === 'newest') {
-                 tempArr.sort((a,b) => b.createdAt - a.createdAt);
+                 tempArr.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
              } else if (currentTaskSort === 'oldest') {
-                 tempArr.sort((a,b) => a.createdAt - b.createdAt);
+                 tempArr.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
              } else if (currentTaskSort === 'importance') {
                  tempArr.sort((a,b) => {
                      const impA = a.importance || 0;
                      const impB = b.importance || 0;
                      if (impB !== impA) return impB - impA;
-                     return b.createdAt - a.createdAt;
+                     return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
                  });
              }
              
              const filterBtn = document.querySelector('.btn-outline-secondary.active');
              const filter = filterBtn ? filterBtn.innerText : 'Tümü';
              const { start, end } = getWeekRange();
+
+             let filteredTasks = [];
 
              tempArr.forEach(t => {
                 if(!t || !t.title || t.title === 'undefined') return;
@@ -681,13 +774,31 @@
                 }
                 
                 if(filter === 'Bu Hafta') {
-                    const tDate = t.createdAt.toDate();
+                    const tSeconds = t.createdAt?.seconds || (Date.now()/1000);
+                    const tDate = new Date(tSeconds * 1000);
                     if(tDate < start || tDate > end) return;
                 }
                 if(filter === 'Başlamadı' && myStatus !== 'pending') return;
                 if(filter === 'Yapılıyor' && myStatus !== 'progress') return;
                 if(filter === 'Bitti' && myStatus !== 'done') return;
 
+                if(canSeeAllTasks() && adminTaskDeptFilter !== 'all') {
+                    if(t.assignedType === 'department' && t.assignedTo !== adminTaskDeptFilter) return;
+                    if(t.assignedType === 'user' && t.assignedToUid) {
+                        const tgtU = allUsersCache.find(x => x.uid === t.assignedToUid);
+                        if(tgtU && !tgtU.departments.includes(adminTaskDeptFilter)) return;
+                    }
+                }
+                
+                filteredTasks.push({ t, myStatus });
+            });
+
+            // Arayüz Sayfalaması: Sadece limitteki kadar görevi ekrana basar
+            const slicedTasks = filteredTasks.slice(0, taskRenderLimit);
+
+            slicedTasks.forEach(item => {
+                const { t, myStatus } = item;
+                
                 let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                 const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                 const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
@@ -743,7 +854,24 @@
                     </div>
                 </div>`;
             });
+
+            if (filteredTasks.length > taskRenderLimit) {
+                list.innerHTML += `<button class="btn btn-dark border-secondary text-primary w-100 mt-2 py-3 fw-bold shadow-sm rounded-4" onclick="loadMoreTasks()">Daha Fazla Göster (${filteredTasks.length - taskRenderLimit} kaldı)</button>`;
+            }
+
             calcSuccessRate();
+            
+            // DÜZELTME: Eğer pozisyon korunacaksa (Daha fazlaya basıldıysa veya anlık güncelleme olduysa) ekranı eski yerine geri koy
+            if(preserveScroll) {
+                setTimeout(() => { view.scrollTop = scrollPos; }, 0); 
+            } else {
+                view.scrollTop = 0; // Filtre/Sıralama değiştirildiyse en başa at
+            }
+        };
+
+        window.loadMoreTasks = () => {
+            taskRenderLimit += 20;
+            renderTasksToPage(true); // DÜZELTME: Daha fazlaya basınca kaydırma pozisyonunu koruması için true gönderiyoruz
         };
 
         function listenTasks() {
@@ -794,7 +922,7 @@
                  togT('department');
             }
 
-            new bootstrap.Modal(document.getElementById('modal-task')).show(); pushState();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-task')).show(); pushState();
         };
 
         window.openTaskDetail = (tid) => {
@@ -811,10 +939,23 @@
             } else { assigneesHtml = `<span class="badge bg-secondary">${t.assignedTo}</span>`; }
             document.getElementById('td-assignees').innerHTML = assigneesHtml;
 
-            document.getElementById('td-desc').innerHTML = parseMD(t.description || 'Açıklama yok.');
+            document.getElementById('td-desc').innerHTML = linkify(parseMD(t.description || 'Açıklama yok.'));
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
             document.getElementById('td-stars-wrapper').innerHTML = starsHtml; 
             
+            const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
+                                   (t.assignedType==='user' && t.assignedToUid===curUser.uid);
+            
+            const subArea = document.getElementById('td-submission-area');
+            if(isAssignedToMe) {
+                subArea.style.display = 'block';
+                document.getElementById('t-submission-input').value = (t.submissions && t.submissions[curUser.uid]) ? t.submissions[curUser.uid] : '';
+                document.getElementById('t-submission-input').dataset.tid = t.id;
+            } else {
+                subArea.style.display = 'none';
+            }
+
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
             let expectedUsers = [];
             
@@ -832,13 +973,41 @@
                     const status = (t.statusMap && t.statusMap[u.uid]) ? t.statusMap[u.uid] : 'pending';
                     const stText = status === 'pending' ? 'Başlamadı' : (status === 'progress' ? 'Yapılıyor' : 'Bitti');
                     const stColor = status === 'pending' ? 'text-secondary' : (status === 'progress' ? 'text-primary' : 'text-success');
-                    list.innerHTML += `<div class="d-flex justify-content-between small border-bottom border-dark py-2"><span>${u.name}</span><span class="fw-bold ${stColor}">${stText}</span></div>`;
+                    
+                    let submissionHtml = '';
+                    if(t.submissions && t.submissions[u.uid]) {
+                        // DÜZELTME: white-space: pre-wrap eklendi. Artık enter (satır atlamaları) gizlenmeyecek.
+                        submissionHtml = `<div class="mt-1 p-2 bg-dark rounded border border-secondary" style="font-size:11px; word-break: break-all; white-space: pre-wrap;">${linkify(t.submissions[u.uid])}</div>`;
+                    }
+
+                    list.innerHTML += `<div class="d-flex flex-column small border-bottom border-dark py-2">
+                        <div class="d-flex justify-content-between align-items-center"><span>${u.name}</span><span class="fw-bold ${stColor}">${stText}</span></div>
+                        ${submissionHtml}
+                    </div>`;
                 });
             } else {
                 list.innerHTML = '<span class="text-muted small">Atanmış kimse yok.</span>';
             }
 
-            new bootstrap.Modal(document.getElementById('modal-task-detail')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-task-detail')).show();
+        };
+
+        window.saveTaskSubmission = async () => {
+            const inp = document.getElementById('t-submission-input');
+            const tid = inp.dataset.tid;
+            const text = inp.value.trim();
+            if(!tid) return;
+
+            try {
+                await updateDoc(doc(db,"tasks",tid), { [`submissions.${curUser.uid}`]: text });
+                showToast("Not/Link başarıyla iletildi!");
+                
+                // DÜZELTME: Modalı açıkken tekrar açmaya zorlamak yerine temizce kapatıyoruz.
+                const m = bootstrap.Modal.getInstance(document.getElementById('modal-task-detail'));
+                if(m) m.hide();
+            } catch(e) {
+                showToast("Kaydedilirken hata oluştu.");
+            }
         };
 
         window.setStars = (n) => { 
@@ -880,18 +1049,48 @@
                     else if (type === 'department') { allUsersCache.forEach(u => { if(u.uid !== curUser.uid && u.departments.includes(to) && !isHiddenUser(u)) addDoc(collection(db,"notifications"), {...notifData, to: u.uid}); }); } 
                     else if (type === 'user' && uid && uid !== curUser.uid) { addDoc(collection(db,"notifications"), {...notifData, to: uid}); }
                 }
-                bootstrap.Modal.getInstance(document.getElementById('modal-task')).hide(); 
+                const m = bootstrap.Modal.getInstance(document.getElementById('modal-task'));
+                if(m) m.hide();
                 document.getElementById('form-task').reset();
                 setStars(0);
             } catch(err) { showToast("Hata oluştu: " + err.message); }
         };
 
-        window.openStatusModal = (tid) => { selectedTaskForStatus = tid; new bootstrap.Modal(document.getElementById('modal-status')).show(); };
-        window.updateTaskStatus = async (status) => { if(!selectedTaskForStatus) return; await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); bootstrap.Modal.getInstance(document.getElementById('modal-status')).hide(); };
+        window.openStatusModal = (tid) => { selectedTaskForStatus = tid; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-status')).show(); };
+        
+        // DÜZELTME: Durum değiştiğinde görevi verene bildirim atma mantığı eklendi
+        window.updateTaskStatus = async (status) => { 
+            if(!selectedTaskForStatus) return; 
+            
+            // Veritabanında durumu güncelle
+            await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); 
+            
+            // Bildirim Gönderimi Başlangıcı
+            const t = allTasksCache[selectedTaskForStatus];
+            // Eğer görevi ben oluşturmadıysam ve durumu Yapılıyor/Bitti yaptıysam, kurucuya bildir.
+            if(t && t.createdByUid !== curUser.uid) { 
+                if(status === 'progress' || status === 'done') {
+                    const statusTr = status === 'progress' ? 'Yapılıyor' : 'Bitti';
+                    addDoc(collection(db, "notifications"), {
+                        to: t.createdByUid,
+                        text: `${uData.name}, "${t.title}" görevini ${statusTr} olarak işaretledi.`,
+                        read: false,
+                        createdAt: new Date(),
+                        type: 'task',
+                        linkId: t.id
+                    });
+                }
+            }
+
+            const m = bootstrap.Modal.getInstance(document.getElementById('modal-status')); 
+            if(m) m.hide(); 
+        };
         
         window.filterTasks = (f, b) => { 
+            taskRenderLimit = 20; // YENİ: Filtre değişince limit sıfırlanır
             document.querySelectorAll('#view-tasks .filter-btn').forEach(btn => btn.classList.remove('active')); 
-            b.classList.add('active'); renderTasksToPage();
+            b.classList.add('active'); 
+            renderTasksToPage(false); // DÜZELTME: Filtre değiştiği için listeyi en başa kaydır
         };
         
         window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
@@ -920,7 +1119,21 @@
 
             for (const [deptName, users] of Object.entries(groups)) {
                 if (users.length === 0) continue;
-                const uniqueUsers = [...new Set(users)]; 
+                let uniqueUsers = [...new Set(users)]; 
+
+                // YENİ: Departman içi Hiyerarşik Sıralama (Başkan > YK > YKY > Üye)
+                const roleWeights = { "Başkan": 1, "YK": 2, "YKY": 3, "Üye": 4 };
+                const getWeight = (roles) => {
+                    if (!roles || !roles.length) return 99;
+                    return Math.min(...roles.map(r => roleWeights[r] || 99));
+                };
+                
+                uniqueUsers.sort((a, b) => {
+                    const wA = getWeight(a.roles);
+                    const wB = getWeight(b.roles);
+                    if (wA !== wB) return wA - wB; // Önce role göre sırala
+                    return (a.name || '').localeCompare(b.name || ''); // Rolleri aynıysa alfabetik sırala
+                });
 
                 list.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`;
                 const container = document.createElement('div'); container.className = 'dept-group';
@@ -973,12 +1186,16 @@
             document.getElementById('vp-rate').innerText = `%${rate}`;
             document.getElementById('vp-circle').style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
             const socBox = document.getElementById('vp-socials'); socBox.innerHTML = '';
+            
             if(u.socials) {
                 if(u.socials.linkedin) socBox.innerHTML += `<a href="https://linkedin.com/in/${u.socials.linkedin}" target="_blank" class="text-secondary"><i class="fab fa-linkedin"></i></a>`;
                 if(u.socials.instagram) socBox.innerHTML += `<a href="https://instagram.com/${u.socials.instagram}" target="_blank" class="text-secondary"><i class="fab fa-instagram"></i></a>`;
                 if(u.socials.x) socBox.innerHTML += `<a href="https://x.com/${u.socials.x}" target="_blank" class="text-secondary"><i class="fab fa-twitter"></i></a>`;
+                if(u.socials.tiktok) socBox.innerHTML += `<a href="https://tiktok.com/@${u.socials.tiktok}" target="_blank" class="text-secondary"><i class="fab fa-tiktok"></i></a>`;
+                if(u.socials.youtube) socBox.innerHTML += `<a href="https://youtube.com/@${u.socials.youtube}" target="_blank" class="text-secondary"><i class="fab fa-youtube"></i></a>`;
+                if(u.socials.kick) socBox.innerHTML += `<a href="https://kick.com/${u.socials.kick}" target="_blank" class="text-secondary"><i class="fab fa-kickstarter"></i></a>`;
             } else { socBox.innerHTML = '<small class="text-muted">Sosyal medya yok.</small>'; }
-            new bootstrap.Modal(document.getElementById('modal-profile-view')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-profile-view')).show();
         };
 
         window.deleteUser = async (uid) => { customConfirm("Kullanıcıyı engellemek istiyor musun?", async () => await updateDoc(doc(db,"users",uid), { isBanned: true })); };
@@ -987,9 +1204,9 @@
             document.getElementById('ue-name').innerText = u.name;
             const rd = document.getElementById('ue-roles'); rd.innerHTML = ''; ROLES.forEach(r => { rd.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="${r}" ${u.roles?.includes(r)?'checked':''}><label class="form-check-label">${r}</label></div>`; });
             const dd = document.getElementById('ue-depts'); dd.innerHTML = ''; DEPTS.forEach(d => { dd.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" value="${d}" ${u.departments?.includes(d)?'checked':''}><label class="form-check-label">${d}</label></div>`; });
-            new bootstrap.Modal(document.getElementById('modal-user-edit')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-user-edit')).show();
         };
-        window.saveUserEdit = async () => { const roles = Array.from(document.querySelectorAll('#ue-roles input:checked')).map(c=>c.value); const depts = Array.from(document.querySelectorAll('#ue-depts input:checked')).map(c=>c.value); await updateDoc(doc(db,"users",selectedUserForEdit), { roles, departments: depts }); bootstrap.Modal.getInstance(document.getElementById('modal-user-edit')).hide(); };
+        window.saveUserEdit = async () => { const roles = Array.from(document.querySelectorAll('#ue-roles input:checked')).map(c=>c.value); const depts = Array.from(document.querySelectorAll('#ue-depts input:checked')).map(c=>c.value); await updateDoc(doc(db,"users",selectedUserForEdit), { roles, departments: depts }); const m = bootstrap.Modal.getInstance(document.getElementById('modal-user-edit')); if(m) m.hide(); };
 
         function listenChannelMeta() {
             if(unsubChannelMeta) unsubChannelMeta();
@@ -1052,6 +1269,7 @@
             activeChatId = cid; chatOpen = true; document.getElementById('chat-overlay-title').innerText = title;
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
             document.getElementById('chat-overlay').classList.add('open');
+            chatRenderLimit = 30; // YENİ: Sohbet açıldığında sayfalama sıfırlanır
             
             updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${cid}`]: Date.now() });
             uData.readReceipts[cid] = Date.now();
@@ -1062,110 +1280,145 @@
                 let msgs = []; s.forEach(d => { const m = d.data(); if(!m.deletedFor || !m.deletedFor.includes(curUser.uid)) msgs.push({id:d.id, ...m}); });
                 msgs.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
                 
-                let html = '';
-                let pinnedMsg = null;
-                let lastDateLabel = null; 
-
-                msgs.forEach(m => {
-                    const me = m.senderId === curUser.uid;
-                    let content = m.text || '';
-                    if(m.isPinned) pinnedMsg = m; 
-                    
-                    let msgTime = m.createdAt?.seconds || (Date.now() / 1000);
-                    const dateLabel = getChatDateLabel(msgTime);
-                    if (dateLabel !== lastDateLabel) {
-                        html += `<div class="date-separator"><span class="date-separator-badge">${dateLabel}</span></div>`;
-                        lastDateLabel = dateLabel;
-                    }
-
-                    content = linkify(parseMD(content)); 
-                    
-                    // GÜNCELLENDİ: Etiketleme Mantığı Uzundan Kısaya (YKY Sorunu Çözümü)
-                    let specialTags = ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`));
-                    specialTags.sort((a,b) => b.length - a.length); // YKY'nin YK'dan önce işlenmesi için sıralama
-                    
-                    specialTags.forEach(tag => {
-                        if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
-                    });
-
-                    // Kullanıcı isimleri zaten uzundan kısaya sıralanıyordu
-                    const sortedUsers = [...allUsersCache].sort((a,b) => b.name.length - a.name.length);
-                    sortedUsers.forEach(u => { const tag = `@${u.name}`; if (content.includes(tag)) content = content.split(tag).join(`<span class="text-warning fw-bold">${tag}</span>`); });
-
-                    if(m.type === 'image') {
-                        content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
-                    }
-                    
-                    let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
-                    const sender = allUsersCache.find(u => u.uid === m.senderId);
-                    if(sender) {
-                        senderPhoto = sender.photoURL;
-                        sender.roles?.forEach(r => badgeHtml += `<span class="chat-badge cb-role">${r}</span>`);
-                        sender.departments?.forEach(d => { badgeHtml += `<span class="chat-badge cb-dept">${DEPT_ABBR[d] || d.substring(0,3)}</span>`; });
-                    }
-
-                    let reactHtml = '';
-                    if(m.reactions) {
-                        const counts = {}; Object.values(m.reactions).forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
-                        Object.entries(counts).forEach(([em, count]) => { reactHtml += `<div class="reaction-pill" onclick="openReactionDetails('${m.id}'); event.stopPropagation();">${em} <span style="opacity:0.7">${count}</span></div>`; });
-                    }
-
-                    let replyHtml = '';
-                    if(m.replyTo) {
-                        const rMsg = msgs.find(x => x.id === m.replyTo);
-                        if(rMsg) {
-                            const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.text || '').substring(0,30)+'...';
-                            replyHtml = `<div class="replied-to-block" onclick="scrollToMsg('${m.replyTo}')"><div class="fw-bold" style="font-size:10px; color:var(--primary)"><i class="fas fa-reply me-1"></i>${rMsg.senderName} yanıtlandı</div>${parseMD(rText).replace(/<[^>]*>?/gm, '')}</div>`;
-                        }
-                    }
-
-                    const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, isPinned: m.isPinned}).replace(/"/g, '&quot;');
-                    const nameColor = me ? '#fff' : getUserColor(m.senderId);
-
-                    html += `
-                    <div class="chat-row ${me?'right':'left'}" id="msg-${m.id}">
-                        ${!me ? `<img src="${senderPhoto}" class="chat-avatar-img">` : ''}
-                        <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}"
-                             oncontextmenu="handleMsgCtx(event, ${safeM}); return false;"
-                             ontouchstart="startLongPress(event, ${safeM})" 
-                             ontouchend="cancelLongPress()" 
-                             ontouchmove="cancelLongPress()">
-                            ${!me ? `<div class="sender-header"><span class="sender-name" style="color:${nameColor}">${m.senderName}</span>${badgeHtml}</div>` : ''}
-                            ${replyHtml}
-                            <div style="margin-top:2px;">${content}</div>
-                            <div class="chat-meta">
-                                ${m.isPinned ? '<i class="fas fa-thumbtack text-warning me-1"></i>' : ''}
-                                ${m.isEdited ? '<span class="edited-label">düzenlendi</span>' : ''}
-                                ${m.createdAt?.seconds ? new Date(m.createdAt.seconds*1000).getHours() + ':' + String(new Date(m.createdAt.seconds*1000).getMinutes()).padStart(2,'0') : ''}
-                            </div>
-                        </div>
-                    </div>
-                    ${reactHtml ? `<div class="reaction-container ${me?'justify-content-end':'justify-content-start'}" style="margin-left:${!me?'45px':0}; margin-right:${me?'10px':0};">${reactHtml}</div>` : ''}`;
-                });
-                
-                body.innerHTML = html; 
-                setTimeout(() => body.scrollTop = body.scrollHeight, 100);
-                
-                currentChatMsgs = msgs; 
-
-                const pBar = document.getElementById('pinned-msg-bar');
-                if(pinnedMsg) {
-                    document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || 'Fotoğraf')).substring(0, 40) + '...';
-                    pBar.style.display = 'flex';
-                    pBar.onclick = () => scrollToMsg(pinnedMsg.id);
-                } else {
-                    pBar.style.display = 'none';
-                }
-
-                if (pendingScrollMsgId) {
-                    setTimeout(() => {
-                        scrollToMsg(pendingScrollMsgId);
-                        pendingScrollMsgId = null;
-                    }, 400);
-                }
+                currentChatSnapshot = msgs; // YENİ: Sayfalama için saf veriyi hafızada tutuyoruz
+                renderChatUI(true); // Ekrana çizdir ve en alta in
             });
         };
+
+        // YENİ: Sohbet çizimini parçalayıp ayrı bir fonksiyona aldık ki "Eski Mesajları Yükle" dediğimizde ekran zıplamasın.
+        window.renderChatUI = (scrollToBottom = false) => {
+            const body = document.getElementById('chat-overlay-body');
+            const msgs = currentChatSnapshot;
+            
+            let html = '';
+            let pinnedMsg = null;
+            let lastDateLabel = null; 
+            let isFirstDay = true;
+
+            // YENİ: Sadece sayfalama limitindeki kadar mesajı al
+            const msgsToRender = msgs.slice(-chatRenderLimit);
+
+            // YENİ: Eski mesaj varsa buton koy
+            if (msgs.length > chatRenderLimit) {
+                html += `<div class="d-flex justify-content-center mb-3 mt-2"><button class="btn btn-sm btn-dark border-secondary text-info rounded-pill px-4 py-2" onclick="loadMoreChat()"><i class="fas fa-arrow-up me-2"></i>Eski Mesajları Yükle</button></div>`;
+            }
+
+            msgsToRender.forEach(m => {
+                const me = m.senderId === curUser.uid;
+                let content = m.text || '';
+                if(m.isPinned) pinnedMsg = m; 
+                
+                let msgTime = m.createdAt?.seconds || (Date.now() / 1000);
+                const dateLabel = getChatDateLabel(msgTime);
+                
+                if (dateLabel !== lastDateLabel) {
+                    if (!isFirstDay) html += `</div>`; 
+                    html += `<div class="day-container">
+                                <div class="date-separator"><span class="date-separator-badge">${dateLabel}</span></div>`;
+                    lastDateLabel = dateLabel;
+                    isFirstDay = false;
+                }
+
+                content = linkify(parseMD(content)); 
+                
+                let specialTags = ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`));
+                specialTags.sort((a,b) => b.length - a.length); 
+                
+                specialTags.forEach(tag => {
+                    if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
+                });
+
+                const sortedUsers = [...allUsersCache].sort((a,b) => b.name.length - a.name.length);
+                sortedUsers.forEach(u => { const tag = `@${u.name}`; if (content.includes(tag)) content = content.split(tag).join(`<span class="text-warning fw-bold">${tag}</span>`); });
+
+                if(m.type === 'image') {
+                    content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
+                }
+                
+                let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
+                const sender = allUsersCache.find(u => u.uid === m.senderId);
+                if(sender) {
+                    senderPhoto = sender.photoURL;
+                    sender.roles?.forEach(r => badgeHtml += `<span class="chat-badge cb-role">${r}</span>`);
+                    sender.departments?.forEach(d => { badgeHtml += `<span class="chat-badge cb-dept">${DEPT_ABBR[d] || d.substring(0,3)}</span>`; });
+                }
+
+                let reactHtml = '';
+                if(m.reactions) {
+                    const counts = {}; Object.values(m.reactions).forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
+                    Object.entries(counts).forEach(([em, count]) => { reactHtml += `<div class="reaction-pill" onclick="openReactionDetails('${m.id}'); event.stopPropagation();">${em} <span style="opacity:0.7">${count}</span></div>`; });
+                }
+
+                let replyHtml = '';
+                if(m.replyTo) {
+                    const rMsg = msgs.find(x => x.id === m.replyTo);
+                    if(rMsg) {
+                        const rText = rMsg.type === 'image' ? '📸 Fotoğraf' : (rMsg.text || '').substring(0,30)+'...';
+                        replyHtml = `<div class="replied-to-block" onclick="scrollToMsg('${m.replyTo}')"><div class="fw-bold" style="font-size:10px; color:var(--primary)"><i class="fas fa-reply me-1"></i>${rMsg.senderName} yanıtlandı</div>${parseMD(rText).replace(/<[^>]*>?/gm, '')}</div>`;
+                    }
+                }
+
+                const safeM = JSON.stringify({id:m.id, senderId:m.senderId, text:m.text, isPinned: m.isPinned}).replace(/"/g, '&quot;');
+                const nameColor = me ? '#fff' : getUserColor(m.senderId);
+
+                html += `
+                <div class="chat-row ${me?'right':'left'}" id="msg-${m.id}">
+                    ${!me ? `<img src="${senderPhoto}" class="chat-avatar-img">` : ''}
+                    <div class="msg-bubble ${me?'bubble-sent':'bubble-received'}"
+                         oncontextmenu="handleMsgCtx(event, ${safeM}); return false;"
+                         ontouchstart="startLongPress(event, ${safeM})" 
+                         ontouchend="cancelLongPress()" 
+                         ontouchmove="cancelLongPress()">
+                        ${!me ? `<div class="sender-header"><span class="sender-name" style="color:${nameColor}">${m.senderName}</span>${badgeHtml}</div>` : ''}
+                        ${replyHtml}
+                        <div style="margin-top:2px;">${content}</div>
+                        <div class="chat-meta">
+                            ${m.isPinned ? '<i class="fas fa-thumbtack text-warning me-1"></i>' : ''}
+                            ${m.isEdited ? '<span class="edited-label">düzenlendi</span>' : ''}
+                            ${m.createdAt?.seconds ? new Date(m.createdAt.seconds*1000).getHours() + ':' + String(new Date(m.createdAt.seconds*1000).getMinutes()).padStart(2,'0') : ''}
+                        </div>
+                    </div>
+                </div>
+                ${reactHtml ? `<div class="reaction-container ${me?'justify-content-end':'justify-content-start'}" style="margin-left:${!me?'45px':0}; margin-right:${me?'10px':0};">${reactHtml}</div>` : ''}`;
+            });
+            
+            if (!isFirstDay) html += `</div>`; 
+            
+            // YENİ: Arayüz güncellenirken okuma konumunu (scroll) bozmama
+            const oldScrollHeight = body.scrollHeight;
+            body.innerHTML = html; 
+            
+            if (scrollToBottom) {
+                setTimeout(() => body.scrollTop = body.scrollHeight, 100);
+            } else {
+                body.scrollTop = body.scrollHeight - oldScrollHeight; // Eski mesaja tıklandığında kaldığı yeri hatırlar
+            }
+            
+            currentChatMsgs = msgsToRender; 
+
+            const pBar = document.getElementById('pinned-msg-bar');
+            if(pinnedMsg) {
+                document.getElementById('pinned-msg-text').innerText = (pinnedMsg.senderName + ': ' + (pinnedMsg.text || 'Fotoğraf')).substring(0, 40) + '...';
+                pBar.style.display = 'flex';
+                pBar.onclick = () => scrollToMsg(pinnedMsg.id);
+            } else {
+                pBar.style.display = 'none';
+            }
+
+            if (pendingScrollMsgId) {
+                setTimeout(() => {
+                    scrollToMsg(pendingScrollMsgId);
+                    pendingScrollMsgId = null;
+                }, 400);
+            }
+        };
         
+        // YENİ: Chat Sayfalamasını tetikleyen fonksiyon
+        window.loadMoreChat = () => {
+            chatRenderLimit += 50;
+            renderChatUI(false); // Yeni mesajları yukarı yükle ama scrollu en alta atma
+        };
+
         window.scrollToMsg = (id, attempts = 10) => {
             const el = document.getElementById('msg-' + id);
             if(el) { 
@@ -1277,12 +1530,12 @@
                 const u=allUsersCache.find(x=>x.uid===r.uid); 
                 l.innerHTML+=`<div class="d-flex align-items-center justify-content-between border-bottom border-dark py-2"><div class="d-flex align-items-center gap-2"><img src="${u?.photoURL}" class="rounded-circle" width="25"><span>${r.name}</span></div><span class="fs-5">${r.emoji}</span></div>`; 
             }); 
-            new bootstrap.Modal(document.getElementById('modal-reactions')).show(); 
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-reactions')).show(); 
         };
 
         window.deleteMsg = async (t) => { ctx.style.display='none'; if(t==='all'){ customConfirm("Herkesden sil?",async()=>await deleteDoc(doc(db,"messages",selectedMsg.id))); } else { await updateDoc(doc(db,"messages",selectedMsg.id),{deletedFor:arrayUnion(curUser.uid)}); showToast("Silindi."); } };
-        window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; new bootstrap.Modal(document.getElementById('modal-edit-msg')).show(); };
-        window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')).hide(); };
+        window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-edit-msg')).show(); };
+        window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); const m = bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')); if(m) m.hide(); };
         
         document.getElementById('chat-file-inp').addEventListener('change', async e => { 
             const files = e.target.files; 
@@ -1360,7 +1613,8 @@
             allUsersCache.forEach(u => {
                 if(isHiddenUser(u)) return;
 
-                if(!isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
+                if(lbMode !== 'herkes' && !isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
+                
                 let total = 0, done = 0;
                 Object.values(allTasksCache).forEach(t => {
                     if(lbMode === 'haftalik') { const tDate = t.createdAt.toDate(); if(tDate < start || tDate > end) return; }
@@ -1378,7 +1632,7 @@
             scores.sort((a,b) => b.rate - a.rate);
             if(scores.length === 0) list.innerHTML = '<div class="text-center text-muted mt-3">Veri yok.</div>';
             scores.forEach((s, idx) => { list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-2 border-bottom border-secondary"><div class="d-flex align-items-center gap-3"><div class="fw-bold" style="width:20px;">${idx+1}</div><img src="${s.photoURL}" class="rounded-circle" width="35"><div><div class="fw-bold small">${s.name}</div><div class="text-muted" style="font-size:10px">${s.done}/${s.total} Görev</div></div></div><div class="fw-bold text-success">%${Math.round(s.rate)}</div></div>`; });
-            if(!refresh) new bootstrap.Modal(document.getElementById('modal-leaderboard')).show(); pushState();
+            if(!refresh) bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-leaderboard')).show(); pushState();
         };
 
         window.goTab = (t,b) => { document.getElementById('page-title').innerText = {'tasks':'Görev Panosu','messages':'Sohbetler','team':'Ekip Listesi','profile':'Profilim'}[t]; document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); };
@@ -1484,8 +1738,6 @@
             if (txtLower.includes('@herkes')) {
                 allUsersCache.forEach(u => { if(u.uid !== curUser.uid && !isHiddenUser(u)) taggedUids.add(u.uid); });
             } else {
-                
-                // GÜNCELLENDİ: Regex Word Boundary ile kesin eşleşme kontrolü (YKY'den YK'ya bildirim gitmesini engellemek için)
                 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const checkTag = (tag) => {
                     const regex = new RegExp(`@${escapeRegExp(tag.toLowerCase())}(?![a-zğüşıöç])`, 'i');
@@ -1521,7 +1773,9 @@
         function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
         
         window.handleNotifClick = async (type, linkId, linkTitle, targetMsgId) => {
-            bootstrap.Modal.getInstance(document.getElementById('modal-notif')).hide();
+            const m = bootstrap.Modal.getInstance(document.getElementById('modal-notif'));
+            if(m) m.hide();
+            
             if(type === 'task' && linkId) { 
                 if(!allTasksCache[linkId]) { try { const snap = await getDoc(doc(db,"tasks",linkId)); if(snap.exists()) { allTasksCache[linkId] = {id: snap.id, ...snap.data()}; openTaskDetail(linkId); } } catch(e) {} } else { openTaskDetail(linkId); } pushState(); 
             } 
@@ -1537,7 +1791,7 @@
         };
 
         window.openNotifs=async()=>{ 
-            const m=new bootstrap.Modal(document.getElementById('modal-notif')); m.show(); pushState(); const l=document.getElementById('notif-list'); l.innerHTML='...'; 
+            const md = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-notif')); md.show(); pushState(); const l=document.getElementById('notif-list'); l.innerHTML='...'; 
             const q = query(collection(db,"notifications"), where("to","==",curUser.uid)); const s=await getDocs(q); const n=[]; s.forEach(d=>n.push({id:d.id,...d.data()})); n.sort((a,b)=>b.createdAt-a.createdAt); 
             l.innerHTML=''; if(n.length===0)l.innerHTML='<div class="text-center p-3 text-muted">Yok.</div>'; 
             n.forEach(d=>{ 
@@ -1571,8 +1825,6 @@
         document.getElementById('form-register').addEventListener('submit',async e=>{ e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{ uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false, roles: ['Üye'], departments: ['...'] }); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(err){ showToast(err.message) } });
         document.getElementById('form-login').addEventListener('submit',async e=>{ e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ showToast("Hata: " + err.message); } });
         window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
-        
-        window.aiGenerateTaskDesc = async () => { const t = document.getElementById('t-title').value.trim(); if(!t) return showToast("Başlık girin!"); const d = document.getElementById('t-desc'); d.placeholder = "✨ AI düşünüyor..."; d.disabled = true; try { d.value = await fetchGemini(`Lütfen şu görev başlığı için profesyonel, maddeler halinde ve net bir açıklama yaz: "${t}".`); } catch(e) {} finally { d.placeholder = "Açıklama (*kalın*, _eğik_, vb. kullanılabilir)"; d.disabled = false; } };
         
         window.aiSummarizeChat = async () => { 
             const now = new Date();
