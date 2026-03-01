@@ -247,7 +247,6 @@
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
                 
-                <!-- DÜZELTİLDİ: Taşmayı önleyen ve tek satıra zorlayan CSS eklendi -->
                 <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable mx-auto" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
                 
                 <div class="card-custom p-3 mt-1 d-flex align-items-center justify-content-between">
@@ -291,6 +290,9 @@
             <div class="d-flex align-items-center">
                 <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
                 <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
+                
+                <!-- YENİ: Özel Mesajlar İçin Manuel Bildirim (Dürtme) Butonu -->
+                <button id="btn-ping-user" class="btn btn-sm btn-outline-warning ms-3 rounded-pill py-0 px-2" style="display:none; font-size: 10px;" onclick="sendManualPing()"><i class="fas fa-bell"></i> Bildirim Gönder</button>
             </div>
             <button class="btn-ai btn-sm px-3" onclick="aiSummarizeChat()" title="Sohbeti Özetle">✨ Özetle</button>
         </div>
@@ -379,7 +381,6 @@
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
         <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div style="min-width: 0; flex: 1;"><h4 id="vp-name" class="fw-bold mb-1 text-truncate">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div>
         
-        <!-- DÜZELTİLDİ: Taşmayı önleyen ve tek satıra zorlayan CSS eklendi -->
         <div id="vp-external-id" class="badge bg-dark border border-secondary text-muted mt-2 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
         </div></div>
         <div class="mb-3 text-start">
@@ -1317,6 +1318,14 @@
             document.getElementById('chat-overlay').classList.add('open');
             chatRenderLimit = 30; 
             
+            // YENİ: Manuel Bildirim butonunu sadece DM ise göster
+            const pingBtn = document.getElementById('btn-ping-user');
+            if (cid.includes('_')) {
+                pingBtn.style.display = 'inline-block';
+            } else {
+                pingBtn.style.display = 'none';
+            }
+
             updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${cid}`]: Date.now() });
             uData.readReceipts[cid] = Date.now();
             renderChannelBadges();
@@ -1329,6 +1338,37 @@
                 currentChatSnapshot = msgs; 
                 renderChatUI(true); 
             });
+        };
+        
+        // YENİ: Manuel Dürtme (Ping) Fonksiyonu
+        window.sendManualPing = async () => {
+            if (!activeChatId || !activeChatId.includes('_')) return;
+            const otherUid = activeChatId.split('_').find(id => id !== curUser.uid);
+            if (!otherUid) return;
+
+            const btn = document.getElementById('btn-ping-user');
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Gönderildi';
+
+            try {
+                await addDoc(collection(db, "notifications"), {
+                    to: otherUid,
+                    text: `${uData.name} sana özel mesaj gönderdi!`,
+                    read: false,
+                    createdAt: new Date(),
+                    type: 'chat',
+                    linkId: curUser.uid
+                });
+                showToast("Bildirim başarıyla gönderildi!");
+            } catch(e) {
+                showToast("Bildirim gönderilemedi.");
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }, 5000); 
         };
 
         window.renderChatUI = (scrollToBottom = false) => {
@@ -1805,22 +1845,6 @@
                     targetMsgId: msgRef.id 
                 });
             });
-
-            // YENİ: Özel Mesaj (DM) Bildirimi
-            if (activeChatId && activeChatId.includes('_')) {
-                const otherUid = activeChatId.split('_').find(id => id !== curUser.uid);
-                if (otherUid) {
-                    let shortMsg = t.length > 30 ? t.substring(0, 30) + '...' : t;
-                    addDoc(collection(db, "notifications"), {
-                        to: otherUid,
-                        text: `${uData.name} sana bir mesaj gönderdi: ${shortMsg}`,
-                        read: false,
-                        createdAt: new Date(),
-                        type: 'chat',
-                        linkId: curUser.uid
-                    });
-                }
-            }
             
             cancelReply();
             document.getElementById('chat-input').value=''; 
@@ -1833,7 +1857,6 @@
                 let hasUnread = false;
                 s.forEach(d => {
                     const n = d.data();
-                    // YENİ: Eğer bir DM bildirimi geldiyse ve kullanıcı şu an o DM içindeyse bildirimi anında okundu say
                     if (n.type === 'chat' && activeChatId === [curUser.uid, n.linkId].sort().join('_')) {
                         updateDoc(doc(db, "notifications", d.id), { read: true });
                     } else {
