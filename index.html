@@ -247,10 +247,9 @@
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
                 
-                <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 9px; padding: 2px 6px; font-weight: normal; opacity: 0.8;"></div>
+                <!-- DÜZELTİLDİ: Taşmayı önleyen ve tek satıra zorlayan CSS eklendi -->
+                <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable mx-auto" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
                 
-                <button class="btn btn-sm btn-outline-warning w-100 mb-3" onclick="enableWebPush()"><i class="fas fa-bell me-1"></i> Web Bildirimlerini Aç (iOS/PC)</button>
-
                 <div class="card-custom p-3 mt-1 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
                     <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
@@ -378,8 +377,10 @@
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div>
-        <div id="vp-external-id" class="badge bg-dark border border-secondary text-muted mt-2 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 9px; padding: 2px 6px; font-weight: normal; opacity: 0.8;"></div>
+        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div style="min-width: 0; flex: 1;"><h4 id="vp-name" class="fw-bold mb-1 text-truncate">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div>
+        
+        <!-- DÜZELTİLDİ: Taşmayı önleyen ve tek satıra zorlayan CSS eklendi -->
+        <div id="vp-external-id" class="badge bg-dark border border-secondary text-muted mt-2 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
         </div></div>
         <div class="mb-3 text-start">
              <div class="small text-muted mb-1"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div>
@@ -483,7 +484,6 @@
             ta.style.left = '0';
             ta.style.opacity = '0';
             
-            // BOOTSTRAP ODAK KİLİDİ ÇÖZÜMÜ: Eğer ekranda açık bir modal varsa, textarea'yı body yerine modalın içine ekle.
             const container = document.querySelector('.modal.show') || document.body;
             container.appendChild(ta);
             
@@ -496,17 +496,6 @@
                 showToast("Kopyalama başarısız oldu."); 
             }
             container.removeChild(ta);
-        };
-
-        window.enableWebPush = () => {
-            if(window.OneSignalDeferred) {
-                OneSignalDeferred.push(async function(OneSignal) {
-                    await OneSignal.Slidedown.promptPush();
-                    showToast("Bildirim yetkisi tetiklendi. Lütfen tarayıcı izinlerini kontrol edin.");
-                });
-            } else {
-                showToast("Bildirim altyapısı yüklenemedi.");
-            }
         };
 
         function getWeekRange() {
@@ -632,7 +621,7 @@
             updateProfileBadges(); 
             
             const extId = document.getElementById('prof-external-id');
-            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> ${curUser.uid} <i class="fas fa-copy ms-1"></i>`;
+            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> <span style="vertical-align: middle;">${curUser.uid}</span> <i class="fas fa-copy ms-1"></i>`;
             extId.dataset.uid = curUser.uid;
             
             document.getElementById('inp-uni').value = uData.university || '';
@@ -1218,9 +1207,8 @@
             u.roles?.forEach(r => bdg.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); bdg.innerHTML += `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
             
-            // Diğer kullanıcıların modalları için küçük ID eklendi
             const extId = document.getElementById('vp-external-id');
-            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> ${u.uid} <i class="fas fa-copy ms-1"></i>`;
+            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> <span style="vertical-align: middle;">${u.uid}</span> <i class="fas fa-copy ms-1"></i>`;
             extId.dataset.uid = u.uid;
 
             document.getElementById('vp-uni').innerText = u.university || 'Belirtilmemiş';
@@ -1817,13 +1805,44 @@
                     targetMsgId: msgRef.id 
                 });
             });
+
+            // YENİ: Özel Mesaj (DM) Bildirimi
+            if (activeChatId && activeChatId.includes('_')) {
+                const otherUid = activeChatId.split('_').find(id => id !== curUser.uid);
+                if (otherUid) {
+                    let shortMsg = t.length > 30 ? t.substring(0, 30) + '...' : t;
+                    addDoc(collection(db, "notifications"), {
+                        to: otherUid,
+                        text: `${uData.name} sana bir mesaj gönderdi: ${shortMsg}`,
+                        read: false,
+                        createdAt: new Date(),
+                        type: 'chat',
+                        linkId: curUser.uid
+                    });
+                }
+            }
             
             cancelReply();
             document.getElementById('chat-input').value=''; 
             chatInputEl.style.height = '45px'; 
         });
         
-        function listenNotifs(){ unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ document.getElementById('notif-dot').style.display=s.empty?'none':'block'; }); }
+        function listenNotifs(){ 
+            if(unsubNotif) unsubNotif();
+            unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ 
+                let hasUnread = false;
+                s.forEach(d => {
+                    const n = d.data();
+                    // YENİ: Eğer bir DM bildirimi geldiyse ve kullanıcı şu an o DM içindeyse bildirimi anında okundu say
+                    if (n.type === 'chat' && activeChatId === [curUser.uid, n.linkId].sort().join('_')) {
+                        updateDoc(doc(db, "notifications", d.id), { read: true });
+                    } else {
+                        hasUnread = true;
+                    }
+                });
+                document.getElementById('notif-dot').style.display = hasUnread ? 'block' : 'none'; 
+            }); 
+        }
         
         window.handleNotifClick = async (type, linkId, linkTitle, targetMsgId) => {
             const m = bootstrap.Modal.getInstance(document.getElementById('modal-notif'));
