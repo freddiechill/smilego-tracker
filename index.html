@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- iOS PWA (Ana Ekrana Ekle) Destek Etiketleri -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmileGO Tracker">
+    
     <title>SmileGO Tracker</title>
     
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/trackerlogo.png">
@@ -138,7 +144,6 @@
         .lb-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: rgba(0,0,0,0.5); background: var(--bs-warning); transition: 0.2s; }
         .lb-tab.active { color: #000; border-bottom: 3px solid #000; }
 
-        /* HATA ÇÖZÜMÜ: translateY gizleme payını -250px yaparak uzun metinlerin de ekrandan çıkmasını sağladık */
         #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-250px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
         #app-toast.show { transform: translateX(-50%) translateY(0); }
         
@@ -241,9 +246,11 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
-                <!-- EKLENEN YER: External ID Kopyalama Rozeti -->
-                <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable" onclick="copyExternalId()" title="Kopyalamak için tıkla" style="font-family: monospace; letter-spacing: 1px;"></div>
                 
+                <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 9px; padding: 2px 6px; font-weight: normal; opacity: 0.8;"></div>
+                
+                <button class="btn btn-sm btn-outline-warning w-100 mb-3" onclick="enableWebPush()"><i class="fas fa-bell me-1"></i> Web Bildirimlerini Aç (iOS/PC)</button>
+
                 <div class="card-custom p-3 mt-1 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
                     <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
@@ -371,7 +378,9 @@
 
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div></div></div>
+        <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div><h4 id="vp-name" class="fw-bold mb-1">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div>
+        <div id="vp-external-id" class="badge bg-dark border border-secondary text-muted mt-2 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 9px; padding: 2px 6px; font-weight: normal; opacity: 0.8;"></div>
+        </div></div>
         <div class="mb-3 text-start">
              <div class="small text-muted mb-1"><i class="fas fa-university me-1"></i> <span id="vp-uni" class="text-white">...</span></div>
              <div class="small text-muted mb-1"><i class="fas fa-graduation-cap me-1"></i> <span id="vp-dept" class="text-white">...</span></div>
@@ -409,13 +418,9 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
-        // UYARI: Frontend'e açıkça yazılan API anahtarları Github gibi açık repolara itildiğinde Google bunu tespit edip
-        // güvenlik riski sebebiyle kalıcı olarak bloklar. Gördüğün hata bunun sebebi.  
-        // Şu an bu sistemi çalıştırabilmek için anahtarı bilerek boş bıraktım ve çevre değişkeninden çalışacak sisteme bağladım.
         const geminiApiKey = ""; 
         
         async function fetchGemini(prompt) {
-            // İstemci modeli Preview olarak güncellendi.
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
@@ -468,19 +473,40 @@
         window.alert = window.showToast;
         window.customConfirm = (text, cb) => { document.getElementById('confirm-text').innerText = text; const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-confirm')); document.getElementById('confirm-btn-yes').onclick = () => { cb(); modal.hide(); }; modal.show(); };
 
-        // External ID Kopyalama Fonksiyonu Eklendi
-        window.copyExternalId = () => {
+        // Ortak Kopyalama Fonksiyonu
+        window.copyText = (txt, label="Metin") => {
+            if(!txt) return;
             const ta = document.createElement('textarea');
-            ta.value = curUser.uid;
-            document.body.appendChild(ta);
+            ta.value = txt;
+            ta.style.position = 'fixed';
+            ta.style.top = '0';
+            ta.style.left = '0';
+            ta.style.opacity = '0';
+            
+            // BOOTSTRAP ODAK KİLİDİ ÇÖZÜMÜ: Eğer ekranda açık bir modal varsa, textarea'yı body yerine modalın içine ekle.
+            const container = document.querySelector('.modal.show') || document.body;
+            container.appendChild(ta);
+            
+            ta.focus();
             ta.select();
             try { 
                 document.execCommand('copy'); 
-                showToast("External ID Panoya Kopyalandı!"); 
+                showToast(label + " Panoya Kopyalandı!"); 
             } catch(e) { 
                 showToast("Kopyalama başarısız oldu."); 
             }
-            document.body.removeChild(ta);
+            container.removeChild(ta);
+        };
+
+        window.enableWebPush = () => {
+            if(window.OneSignalDeferred) {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.Slidedown.promptPush();
+                    showToast("Bildirim yetkisi tetiklendi. Lütfen tarayıcı izinlerini kontrol edin.");
+                });
+            } else {
+                showToast("Bildirim altyapısı yüklenemedi.");
+            }
         };
 
         function getWeekRange() {
@@ -605,8 +631,9 @@
             document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
             updateProfileBadges(); 
             
-            // External ID Güncellemesi burada yapılıyor
-            document.getElementById('prof-external-id').innerHTML = `<i class="fas fa-fingerprint me-1"></i> ID: ${curUser.uid}`;
+            const extId = document.getElementById('prof-external-id');
+            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> ${curUser.uid} <i class="fas fa-copy ms-1"></i>`;
+            extId.dataset.uid = curUser.uid;
             
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
@@ -1191,6 +1218,11 @@
             u.roles?.forEach(r => bdg.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); bdg.innerHTML += `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
             
+            // Diğer kullanıcıların modalları için küçük ID eklendi
+            const extId = document.getElementById('vp-external-id');
+            extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> ${u.uid} <i class="fas fa-copy ms-1"></i>`;
+            extId.dataset.uid = u.uid;
+
             document.getElementById('vp-uni').innerText = u.university || 'Belirtilmemiş';
             document.getElementById('vp-dept').innerText = u.uni_dept || 'Belirtilmemiş';
             document.getElementById('vp-dob').innerText = (u.dob || '') ? (u.dob||'').split('-').reverse().join('.') : 'Belirtilmemiş';
