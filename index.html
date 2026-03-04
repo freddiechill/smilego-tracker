@@ -26,6 +26,8 @@
         await OneSignal.init({
           appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
         });
+        // Site açıldığında otomatik olarak bildirim izni ister
+        await OneSignal.Slidedown.promptPush();
       });
     </script>
 
@@ -293,7 +295,7 @@
                 <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
                 <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
                 
-                <!-- YENİ: Özel Mesajlar İçin Manuel Bildirim (Dürtme) Butonu SADECE İKON -->
+                <!-- YENİ: Sadece ikon içeren yuvarlak sarı bildirim butonu -->
                 <button id="btn-ping-user" class="btn btn-warning ms-3 rounded-circle align-items-center justify-content-center shadow-sm" style="display:none !important; width: 35px; height: 35px; padding: 0;" onclick="sendManualPing()" title="Bildirim Gönder"><i class="fas fa-bell"></i></button>
             </div>
             <button class="btn-ai btn-sm px-3" onclick="aiSummarizeChat()" title="Sohbeti Özetle">✨ Özetle</button>
@@ -422,10 +424,11 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
+        // Kendi API anahtarını kullanıyorsun
         const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
         
         async function fetchGemini(prompt) {
-            // MODEL GÜNCELLENDİ: Preview yerine stabil olan "gemini-2.5-flash" kullanıyoruz.
+            // HATA ÇÖZÜMÜ: Preview model çıkartıldı, stabil olan "gemini-2.5-flash" eklendi.
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
@@ -552,22 +555,27 @@
                     }
                 });
                 
-                // ONESIGNAL BİLDİRİM İZNİ VE GİRİŞ
-                // DÜZELTME: İzni sayfa açılışında değil, kullanıcı "giriş yaptıktan sonra" istiyoruz ki reddetmesin.
-                if(window.OneSignalDeferred) {
-                    OneSignalDeferred.push(async function(OneSignal) {
-                        await OneSignal.login(u.uid);
-                        await OneSignal.Slidedown.promptPush();
-                    });
+                // --- BİLDİRİM MİMARİSİ (MOBİL VE WEB AYRIMI) ---
+                const isMedianApp = navigator.userAgent.toLowerCase().includes('median');
+
+                if (isMedianApp) {
+                    // KULLANICI MOBİL UYGULAMADA: Sadece native (yerel) ID ayarlayıcıyı çalıştır
+                    setTimeout(() => {
+                        const iframe = document.createElement("iframe");
+                        iframe.style.display = "none";
+                        iframe.src = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
+                        document.body.appendChild(iframe);
+                        setTimeout(() => iframe.remove(), 1000);
+                    }, 1500);
+                } else {
+                    // KULLANICI WEB TARAYICISINDA (PC/MAC vs.): Web Push izni iste ve Web SDK'ya login yap
+                    if(window.OneSignalDeferred) {
+                        OneSignalDeferred.push(async function(OneSignal) {
+                            await OneSignal.login(u.uid);
+                            await OneSignal.Slidedown.promptPush();
+                        });
+                    }
                 }
-                
-                setTimeout(() => {
-                    const iframe = document.createElement("iframe");
-                    iframe.style.display = "none";
-                    iframe.src = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
-                    document.body.appendChild(iframe);
-                    setTimeout(() => iframe.remove(), 1000);
-                }, 1500);
 
             } else {
                 cleanup(); document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none';
