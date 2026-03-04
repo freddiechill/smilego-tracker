@@ -19,14 +19,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap" rel="stylesheet">
 
+    <!-- ONESIGNAL BAŞLATMA KODU (ABSOLUTE URL İLE ZIRHLANDIRILMIŞ HALİ) -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
-          // Alt klasörde çalışan Github Pages için daha kesin Service Worker tanımı
-          serviceWorkerPath: "OneSignalSDKWorker.js" // Yolu göreceli verdik
+          serviceWorkerParam: { scope: "https://freddiechill.github.io/smilego-tracker/" },
+          serviceWorkerPath: "https://freddiechill.github.io/smilego-tracker/OneSignalSDKWorker.js"
         });
       });
     </script>
@@ -559,7 +560,7 @@
                 const isMedianApp = navigator.userAgent.toLowerCase().includes('median');
 
                 if (isMedianApp) {
-                    // KULLANICI MOBİL UYGULAMADA: Sadece native (yerel) ID ayarlayıcıyı çalıştır
+                    // KULLANICI MOBİL UYGULAMADA: Uygulama içi ID tanımlama çalışır
                     setTimeout(() => {
                         const iframe = document.createElement("iframe");
                         iframe.style.display = "none";
@@ -568,7 +569,7 @@
                         setTimeout(() => iframe.remove(), 1000);
                     }, 1500);
                 } else {
-                    // KULLANICI WEB TARAYICISINDA (PC/MAC vs.): Web Push izni iste ve Web SDK'ya login yap
+                    // KULLANICI WEB TARAYICISINDA: Web push izni istenir
                     if(window.OneSignalDeferred) {
                         OneSignalDeferred.push(async function(OneSignal) {
                             await OneSignal.login(u.uid);
