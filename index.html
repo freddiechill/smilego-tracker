@@ -428,7 +428,7 @@
         const geminiApiKey = k1 + k2 + k3 + k4; 
         
         async function fetchGemini(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
             for (let i = 0; i < retries; i++) {
@@ -1951,7 +1951,7 @@
                 b.scrollTop = b.scrollHeight; 
             } catch(e) { 
                 console.error("AI Bağlantı Hatası:", e);
-                showToast("AI Hatası: Lütfen API anahtarınızı güncelleyin."); 
+                showToast("AI Hatası: " + (e.message || "Bağlantı kurulamadı veya reddedildi.")); 
             } 
         };
     </script>
