@@ -425,7 +425,8 @@
         const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
         
         async function fetchGemini(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+            // MODEL GÜNCELLENDİ: Preview yerine stabil olan "gemini-2.5-flash" kullanıyoruz.
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
             for (let i = 0; i < retries; i++) {
@@ -551,7 +552,14 @@
                     }
                 });
                 
-                if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
+                // ONESIGNAL BİLDİRİM İZNİ VE GİRİŞ
+                // DÜZELTME: İzni sayfa açılışında değil, kullanıcı "giriş yaptıktan sonra" istiyoruz ki reddetmesin.
+                if(window.OneSignalDeferred) {
+                    OneSignalDeferred.push(async function(OneSignal) {
+                        await OneSignal.login(u.uid);
+                        await OneSignal.Slidedown.promptPush();
+                    });
+                }
                 
                 setTimeout(() => {
                     const iframe = document.createElement("iframe");
