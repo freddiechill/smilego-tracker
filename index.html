@@ -428,7 +428,37 @@
         const geminiApiKey = k1 + k2 + k3 + k4; 
         
         async function fetchGemini(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
+            let selectedModel = 'gemini-2.0-flash'; // Modern varsayılan
+            
+            try {
+                // 1. Önce API'ye hangi modelleri desteklediğini soralım
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`;
+                const listRes = await fetch(listUrl);
+                
+                if (listRes.ok) {
+                    const data = await listRes.json();
+                    const models = data.models || [];
+                    
+                    // generateContent destekleyen ve adında 'flash' geçen ilk modeli bul
+                    const flashModel = models.find(m => m.name.includes('flash') && (m.supportedGenerationMethods || []).includes('generateContent'));
+                    
+                    if (flashModel) {
+                        selectedModel = flashModel.name.split('models/')[1];
+                    } else {
+                        // Flash yoksa herhangi bir geçerli modeli al
+                        const backupModel = models.find(m => (m.supportedGenerationMethods || []).includes('generateContent'));
+                        if (backupModel) selectedModel = backupModel.name.split('models/')[1];
+                    }
+                    console.log("AI Modeli Otomatik Seçildi:", selectedModel);
+                } else {
+                    console.warn("Model listesi alınamadı. Manuel isim denenecek.");
+                }
+            } catch (err) {
+                console.warn("Model keşfi başarısız:", err);
+            }
+
+            // 2. Seçilen modele isteği gönderelim
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${geminiApiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             let retries = 3; let delay = 1000;
             for (let i = 0; i < retries; i++) {
