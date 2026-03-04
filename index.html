@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+    
     <!-- iOS PWA (Ana Ekrana Ekle) Destek Etiketleri -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SmileGO Tracker">
-
+    
     <title>SmileGO Tracker</title>
-
+    
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/freddiechill/gorsel-depom/refs/heads/main/trackerlogo.png">
 
     <script src="https://cdn.median.co/median.js"></script>
@@ -39,7 +39,7 @@
         .modal { z-index: 1000005 !important; }
         .modal-backdrop { z-index: 1000004 !important; }
         #modal-confirm { z-index: 1000020 !important; } 
-
+        
         .app-header { height: 70px; position: fixed; top: 0; left: 0; width: 100%; background: rgba(9, 9, 11, 0.95); border-bottom: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .header-icon-btn { background: transparent !important; border: none !important; padding: 0 8px !important; color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; }
         .bottom-nav { height: 85px; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(16, 16, 18, 0.98); border-top: 1px solid #27272a; z-index: 9999; display: flex; align-items: center; justify-content: space-around; padding-bottom: 15px; }
@@ -67,11 +67,11 @@
 
         #chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; display: none; flex-direction: column; }
         #chat-overlay.open { display: flex; }
-
+        
         .pinned-msg-bar { background: rgba(30, 30, 35, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid #3f3f46; padding: 10px 20px; font-size: 13px; display: none; align-items: center; justify-content: space-between; cursor: pointer; z-index: 10; border-left: 3px solid var(--primary); }
         .reply-preview-bar { background: #1c1c1e; border-top: 1px solid #3f3f46; border-left: 3px solid var(--primary); padding: 10px 15px; font-size: 13px; display: none; align-items: center; justify-content: space-between; }
         .replied-to-block { background: rgba(0,0,0,0.2); border-left: 3px solid var(--primary); padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 12px; opacity: 0.8; cursor: pointer; display: flex; flex-direction: column; }
-
+        
         .chat-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: #0b0b0d; scroll-behavior: smooth; }
         .chat-row { display: flex; width: 100%; align-items: flex-start; gap: 8px; margin-bottom: 2px; transition: background 0.3s; border-radius: 8px; }
         .chat-row.right { justify-content: flex-end; }
@@ -82,7 +82,7 @@
         .bubble-sent { background: var(--sent-bg); color: #fff; border-top-right-radius: 2px; margin-left: auto; }
         .bubble-received { background: var(--recv-bg); color: #fff; border-top-left-radius: 2px; margin-right: auto; }
         .msg-bubble a { color: #93c5fd; text-decoration: underline; word-break: break-all; }
-
+        
         .msg-bubble ul, .msg-bubble ol, #notepad-preview ul, #notepad-preview ol { margin-bottom: 0; padding-left: 20px; }
         .msg-bubble b, #notepad-preview b { font-weight: 800; }
         .msg-bubble i, #notepad-preview i { font-style: italic; }
@@ -114,7 +114,7 @@
 
         #star-select { display: flex; gap: 2px; align-items: center; }
         #star-select i { font-size: 24px; cursor: pointer; width: 24px; text-align: center; }
-
+        
         .task-right-panel { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 110px; pointer-events: none; text-align: right; }
         .task-icons { display: flex; gap: 8px; pointer-events: auto; margin-bottom: 2px; justify-content: flex-end; }
         .task-icons i { cursor: pointer; }
@@ -134,7 +134,7 @@
         .progress-ring { width: 60px; height: 60px; }
         .progress-ring__bg { stroke: rgba(255,255,255,0.1); }
         .progress-ring__circle { transition: 0.35s stroke-dashoffset; transform: rotate(-90deg); transform-origin: 50% 50%; }
-
+        
         .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .st-pending { background: rgba(255,255,255,0.1); color: #aaa; }
         .st-progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
@@ -146,7 +146,7 @@
 
         #app-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-250px); background: rgba(30, 30, 35, 0.95); border: 1px solid #444; backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000008; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; min-width: 300px; justify-content: center; }
         #app-toast.show { transform: translateX(-50%) translateY(0); }
-
+        
         #context-menu { position: fixed; background: #1c1c1e; border: 1px solid #333; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 2000006; }
         .ctx-reactions { display: flex; padding: 10px; gap: 5px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: #252529; }
         .ctx-emoji { font-size: 20px; cursor: pointer; transition: 0.2s; padding: 5px; border-radius: 50%; }
@@ -158,7 +158,7 @@
 
         #img-viewer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000000; display: none; align-items: center; justify-content: center; touch-action: none; overflow: hidden; }
         #img-viewer-src { max-width: 100%; max-height: 100%; transition: transform 0.1s; transform-origin: center center; }
-
+        
         .nav-btn { background: none; border: none; color: #52525b; flex: 1; height: 100%; font-size: 24px; transition: 0.2s; }
         .nav-btn.active { color: var(--primary); transform: translateY(-3px); }
 
@@ -173,7 +173,7 @@
     <div class="modal fade" id="modal-confirm" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 text-center"><i class="fas fa-question-circle text-warning fa-3x mb-3"></i><h5 class="fw-bold mb-2">Emin misiniz?</h5><p class="text-muted small mb-4" id="confirm-text">...</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-dark border-secondary w-50" data-bs-dismiss="modal">İptal</button><button class="btn btn-danger w-50" id="confirm-btn-yes">Evet</button></div></div></div></div>
     <div id="context-menu"><div class="ctx-reactions"><span class="ctx-emoji" onclick="addReaction('❤️')">❤️</span><span class="ctx-emoji" onclick="addReaction('👍')">👍</span><span class="ctx-emoji" onclick="addReaction('👎')">👎</span><span class="ctx-emoji" onclick="addReaction('🙏')">🙏</span><span class="ctx-emoji" onclick="addReaction('✍️')">✍️</span><span class="ctx-emoji" onclick="addReaction('✅')">✅</span></div><div id="ctx-options"></div></div>
     <div id="loading-overlay"><div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div><div class="text-white mt-3 fw-bold" id="loading-text">Yükleniyor...</div></div>
-
+    
     <div id="img-viewer">
         <button style="position:absolute;top:40px;right:20px;background:rgba(0,0,0,0.5);border-radius:50%;width:40px;height:40px;border:none;color:white;font-size:20px;z-index:2000001" onclick="closeImgViewer()"><i class="fas fa-times"></i></button>
         <img id="img-viewer-src" src="" alt="Zoomable Image">
@@ -214,7 +214,7 @@
                         <li><a class="dropdown-item" href="#" onclick="changeTaskSort('importance', this); event.preventDefault();">Öneme Göre</a></li>
                     </ul>
                 </div>
-
+                
                 <div class="dropdown me-2" id="admin-dept-filter-wrapper" style="display: none;">
                     <button class="btn btn-dark border-secondary rounded-circle dropdown-toggle text-info flex-shrink-0" type="button" data-bs-toggle="dropdown" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Departmana Göre Filtrele">
                         <i class="fas fa-filter"></i>
@@ -236,7 +236,7 @@
 
         <div id="view-messages" class="main-content"><h6 class="text-muted small fw-bold mb-3 ls-1">GRUPLAR</h6><div id="channel-list" class="d-flex flex-column gap-2 mb-4"></div><h6 class="text-muted small fw-bold mb-3 ls-1">ÖZEL MESAJLAR</h6><div id="dm-list" class="d-flex flex-column gap-2"></div></div>
         <div id="view-team" class="main-content"><input type="text" class="form-control mb-4" placeholder="Ekipte ara (İsim, Rol, Dept)..." onkeyup="renderTeam(this.value)"><div id="team-list"></div></div>
-
+        
         <div id="view-profile" class="main-content">
             <div class="text-center">
                 <div class="mb-3 position-relative d-inline-block">
@@ -246,9 +246,9 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-center gap-2 mb-1"><h4 id="prof-name" class="fw-bold m-0">...</h4><i class="fas fa-pen text-secondary clickable" onclick="editMyName()"></i></div>
                 <div id="prof-roles" class="d-flex justify-content-center flex-wrap gap-2 mb-2"></div>
-
+                
                 <div id="prof-external-id" class="badge bg-dark border border-secondary text-muted mb-3 clickable mx-auto" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
-
+                
                 <div class="card-custom p-3 mt-1 d-flex align-items-center justify-content-between">
                     <div class="text-start"><div class="text-muted small">Görev Başarımı</div><h4 class="fw-bold m-0" id="prof-rate">0%</h4></div>
                     <svg class="progress-ring" width="60" height="60"><circle class="progress-ring__bg" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/><circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" id="prof-circle" stroke-dasharray="163.36" stroke-dashoffset="163.36"/></svg>
@@ -290,20 +290,20 @@
             <div class="d-flex align-items-center">
                 <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
                 <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
-
+                
                 <!-- YENİ: Özel Mesajlar İçin Manuel Bildirim (Dürtme) Butonu -->
                 <button id="btn-ping-user" class="btn btn-sm btn-outline-warning ms-3 rounded-circle" style="display:none; width: 32px; height: 32px; padding: 0; align-items: center; justify-content: center; flex-shrink: 0;" onclick="sendManualPing()" title="Bildirim Gönder"><i class="fas fa-bell"></i></button>
             </div>
             <button class="btn-ai btn-sm px-3" onclick="aiSummarizeChat()" title="Sohbeti Özetle">✨ Özetle</button>
         </div>
-
+        
         <div id="pinned-msg-bar" class="pinned-msg-bar">
             <div><i class="fas fa-thumbtack text-primary me-2"></i> <span id="pinned-msg-text" class="fw-bold" style="opacity: 0.9;"></span></div>
             <i class="fas fa-times text-muted" onclick="event.stopPropagation(); document.getElementById('pinned-msg-bar').style.display='none';"></i>
         </div>
 
         <div class="chat-body-scroll" id="chat-overlay-body"></div>
-
+        
         <div id="reply-preview-bar" class="reply-preview-bar">
             <div style="overflow: hidden;">
                 <div class="fw-bold text-primary mb-1" style="font-size: 11px;"><i class="fas fa-reply me-1"></i> Yanıtlanıyor</div>
@@ -313,7 +313,7 @@
         </div>
 
         <form id="chat-form" style="flex: 0 0 auto; background: var(--nav-dark); border-top: 1px solid #27272a; padding: 15px; padding-bottom: 25px; display: flex; gap: 10px; align-items: flex-end; position: relative;">
-
+            
             <div id="mention-menu"></div>
 
             <input type="file" id="chat-file-inp" multiple hidden>
@@ -368,7 +368,7 @@
         <div class="d-flex justify-content-between align-items-start mb-3"><div style="flex:1; margin-right:10px;"><h5 class="fw-bold mb-1" id="td-title">...</h5><div id="td-assignees" class="d-flex align-items-center mb-1"></div></div><div class="text-end" id="td-meta"></div></div>
         <div class="d-flex flex-wrap gap-2 mb-2 align-items-center" id="td-stars-wrapper"></div>
         <div class="p-2 mb-3 small" id="td-desc" style="min-height:60px; max-height:300px; overflow-y:auto; resize:vertical; background: rgba(0,0,0,0.3); border-radius:12px;"></div>
-
+        
         <div id="td-submission-area" class="mb-3" style="display: none;">
             <label class="small text-muted fw-bold mb-1">Görevi Teslim Et / Not Ekle</label>
             <textarea id="t-submission-input" class="form-control mb-2 auto-expand" placeholder="Görevle ilgili link, döküman veya notunuzu buraya girebilirsiniz..." style="font-size: 13px; min-height: 60px; max-height:150px; resize:none; overflow-y:auto;"></textarea>
@@ -380,7 +380,7 @@
     <div class="modal fade" id="modal-profile-view" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-4 position-relative">
         <button class="btn btn-sm btn-dark position-absolute top-0 end-0 m-3 rounded-circle" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
         <div class="d-flex align-items-center gap-3 mb-3 text-start"><img id="vp-img" src="" class="rounded-circle border border-2 border-secondary p-1" width="110" height="110"><div style="min-width: 0; flex: 1;"><h4 id="vp-name" class="fw-bold mb-1 text-truncate">...</h4><div id="vp-badges" class="d-flex flex-wrap gap-1"></div>
-
+        
         <div id="vp-external-id" class="badge bg-dark border border-secondary text-muted mt-2 clickable" onclick="copyText(this.dataset.uid, 'Kullanıcı ID')" title="Kopyalamak için tıkla" style="font-family: monospace; font-size: 11px; padding: 5px 10px; font-weight: normal; opacity: 0.8; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></div>
         </div></div>
         <div class="mb-3 text-start">
@@ -396,7 +396,7 @@
     </div></div></div>
 
     <div class="modal fade" id="modal-user-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Üye Düzenle (Admin)</h5><h6 id="ue-name" class="text-primary mb-3"></h6><div id="ue-roles" class="d-flex flex-wrap gap-2 mb-3"></div><div id="ue-depts" class="d-flex flex-wrap gap-2 mb-3"></div><button class="btn btn-success w-100" onclick="saveUserEdit()">Kaydet</button></div></div></div>
-
+    
     <div class="modal fade" id="modal-leaderboard" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-0 overflow-hidden"><div class="bg-warning p-3 text-center"><h5 class="fw-bold m-0 text-black"><i class="fas fa-trophy me-2"></i>Sıralama</h5></div>
     <div class="lb-tabs">
         <div class="lb-tab active" onclick="switchLB('departman', this)">Departman</div>
@@ -404,7 +404,7 @@
         <div class="lb-tab" onclick="switchLB('herkes', this)">Herkes</div>
     </div>
     <div id="lb-list" class="p-3" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
-
+    
     <div class="modal fade" id="modal-notif" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-custom border-0 p-3"><h5 class="fw-bold mb-3">Bildirimler</h5><div id="notif-list" style="max-height:50vh;overflow-y:auto"></div></div></div></div>
     <div class="modal fade" id="modal-status" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3 text-center"><h6 class="mb-3">Durum Güncelle</h6><div class="d-grid gap-2"><button class="btn btn-outline-secondary" onclick="updateTaskStatus('pending')">Başlamadı</button><button class="btn btn-outline-primary" onclick="updateTaskStatus('progress')">Yapılıyor</button><button class="btn btn-outline-success" onclick="updateTaskStatus('done')">Bitti</button></div></div></div></div>
     <div class="modal fade" id="modal-name-edit" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content card-custom border-0 p-3"><h6 class="mb-3">İsim Değiştir</h6><input id="inp-new-name" class="form-control mb-3"><button class="btn btn-success w-100" onclick="saveMyName()">Kaydet</button></div></div></div>
@@ -426,9 +426,8 @@
         const k3 = "5lWvcS00Gn";
         const k4 = "FWeVUSE";
         const geminiApiKey = k1 + k2 + k3 + k4; 
-
+        
         async function fetchGemini(prompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
             let selectedModel = 'gemini-2.0-flash'; // Modern varsayılan
             
             try {
@@ -465,12 +464,12 @@
             for (let i = 0; i < retries; i++) {
                 try {
                     const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-
+                    
                     if (!res.ok) {
                         const errData = await res.json();
                         throw new Error(errData.error?.message || `Bilinmeyen HTTP Hatası: ${res.status}`);
                     }
-
+                    
                     const data = await res.json();
                     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
                 } catch (err) {
@@ -497,11 +496,11 @@
         let adminTaskDeptFilter = 'all'; 
         let currentChatMsgs = []; 
         let pendingScrollMsgId = null; 
-
+        
         let taskRenderLimit = 20;
         let chatRenderLimit = 30;
         let currentChatSnapshot = [];
-
+        
         const isHiddenUser = (user) => user.roles && user.roles.includes('Admin');
 
         const NAME_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e', '#e879f9', '#2dd4bf'];
@@ -520,10 +519,10 @@
             ta.style.top = '0';
             ta.style.left = '0';
             ta.style.opacity = '0';
-
+            
             const container = document.querySelector('.modal.show') || document.body;
             container.appendChild(ta);
-
+            
             ta.focus();
             ta.select();
             try { 
@@ -563,16 +562,16 @@
                         if(!Array.isArray(uData.departments)) uData.departments = [uData.department || '...'];
                         if(!uData.readReceipts) uData.readReceipts = {}; 
                         if(u.email === ADMIN_EMAIL && !uData.roles.includes('Admin')) uData.roles.push('Admin');
-
+                        
                         const lBtn = document.querySelector('#form-login button');
                         if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
-
+                        
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-screen').style.display = 'block';
-
+                        
                         checkUIState(); 
                         updateProfileBadges(); 
-
+                        
                         if(!document.getElementById('btn-add-task').dataset.initialized) {
                             initApp();
                             document.getElementById('btn-add-task').dataset.initialized = "true";
@@ -584,9 +583,9 @@
                         if(lBtn) { lBtn.innerText = "Giriş Yap"; lBtn.disabled = false; }
                     }
                 });
-
+                
                 if(window.OneSignalDeferred) OneSignalDeferred.push(()=>OneSignal.login(u.uid));
-
+                
                 setTimeout(() => {
                     const iframe = document.createElement("iframe");
                     iframe.style.display = "none";
@@ -603,7 +602,7 @@
         const isAdmin = () => uData.roles?.includes('Admin');
         const isPres = () => uData.roles?.includes('Başkan');
         const canManageUsers = () => isAdmin() || isPres();
-
+        
         const canSeeAllTasks = () => {
             return uData.roles?.some(r => ['Başkan', 'YK', 'Admin'].includes(r)) || 
                    uData.departments?.includes('Organizasyonel Gelişim');
@@ -628,7 +627,7 @@
 
         async function initApp() {
             loadProfile(); listenTasks(); listenTeam(); listenChannelMeta(); loadChannels(); listenNotifs(); loadRecentDMs();
-
+            
             const dSelect = document.getElementById('t-dept'); dSelect.innerHTML='';
             DEPTS.forEach(d => dSelect.innerHTML += `<option>${d}</option>`);
 
@@ -656,11 +655,11 @@
         window.loadProfile = () => {
             document.getElementById('prof-img').src = uData.photoURL || 'https://via.placeholder.com/150';
             updateProfileBadges(); 
-
+            
             const extId = document.getElementById('prof-external-id');
             extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> <span style="vertical-align: middle;">${curUser.uid}</span> <i class="fas fa-copy ms-1"></i>`;
             extId.dataset.uid = curUser.uid;
-
+            
             document.getElementById('inp-uni').value = uData.university || '';
             document.getElementById('inp-sec').value = uData.uni_dept || '';
             document.getElementById('inp-city').value = uData.city || '';
@@ -726,7 +725,7 @@
             showToast("Notlar kaydedildi!");
             bootstrap.Modal.getInstance(document.getElementById('modal-notepad')).hide();
         };
-
+        
         window.clearNotepad = () => {
             customConfirm("Tüm notları silmek istediğine emin misin?", async () => { 
                 document.getElementById('notepad-text').value = ''; 
@@ -751,7 +750,7 @@
             showToast("Kaydedildi!"); 
         };
         window.saveSocials = async () => { const soc = {}; ['linkedin','instagram','x','tiktok','youtube','kick'].forEach(k => { const v = document.getElementById(`sm-${k}`).value.trim(); if(v) soc[k] = v; }); await updateDoc(doc(db,"users",curUser.uid), { socials: soc }); showToast("Kaydedildi!"); };
-
+        
         window.editMyName = () => { document.getElementById('inp-new-name').value = uData.name; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-name-edit')).show(); }
         window.saveMyName = async () => {
              const newName = document.getElementById('inp-new-name').value;
@@ -790,10 +789,10 @@
             const date = new Date(dl);
             const datePart = date.toLocaleString('tr-TR', { day: 'numeric', month: 'short', weekday: 'short' });
             const timePart = date.toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-
+            
             const diff = date - new Date();
             if(diff < 0) return `<div class="d-flex flex-column align-items-end"><span class="small text-muted" style="line-height:1.2;">${datePart}</span><span class="small fw-bold text-muted">${timePart}</span><span class="badge bg-danger mt-1" style="font-size:10px">Süre Doldu!</span></div>`;
-
+            
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const timeRem = days > 0 ? `${days} gün` : `${hours} saat`;
@@ -828,12 +827,12 @@
         window.renderTasksToPage = (preserveScroll = true) => {
              const list = document.getElementById('task-list'); 
              const view = document.getElementById('view-tasks');
-
+             
              const scrollPos = view.scrollTop; 
-
+             
              list.innerHTML = ''; 
              let tempArr = Object.values(allTasksCache);
-
+             
              if (currentTaskSort === 'newest') {
                  tempArr.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
              } else if (currentTaskSort === 'oldest') {
@@ -846,7 +845,7 @@
                      return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
                  });
              }
-
+             
              const filterBtn = document.querySelector('.btn-outline-secondary.active');
              const filter = filterBtn ? filterBtn.innerText : 'Tümü';
              const { start, end } = getWeekRange();
@@ -861,7 +860,7 @@
                     if(t.statusMap[curUser.uid]) myStatus = t.statusMap[curUser.uid];
                     else if(t.assignedToUid !== curUser.uid) myStatus = Object.values(t.statusMap)[0] || 'pending';
                 }
-
+                
                 if(filter === 'Bu Hafta') {
                     const tSeconds = t.createdAt?.seconds || (Date.now()/1000);
                     const tDate = new Date(tSeconds * 1000);
@@ -878,7 +877,7 @@
                         if(tgtU && !tgtU.departments.includes(adminTaskDeptFilter)) return;
                     }
                 }
-
+                
                 filteredTasks.push({ t, myStatus });
             });
 
@@ -886,15 +885,15 @@
 
             slicedTasks.forEach(item => {
                 const { t, myStatus } = item;
-
+                
                 let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning" style="font-size:10px"></i>';
                 const stClass = myStatus === 'pending' ? 'st-pending' : (myStatus === 'progress' ? 'st-progress' : 'st-done');
                 const stText = myStatus === 'pending' ? 'Başlamadı' : (myStatus === 'progress' ? 'Yapılıyor' : 'Bitti');
-
+            
             const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
                                    (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
                                    (t.assignedType==='user' && t.assignedToUid===curUser.uid);
-
+            
             const canChangeStatus = isAssignedToMe;
             const dlBadge = formatDeadline(t.deadline);
             const canEdit = (t.createdByUid === curUser.uid || isAdmin());
@@ -948,7 +947,7 @@
             }
 
             calcSuccessRate();
-
+            
             if(preserveScroll) {
                 setTimeout(() => { view.scrollTop = scrollPos; }, 0); 
             } else {
@@ -982,7 +981,7 @@
             document.getElementById('form-task').reset(); 
             document.getElementById('t-id').value = '';
             setStars(0);
-
+            
             const userSelect = document.getElementById('t-user'); userSelect.innerHTML = '';
             allUsersCache.forEach(u => { 
                 if(u.uid !== curUser.uid && !isHiddenUser(u))
@@ -1029,11 +1028,11 @@
             document.getElementById('td-desc').innerHTML = linkify(parseMD(t.description || 'Açıklama yok.'));
             let starsHtml = ''; for(let i=0; i<(t.importance||0); i++) starsHtml += '<i class="fas fa-star text-warning me-1"></i>';
             document.getElementById('td-stars-wrapper').innerHTML = starsHtml; 
-
+            
             const isAssignedToMe = (t.assignedType==='all' && t.createdByUid !== curUser.uid) || 
                                    (t.assignedType==='department' && uData.departments.includes(t.assignedTo) && t.createdByUid !== curUser.uid) || 
                                    (t.assignedType==='user' && t.assignedToUid===curUser.uid);
-
+            
             const subArea = document.getElementById('td-submission-area');
             if(isAssignedToMe) {
                 subArea.style.display = 'block';
@@ -1045,7 +1044,7 @@
 
             const list = document.getElementById('td-status-list'); list.innerHTML = '';
             let expectedUsers = [];
-
+            
             if (t.assignedType === 'all') {
                 expectedUsers = allUsersCache.filter(u => !isHiddenUser(u) && u.uid !== t.createdByUid);
             } else if (t.assignedType === 'department') {
@@ -1060,7 +1059,7 @@
                     const status = (t.statusMap && t.statusMap[u.uid]) ? t.statusMap[u.uid] : 'pending';
                     const stText = status === 'pending' ? 'Başlamadı' : (status === 'progress' ? 'Yapılıyor' : 'Bitti');
                     const stColor = status === 'pending' ? 'text-secondary' : (status === 'progress' ? 'text-primary' : 'text-success');
-
+                    
                     let submissionHtml = '';
                     if(t.submissions && t.submissions[u.uid]) {
                         submissionHtml = `<div class="mt-1 p-2 bg-dark rounded border border-secondary" style="font-size:11px; word-break: break-all; white-space: pre-wrap;">${linkify(t.submissions[u.uid])}</div>`;
@@ -1087,7 +1086,7 @@
             try {
                 await updateDoc(doc(db,"tasks",tid), { [`submissions.${curUser.uid}`]: text });
                 showToast("Not/Link başarıyla iletildi!");
-
+                
                 const m = bootstrap.Modal.getInstance(document.getElementById('modal-task-detail'));
                 if(m) m.hide();
             } catch(e) {
@@ -1111,7 +1110,7 @@
                 const type = document.getElementById('t-type').value;
                 const imp = parseInt(document.getElementById('t-stars').value);
                 const deadline = document.getElementById('t-deadline').value;
-
+                
                 let to = "Herkes", uid = null;
                 if(type === 'department') to = document.getElementById('t-dept').value;
                 if(type === 'user') { 
@@ -1119,7 +1118,7 @@
                     to = el.options[el.selectedIndex].text; 
                     uid = el.value; 
                 }
-
+                
                 const taskData = { title, description: desc, assignedType: type, assignedTo: to, assignedToUid: uid, importance: imp, deadline: deadline };
 
                 if(editId) {
@@ -1142,12 +1141,12 @@
         };
 
         window.openStatusModal = (tid) => { selectedTaskForStatus = tid; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-status')).show(); };
-
+        
         window.updateTaskStatus = async (status) => { 
             if(!selectedTaskForStatus) return; 
-
+            
             await updateDoc(doc(db,"tasks",selectedTaskForStatus), { [`statusMap.${curUser.uid}`]: status }); 
-
+            
             const t = allTasksCache[selectedTaskForStatus];
             if(t && t.createdByUid !== curUser.uid) { 
                 if(status === 'progress' || status === 'done') {
@@ -1166,14 +1165,14 @@
             const m = bootstrap.Modal.getInstance(document.getElementById('modal-status')); 
             if(m) m.hide(); 
         };
-
+        
         window.filterTasks = (f, b) => { 
             taskRenderLimit = 20;
             document.querySelectorAll('#view-tasks .filter-btn').forEach(btn => btn.classList.remove('active')); 
             b.classList.add('active'); 
             renderTasksToPage(false); 
         };
-
+        
         window.delTask=(id)=>{ customConfirm("Görevi silmek istediğine emin misin?", async () => await deleteDoc(doc(db,"tasks",id))); }
 
         function listenTeam() { 
@@ -1183,14 +1182,14 @@
                 renderTeam(); renderTasksToPage();
             }); 
         }
-
+        
         window.renderTeam = (filter='') => {
             const list = document.getElementById('team-list'); list.innerHTML = ''; const f = filter.toLowerCase();
             const groups = {}; DEPTS.forEach(d => groups[d] = []); groups["Diğer"] = [];
-
+            
             allUsersCache.forEach(u => {
                 if(isHiddenUser(u)) return;
-
+                
                 const searchStr = (u.name + ' ' + (u.roles||[]).join(' ') + ' ' + (u.departments||[]).map(d=>DEPT_ABBR[d]||d).join(' ')).toLowerCase();
                 if(f && !searchStr.includes(f)) return;
                 let placed = false;
@@ -1207,7 +1206,7 @@
                     if (!roles || !roles.length) return 99;
                     return Math.min(...roles.map(r => roleWeights[r] || 99));
                 };
-
+                
                 uniqueUsers.sort((a, b) => {
                     const wA = getWeight(a.roles);
                     const wB = getWeight(b.roles);
@@ -1217,7 +1216,7 @@
 
                 list.innerHTML += `<div class="dept-header"><i class="fas fa-briefcase"></i> ${deptName}</div>`;
                 const container = document.createElement('div'); container.className = 'dept-group';
-
+                
                 uniqueUsers.forEach(u => {
                     let badges = '';
                     u.roles?.forEach(r => badges += `<span class="role-badge border">${r}</span>`);
@@ -1244,7 +1243,7 @@
             const bdg = document.getElementById('vp-badges'); bdg.innerHTML = '';
             u.roles?.forEach(r => bdg.innerHTML += `<span class="badge bg-secondary small">${r}</span>`);
             u.departments?.forEach(d => { const abbr = DEPT_ABBR[d] || d.substring(0,3); bdg.innerHTML += `<span class="badge bg-dark border border-secondary text-muted">${abbr}</span>`; });
-
+            
             const extId = document.getElementById('vp-external-id');
             extId.innerHTML = `<i class="fas fa-fingerprint me-1"></i> <span style="vertical-align: middle;">${u.uid}</span> <i class="fas fa-copy ms-1"></i>`;
             extId.dataset.uid = u.uid;
@@ -1270,7 +1269,7 @@
             document.getElementById('vp-rate').innerText = `%${rate}`;
             document.getElementById('vp-circle').style.strokeDashoffset = (163.36 * (100 - rate)) / 100;
             const socBox = document.getElementById('vp-socials'); socBox.innerHTML = '';
-
+            
             if(u.socials) {
                 if(u.socials.linkedin) socBox.innerHTML += `<a href="https://linkedin.com/in/${u.socials.linkedin}" target="_blank" class="text-secondary"><i class="fab fa-linkedin"></i></a>`;
                 if(u.socials.instagram) socBox.innerHTML += `<a href="https://instagram.com/${u.socials.instagram}" target="_blank" class="text-secondary"><i class="fab fa-instagram"></i></a>`;
@@ -1319,7 +1318,7 @@
             list.innerHTML = `<div data-cid="Genel Sohbet" class="card-custom p-3 d-flex align-items-center mb-0 border border-secondary" onclick="openChat('Genel Sohbet','Genel Sohbet'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-hashtag"></i></div><div class="fw-bold">Sohbet</div></div>`;
             list.innerHTML += `<div data-cid="Business" class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-secondary" onclick="openChat('Business','Business'); pushState()"><div class="bg-dark rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-briefcase"></i></div><div class="fw-bold">Business</div></div>`;
             if(isBoard()) list.innerHTML += `<div data-cid="Yönetim Kurulu" class="card-custom p-3 d-flex align-items-center mb-0 mt-2 border border-warning" onclick="openChat('Yönetim Kurulu','Yönetim Kurulu'); pushState()"><div class="bg-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:40px;height:40px"><i class="fas fa-crown text-black"></i></div><div class="fw-bold text-warning">Yönetim Kurulu</div></div>`;
-
+            
             let sortedDepts = [...(canSeeAllChannels() ? DEPTS : (uData.departments || []))];
             if (isBoard() && uData.departments && uData.departments.length > 0) {
                 const myDept = uData.departments[0];
@@ -1344,7 +1343,7 @@
 
             if (msgDate.getTime() === today.getTime()) return "Bugün";
             if (msgDate.getTime() === yesterday.getTime()) return "Dün";
-
+            
             const months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
             return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
@@ -1354,7 +1353,7 @@
             const body = document.getElementById('chat-overlay-body'); body.innerHTML = '';
             document.getElementById('chat-overlay').classList.add('open');
             chatRenderLimit = 30; 
-
+            
             // YENİ: Manuel Bildirim butonunu sadece DM ise göster
             const pingBtn = document.getElementById('btn-ping-user');
             if (cid.includes('_')) {
@@ -1371,12 +1370,12 @@
             unsubChat = onSnapshot(query(collection(db,"messages"), where("channel","==",cid)), s => {
                 let msgs = []; s.forEach(d => { const m = d.data(); if(!m.deletedFor || !m.deletedFor.includes(curUser.uid)) msgs.push({id:d.id, ...m}); });
                 msgs.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-
+                
                 currentChatSnapshot = msgs; 
                 renderChatUI(true); 
             });
         };
-
+        
         // YENİ: Manuel Dürtme (Ping) Fonksiyonu
         window.sendManualPing = async () => {
             if (!activeChatId || !activeChatId.includes('_')) return;
@@ -1411,7 +1410,7 @@
         window.renderChatUI = (scrollToBottom = false) => {
             const body = document.getElementById('chat-overlay-body');
             const msgs = currentChatSnapshot;
-
+            
             let html = '';
             let pinnedMsg = null;
             let lastDateLabel = null; 
@@ -1427,10 +1426,10 @@
                 const me = m.senderId === curUser.uid;
                 let content = m.text || '';
                 if(m.isPinned) pinnedMsg = m; 
-
+                
                 let msgTime = m.createdAt?.seconds || (Date.now() / 1000);
                 const dateLabel = getChatDateLabel(msgTime);
-
+                
                 if (dateLabel !== lastDateLabel) {
                     if (!isFirstDay) html += `</div>`; 
                     html += `<div class="day-container">
@@ -1440,10 +1439,10 @@
                 }
 
                 content = linkify(parseMD(content)); 
-
+                
                 let specialTags = ['@Herkes'].concat(ROLES.map(r=>`@${r}`)).concat(DEPTS.map(d=>`@${d}`));
                 specialTags.sort((a,b) => b.length - a.length); 
-
+                
                 specialTags.forEach(tag => {
                     if (content.includes(tag)) content = content.split(tag).join(`<span class="text-info fw-bold">${tag}</span>`);
                 });
@@ -1454,7 +1453,7 @@
                 if(m.type === 'image') {
                     content = `<img src="${m.url}" class="chat-img" onclick="openImgViewer('${m.url}')">`;
                 }
-
+                
                 let badgeHtml = '', senderPhoto = 'https://ui-avatars.com/api/?name=User';
                 const sender = allUsersCache.find(u => u.uid === m.senderId);
                 if(sender) {
@@ -1501,18 +1500,18 @@
                 </div>
                 ${reactHtml ? `<div class="reaction-container ${me?'justify-content-end':'justify-content-start'}" style="margin-left:${!me?'45px':0}; margin-right:${me?'10px':0};">${reactHtml}</div>` : ''}`;
             });
-
+            
             if (!isFirstDay) html += `</div>`; 
-
+            
             const oldScrollHeight = body.scrollHeight;
             body.innerHTML = html; 
-
+            
             if (scrollToBottom) {
                 setTimeout(() => body.scrollTop = body.scrollHeight, 100);
             } else {
                 body.scrollTop = body.scrollHeight - oldScrollHeight; 
             }
-
+            
             currentChatMsgs = msgsToRender; 
 
             const pBar = document.getElementById('pinned-msg-bar');
@@ -1531,7 +1530,7 @@
                 }, 400);
             }
         };
-
+        
         window.loadMoreChat = () => {
             chatRenderLimit += 50;
             renderChatUI(false); 
@@ -1560,15 +1559,15 @@
         window.handleMsgCtx = (e, msg) => {
             if(window.navigator.vibrate) window.navigator.vibrate(50);
             selectedMsg = msg; let html = ''; const isMine = msg.senderId === curUser.uid;
-
+            
             html += `<div class="ctx-item text-primary" onclick="replyToMsg()"><i class="fas fa-reply"></i> Yanıtla</div>`;
-
+            
             if(msg.text) {
                 html += `<div class="ctx-item text-light" onclick="copyMsg()"><i class="fas fa-copy"></i> Kopyala</div>`;
             }
 
             html += `<div class="ctx-item text-warning" onclick="togglePinMsg()"><i class="fas fa-thumbtack"></i> ${msg.isPinned ? 'Sabitlemeyi Kaldır' : 'Sohbete Sabitle'}</div>`; 
-
+            
             const fullMsg = currentChatMsgs?.find(x => x.id === msg.id);
             if (fullMsg && fullMsg.reactions && Object.keys(fullMsg.reactions).length > 0) {
                 html += `<div class="ctx-item text-info" onclick="openReactionDetails('${msg.id}')"><i class="fas fa-smile"></i> Tepki Verenler</div>`;
@@ -1578,7 +1577,7 @@
             if(isMine || isAdmin()) html += `<div class="ctx-item delete" onclick="deleteMsg('all')"><i class="fas fa-trash"></i> Herkes için Sil</div>`;
             html += `<div class="ctx-item delete" onclick="deleteMsg('me')"><i class="fas fa-trash-alt"></i> Benden Sil</div>`;
             document.getElementById('ctx-options').innerHTML = html;
-
+            
             ctx.style.display='flex';
             let x = e.clientX, y = e.clientY;
             if (x + ctx.offsetWidth > window.innerWidth) x = window.innerWidth - ctx.offsetWidth - 10;
@@ -1586,22 +1585,22 @@
             ctx.style.top = y + 'px'; ctx.style.left = x + 'px';
         };
         document.addEventListener('click', (e)=>{if(!ctx.contains(e.target))ctx.style.display='none';});
-
+        
         window.replyToMsg = () => {
             ctx.style.display='none'; currentReplyToId = selectedMsg.id;
             document.getElementById('reply-preview-bar').style.display = 'flex';
-
+            
             const fullMsg = currentChatMsgs?.find(x => x.id === selectedMsg.id);
             let pText = '📸 Fotoğraf';
             if(fullMsg) {
                 if(fullMsg.text) pText = fullMsg.text;
             }
-
+            
             document.getElementById('reply-preview-text').innerText = pText;
             document.getElementById('chat-input').focus();
         };
         window.cancelReply = () => { currentReplyToId = null; document.getElementById('reply-preview-bar').style.display = 'none'; };
-
+        
         window.togglePinMsg = async () => {
             ctx.style.display='none';
             await updateDoc(doc(db,"messages",selectedMsg.id), { isPinned: !selectedMsg.isPinned });
@@ -1654,7 +1653,7 @@
         window.deleteMsg = async (t) => { ctx.style.display='none'; if(t==='all'){ customConfirm("Herkesden sil?",async()=>await deleteDoc(doc(db,"messages",selectedMsg.id))); } else { await updateDoc(doc(db,"messages",selectedMsg.id),{deletedFor:arrayUnion(curUser.uid)}); showToast("Silindi."); } };
         window.editMsg = () => { ctx.style.display='none'; document.getElementById('edit-msg-input').value=selectedMsg.text; bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-edit-msg')).show(); };
         window.submitEditMsg = async () => { await updateDoc(doc(db,"messages",selectedMsg.id),{text:document.getElementById('edit-msg-input').value,isEdited:true}); const m = bootstrap.Modal.getInstance(document.getElementById('modal-edit-msg')); if(m) m.hide(); };
-
+        
         document.getElementById('chat-file-inp').addEventListener('change', async e => { 
             const files = e.target.files; 
             if(!files || files.length === 0) return; 
@@ -1666,7 +1665,7 @@
 
             for(let i = 0; i < files.length; i++) {
                 const f = files[i];
-
+                
                 if(f.type.startsWith('image/')) {
                     imageCount++;
                     await new Promise((resolve) => {
@@ -1679,7 +1678,7 @@
                                 let w = img.width, h = img.height, m = 800; 
                                 if(w > h){if(w > m){h *= m/w; w = m;}} else {if(h > m){w *= m/h; h = m;}} 
                                 c.width = w; c.height = h; x.drawImage(img, 0, 0, w, h); 
-
+                                
                                 try {
                                     await addDoc(collection(db,"messages"),{type:'image',url:c.toDataURL('image/jpeg',0.6),channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
                                     setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
@@ -1705,7 +1704,7 @@
                 showToast(`${imageCount} fotoğraf başarıyla gönderildi!`);
             }
         });
-
+        
         const vImg = document.getElementById('img-viewer'); const vImgSrc = document.getElementById('img-viewer-src');
         let sc=1, pX=0, pY=0, sX=0, sY=0, lDist=0, isP=false;
         vImg.addEventListener('touchstart', e => {
@@ -1720,7 +1719,7 @@
         });
         vImg.addEventListener('touchend', () => isP=false);
         function setTrans() { vImgSrc.style.transform = `translate(${pX}px, ${pY}px) scale(${sc})`; }
-
+        
         window.closeImgViewer=()=>{ vImg.style.display='none'; sc=1;pX=0;pY=0; setTrans(); };
         window.openImgViewer=(src)=>{ vImgSrc.src=src; vImg.style.display='flex'; sc=1;pX=0;pY=0; setTrans(); };
 
@@ -1732,11 +1731,11 @@
                 if(isHiddenUser(u)) return;
 
                 if(lbMode !== 'herkes' && !isAdmin() && !u.departments.some(d => uData.departments.includes(d))) return;
-
+                
                 let total = 0, done = 0;
                 Object.values(allTasksCache).forEach(t => {
                     if(lbMode === 'haftalik') { const tDate = t.createdAt.toDate(); if(tDate < start || tDate > end) return; }
-
+                    
                     const isAssigned = (t.assignedType==='all' && t.createdByUid !== u.uid) || 
                                        (t.assignedType==='department' && u.departments.includes(t.assignedTo) && t.createdByUid !== u.uid) || 
                                        (t.assignedType==='user' && t.assignedToUid===u.uid);
@@ -1754,10 +1753,10 @@
         };
 
         window.goTab = (t,b) => { document.getElementById('page-title').innerText = {'tasks':'Görev Panosu','messages':'Sohbetler','team':'Ekip Listesi','profile':'Profilim'}[t]; document.querySelectorAll('.main-content').forEach(e=>e.classList.remove('active')); document.getElementById(`view-${t}`).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active')); b.classList.add('active'); };
-
+        
         const chatInputEl = document.getElementById('chat-input');
         const mentionMenu = document.getElementById('mention-menu');
-
+        
         chatInputEl.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1774,9 +1773,9 @@
             const val = this.value;
             const cursorPos = this.selectionStart;
             const textBefore = val.substring(0, cursorPos);
-
+            
             const match = textBefore.match(/@([a-zA-ZğüşıöçĞÜŞİÖÇ\s]*)$/);
-
+            
             if (match) {
                 currentMentionSearch = match[1].toLowerCase();
                 renderMentionMenu(currentMentionSearch);
@@ -1830,7 +1829,7 @@
             const cursorPos = chatInputEl.selectionStart;
             const textBefore = val.substring(0, cursorPos);
             const textAfter = val.substring(cursorPos);
-
+            
             const lastAtIndex = textBefore.lastIndexOf('@');
             if (lastAtIndex !== -1) {
                 const newTextBefore = textBefore.substring(0, lastAtIndex) + '@' + text + ' ';
@@ -1843,9 +1842,9 @@
 
         document.getElementById('chat-form').addEventListener('submit',async e=>{
             e.preventDefault(); const t=document.getElementById('chat-input').value.trim(); if(!t)return; 
-
+            
             const msgRef = await addDoc(collection(db,"messages"),{text:t, type:'text', channel:activeChatId,senderId:curUser.uid,senderName:uData.name,createdAt:new Date(), replyTo: currentReplyToId}); 
-
+            
             setDoc(doc(db, "channelMeta", activeChatId), { lastTime: Date.now() }, {merge:true});
             updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${activeChatId}`]: Date.now() });
 
@@ -1882,12 +1881,12 @@
                     targetMsgId: msgRef.id 
                 });
             });
-
+            
             cancelReply();
             document.getElementById('chat-input').value=''; 
             chatInputEl.style.height = '45px'; 
         });
-
+        
         function listenNotifs(){ 
             if(unsubNotif) unsubNotif();
             unsubNotif = onSnapshot(query(collection(db,"notifications"),where("to","==",curUser.uid),where("read","==",false)), s=>{ 
@@ -1903,11 +1902,11 @@
                 document.getElementById('notif-dot').style.display = hasUnread ? 'block' : 'none'; 
             }); 
         }
-
+        
         window.handleNotifClick = async (type, linkId, linkTitle, targetMsgId) => {
             const m = bootstrap.Modal.getInstance(document.getElementById('modal-notif'));
             if(m) m.hide();
-
+            
             if(type === 'task' && linkId) { 
                 if(!allTasksCache[linkId]) { try { const snap = await getDoc(doc(db,"tasks",linkId)); if(snap.exists()) { allTasksCache[linkId] = {id: snap.id, ...snap.data()}; openTaskDetail(linkId); } } catch(e) {} } else { openTaskDetail(linkId); } pushState(); 
             } 
@@ -1934,7 +1933,7 @@
             }); 
             document.getElementById('notif-dot').style.display='none'; 
         };
-
+        
         async function loadRecentDMs(){ 
             if(unsubDMs)unsubDMs(); 
             unsubDMs=onSnapshot(collection(db,"messages"),s=>{ 
@@ -1951,21 +1950,21 @@
                 }); 
             }); 
         }
-
+        
         window.logout = async () => { await signOut(auth); window.location.reload(); };
 
         document.getElementById('form-register').addEventListener('submit',async e=>{ e.preventDefault(); const n=document.getElementById('r-name').value, em=document.getElementById('r-email').value, ps=document.getElementById('r-pass').value; try{ const c=await createUserWithEmailAndPassword(auth,em,ps); const p=`https://ui-avatars.com/api/?name=${n}&background=random&color=fff`; await setDoc(doc(db,"users",c.user.uid),{ uid:c.user.uid, name:n, email:em, photoURL:p, createdAt:new Date(), isBanned:false, roles: ['Üye'], departments: ['...'] }); await updateProfile(c.user,{displayName:n,photoURL:p}); } catch(err){ showToast(err.message) } });
         document.getElementById('form-login').addEventListener('submit',async e=>{ e.preventDefault(); try{ await signInWithEmailAndPassword(auth,document.getElementById('l-email').value,document.getElementById('l-pass').value) } catch(err){ showToast("Hata: " + err.message); } });
         window.uploadPhoto=(i)=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=(e)=>{const im=new Image();im.src=e.target.result;im.onload=()=>{const c=document.createElement('canvas');const x=c.getContext('2d');const s=150/Math.max(im.width,im.height);c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);const b=c.toDataURL('image/jpeg',0.7);updateDoc(doc(db,"users",curUser.uid),{photoURL:b}).then(()=>{uData.photoURL=b;loadProfile()})}};r.readAsDataURL(f);}
-
+        
         window.aiSummarizeChat = async () => { 
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
-
+            
             const todaysMsgs = currentChatMsgs.filter(x => x.createdAt?.seconds >= startOfToday);
 
             if(!todaysMsgs || todaysMsgs.length === 0) return showToast("Bugün özetlenecek mesaj yok."); 
-
+            
             showToast("✨ AI bugünkü mesajları okuyor..."); 
             try { 
                 const txt = todaysMsgs.slice(-40).map(x => `${x.senderName}: ${x.text || '[Medya/Dosya]'}`).join('\n'); 
