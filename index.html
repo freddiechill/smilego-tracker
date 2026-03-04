@@ -544,20 +544,10 @@
                 });
                 
                 // --- SADECE MOBİL BİLDİRİMLER (MEDIAN) ---
-                // Web tarafını tamamen iptal ettik. Sadece mobil uygulamayı OneSignal'a bağlıyoruz.
-                if (typeof median !== 'undefined') {
-                    setTimeout(() => {
-                        median.onesignal.setExternalUserId({externalUserId: u.uid});
-                    }, 1500);
-                } else {
-                    setTimeout(() => {
-                        const iframe = document.createElement("iframe");
-                        iframe.style.display = "none";
-                        iframe.src = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
-                        document.body.appendChild(iframe);
-                        setTimeout(() => iframe.remove(), 1000);
-                    }, 2000);
-                }
+                // Tüm karmaşık kontrolleri attık. Median'ın en temel, en doğrudan yerel (native) komutunu kullanıyoruz.
+                setTimeout(() => {
+                    window.location.href = "median://onesignal/setExternalUserId?externalUserId=" + u.uid;
+                }, 1500);
 
             } else {
                 cleanup(); document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none';
