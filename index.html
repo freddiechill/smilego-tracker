@@ -22,8 +22,10 @@
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(function(OneSignal) {
-        OneSignal.init({ appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d" });
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
+        });
       });
     </script>
 
@@ -291,8 +293,8 @@
                 <button class="btn text-white me-2 p-0" onclick="closeChat()"><i class="fas fa-arrow-left fa-lg"></i></button>
                 <h6 class="m-0 fw-bold text-white" id="chat-overlay-title">Sohbet</h6>
                 
-                <!-- YENİ: Özel Mesajlar İçin Manuel Bildirim (Dürtme) Butonu -->
-                <button id="btn-ping-user" class="btn btn-sm btn-outline-warning ms-3 rounded-pill py-0 px-2" style="display:none; font-size: 10px;" onclick="sendManualPing()"><i class="fas fa-bell"></i> Bildirim Gönder</button>
+                <!-- YENİ: Özel Mesajlar İçin Manuel Bildirim (Dürtme) Butonu SADECE İKON -->
+                <button id="btn-ping-user" class="btn btn-warning ms-3 rounded-circle align-items-center justify-content-center shadow-sm" style="display:none !important; width: 35px; height: 35px; padding: 0;" onclick="sendManualPing()" title="Bildirim Gönder"><i class="fas fa-bell"></i></button>
             </div>
             <button class="btn-ai btn-sm px-3" onclick="aiSummarizeChat()" title="Sohbeti Özetle">✨ Özetle</button>
         </div>
@@ -420,7 +422,7 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
 
-        const geminiApiKey = ""; 
+        const geminiApiKey = "AIzaSyBzxlBc0Ie5-uQMRw5lWvcS00GnFWeVUSE"; 
         
         async function fetchGemini(prompt) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
@@ -1318,12 +1320,14 @@
             document.getElementById('chat-overlay').classList.add('open');
             chatRenderLimit = 30; 
             
-            // YENİ: Manuel Bildirim butonunu sadece DM ise göster
+            // YENİ: Manuel Bildirim butonunu sadece DM ise (içinde "_" varsa) göster
             const pingBtn = document.getElementById('btn-ping-user');
-            if (cid.includes('_')) {
-                pingBtn.style.display = 'inline-block';
+            const isDM = cid.includes('_') && cid.length > 20; // Ekstra güvenlik: UID'ler uzundur. "Genel Sohbet" vb. false döner.
+            
+            if (isDM) {
+                pingBtn.style.setProperty('display', 'flex', 'important');
             } else {
-                pingBtn.style.display = 'none';
+                pingBtn.style.setProperty('display', 'none', 'important');
             }
 
             updateDoc(doc(db,"users",curUser.uid), { [`readReceipts.${cid}`]: Date.now() });
@@ -1340,7 +1344,6 @@
             });
         };
         
-        // YENİ: Manuel Dürtme (Ping) Fonksiyonu
         window.sendManualPing = async () => {
             if (!activeChatId || !activeChatId.includes('_')) return;
             const otherUid = activeChatId.split('_').find(id => id !== curUser.uid);
@@ -1349,7 +1352,10 @@
             const btn = document.getElementById('btn-ping-user');
             btn.disabled = true;
             const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Gönderildi';
+            
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-success');
 
             try {
                 await addDoc(collection(db, "notifications"), {
@@ -1368,6 +1374,8 @@
             setTimeout(() => {
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-warning');
             }, 5000); 
         };
 
@@ -1945,7 +1953,7 @@
                 b.scrollTop = b.scrollHeight; 
             } catch(e) { 
                 console.error("AI Bağlantı Hatası:", e);
-                showToast("AI Hatası: Lütfen API anahtarınızı güncelleyin."); 
+                showToast("AI Hatası: " + (e.message || "Bilinmeyen Hata")); 
             } 
         };
     </script>
