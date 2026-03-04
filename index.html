@@ -25,11 +25,9 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "2657219b-d29e-46e1-ac6f-68d2cdb8014d",
-          // EKLENEN KISIM: Github Pages Alt Klasör Yönlendirmesi
-          serviceWorkerParam: { scope: "/smilego-tracker/" },
-          serviceWorkerPath: "/smilego-tracker/OneSignalSDKWorker.js"
+          // Alt klasörde çalışan Github Pages için daha kesin Service Worker tanımı
+          serviceWorkerPath: "OneSignalSDKWorker.js" // Yolu göreceli verdik
         });
-        // DİKKAT: promptPush() KODU BURADAN SİLİNDİ (Mobilin bozulmaması için)
       });
     </script>
 
